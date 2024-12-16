@@ -163,9 +163,9 @@ spring:
           slow-sql-millis: 5000
       datasource:
         master:
-          url: jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
-          username: root
-          password: root
+          url: jdbc:mysql://192.168.88.10:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+          username: jeecg
+          password: p0o9i8u7
           driver-class-name: com.mysql.cj.jdbc.Driver
           # 多数据源配置
           #multi-datasource1:
@@ -175,8 +175,8 @@ spring:
           #driver-class-name: com.mysql.cj.jdbc.Driver
   #redis 配置
   redis:
-    database: 0
-    host: 127.0.0.1
+    database: 1
+    host: 192.168.88.10
     port: 6379
     password: ''
 #mybatis plus 设置
@@ -221,7 +221,7 @@ jeecg:
     #webapp文件路径
     webapp: /opt/webapp
   shiro:
-    excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/bigscreen/category/**,/bigscreen/visual/**,/bigscreen/map/**,/jmreport/bigscreen2/**
+    excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/bigscreen/category/**,/bigscreen/visual/**,/bigscreen/map/**,/jmreport/bigscreen2/**,/cpe/**
   #阿里云oss存储和大鱼短信秘钥配置
   oss:
     accessKey: ??
