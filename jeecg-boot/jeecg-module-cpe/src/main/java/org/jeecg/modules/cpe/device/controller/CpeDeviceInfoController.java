@@ -105,47 +105,47 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
 		return Result.OK(pageList);
 	}
 
-	/**
-     *   添加
-     * @param cpeDeviceInfo
-     * @return
-     */
-    @AutoLog(value = "设备信息表-添加")
-    @ApiOperation(value="设备信息表-添加", notes="设备信息表-添加")
-    @RequiresPermissions("cpe.device:cpe_device_info:add")
-    @PostMapping(value = "/add")
-    public Result<String> add(@RequestBody CpeDeviceInfo cpeDeviceInfo) {
-        cpeDeviceInfoService.save(cpeDeviceInfo);
-        return Result.OK("添加成功！");
-    }
+	// /**
+    //  *   添加
+    //  * @param cpeDeviceInfo
+    //  * @return
+    //  */
+    // @AutoLog(value = "设备信息表-添加")
+    // @ApiOperation(value="设备信息表-添加", notes="设备信息表-添加")
+    // @RequiresPermissions("cpe.device:cpe_device_info:add")
+    // @PostMapping(value = "/add")
+    // public Result<String> add(@RequestBody CpeDeviceInfo cpeDeviceInfo) {
+    //     cpeDeviceInfoService.save(cpeDeviceInfo);
+    //     return Result.OK("添加成功！");
+    // }
 
-    /**
-     *  编辑
-     * @param cpeDeviceInfo
-     * @return
-     */
-    @AutoLog(value = "设备信息表-编辑")
-    @ApiOperation(value="设备信息表-编辑", notes="设备信息表-编辑")
-    @RequiresPermissions("cpe.device:cpe_device_info:edit")
-    @RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
-    public Result<String> edit(@RequestBody CpeDeviceInfo cpeDeviceInfo) {
-        cpeDeviceInfoService.updateById(cpeDeviceInfo);
-        return Result.OK("编辑成功!");
-    }
+    // /**
+    //  *  编辑
+    //  * @param cpeDeviceInfo
+    //  * @return
+    //  */
+    // @AutoLog(value = "设备信息表-编辑")
+    // @ApiOperation(value="设备信息表-编辑", notes="设备信息表-编辑")
+    // @RequiresPermissions("cpe.device:cpe_device_info:edit")
+    // @RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
+    // public Result<String> edit(@RequestBody CpeDeviceInfo cpeDeviceInfo) {
+    //     cpeDeviceInfoService.updateById(cpeDeviceInfo);
+    //     return Result.OK("编辑成功!");
+    // }
 
-    /**
-     * 通过id删除
-     * @param id
-     * @return
-     */
-    @AutoLog(value = "设备信息表-通过id删除")
-    @ApiOperation(value="设备信息表-通过id删除", notes="设备信息表-通过id删除")
-    @RequiresPermissions("cpe.device:cpe_device_info:delete")
-    @DeleteMapping(value = "/delete")
-    public Result<String> delete(@RequestParam(name="id",required=true) String id) {
-        cpeDeviceInfoService.delMain(id);
-        return Result.OK("删除成功!");
-    }
+    // /**
+    //  * 通过id删除
+    //  * @param id
+    //  * @return
+    //  */
+    // @AutoLog(value = "设备信息表-通过id删除")
+    // @ApiOperation(value="设备信息表-通过id删除", notes="设备信息表-通过id删除")
+    // @RequiresPermissions("cpe.device:cpe_device_info:delete")
+    // @DeleteMapping(value = "/delete")
+    // public Result<String> delete(@RequestParam(name="id",required=true) String id) {
+    //     cpeDeviceInfoService.delMain(id);
+    //     return Result.OK("删除成功!");
+    // }
 
 	/**
      * 重启设备操作
@@ -166,19 +166,19 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
         return Result.OK("操作成功!");
     }
 
-    /**
-     * 批量删除
-     * @param ids
-     * @return
-     */
-    @AutoLog(value = "设备信息表-批量删除")
-    @ApiOperation(value="设备信息表-批量删除", notes="设备信息表-批量删除")
-    @RequiresPermissions("cpe.device:cpe_device_info:deleteBatch")
-    @DeleteMapping(value = "/deleteBatch")
-    public Result<String> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-        this.cpeDeviceInfoService.delBatchMain(Arrays.asList(ids.split(",")));
-        return Result.OK("批量删除成功!");
-    }
+    // /**
+    //  * 批量删除
+    //  * @param ids
+    //  * @return
+    //  */
+    // @AutoLog(value = "设备信息表-批量删除")
+    // @ApiOperation(value="设备信息表-批量删除", notes="设备信息表-批量删除")
+    // @RequiresPermissions("cpe.device:cpe_device_info:deleteBatch")
+    // @DeleteMapping(value = "/deleteBatch")
+    // public Result<String> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
+    //     this.cpeDeviceInfoService.delBatchMain(Arrays.asList(ids.split(",")));
+    //     return Result.OK("批量删除成功!");
+    // }
 
     /**
      * 导出
@@ -190,15 +190,15 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
         return super.exportXls(request, cpeDeviceInfo, CpeDeviceInfo.class, "设备信息表");
     }
 
-    /**
-     * 导入
-     * @return
-     */
-    @RequiresPermissions("cpe.device:cpe_device_info:importExcel")
-    @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
-    public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
-        return super.importExcel(request, response, CpeDeviceInfo.class);
-    }
+    // /**
+    //  * 导入
+    //  * @return
+    //  */
+    // @RequiresPermissions("cpe.device:cpe_device_info:importExcel")
+    // @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
+    // public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
+    //     return super.importExcel(request, response, CpeDeviceInfo.class);
+    // }
 	/*---------------------------------主表处理-end-------------------------------------*/
 	
 
@@ -220,57 +220,57 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
         return Result.OK(pageList);
     }
 
-	/**
-	 * 添加
-	 * @param cpeDeviceStatus
-	 * @return
-	 */
-	@AutoLog(value = "CPE设备状态表-添加")
-	@ApiOperation(value="CPE设备状态表-添加", notes="CPE设备状态表-添加")
-	@PostMapping(value = "/addCpeDeviceStatus")
-	public Result<String> addCpeDeviceStatus(@RequestBody CpeDeviceStatus cpeDeviceStatus) {
-		cpeDeviceStatusService.save(cpeDeviceStatus);
-		return Result.OK("添加成功！");
-	}
+	// /**
+	//  * 添加
+	//  * @param cpeDeviceStatus
+	//  * @return
+	//  */
+	// @AutoLog(value = "CPE设备状态表-添加")
+	// @ApiOperation(value="CPE设备状态表-添加", notes="CPE设备状态表-添加")
+	// @PostMapping(value = "/addCpeDeviceStatus")
+	// public Result<String> addCpeDeviceStatus(@RequestBody CpeDeviceStatus cpeDeviceStatus) {
+	// 	cpeDeviceStatusService.save(cpeDeviceStatus);
+	// 	return Result.OK("添加成功！");
+	// }
 
-    /**
-	 * 编辑
-	 * @param cpeDeviceStatus
-	 * @return
-	 */
-	@AutoLog(value = "CPE设备状态表-编辑")
-	@ApiOperation(value="CPE设备状态表-编辑", notes="CPE设备状态表-编辑")
-	@RequestMapping(value = "/editCpeDeviceStatus", method = {RequestMethod.PUT,RequestMethod.POST})
-	public Result<String> editCpeDeviceStatus(@RequestBody CpeDeviceStatus cpeDeviceStatus) {
-		cpeDeviceStatusService.updateById(cpeDeviceStatus);
-		return Result.OK("编辑成功!");
-	}
+    // /**
+	//  * 编辑
+	//  * @param cpeDeviceStatus
+	//  * @return
+	//  */
+	// @AutoLog(value = "CPE设备状态表-编辑")
+	// @ApiOperation(value="CPE设备状态表-编辑", notes="CPE设备状态表-编辑")
+	// @RequestMapping(value = "/editCpeDeviceStatus", method = {RequestMethod.PUT,RequestMethod.POST})
+	// public Result<String> editCpeDeviceStatus(@RequestBody CpeDeviceStatus cpeDeviceStatus) {
+	// 	cpeDeviceStatusService.updateById(cpeDeviceStatus);
+	// 	return Result.OK("编辑成功!");
+	// }
 
-	/**
-	 * 通过id删除
-	 * @param id
-	 * @return
-	 */
-	@AutoLog(value = "CPE设备状态表-通过id删除")
-	@ApiOperation(value="CPE设备状态表-通过id删除", notes="CPE设备状态表-通过id删除")
-	@DeleteMapping(value = "/deleteCpeDeviceStatus")
-	public Result<String> deleteCpeDeviceStatus(@RequestParam(name="id",required=true) String id) {
-		cpeDeviceStatusService.removeById(id);
-		return Result.OK("删除成功!");
-	}
+	// /**
+	//  * 通过id删除
+	//  * @param id
+	//  * @return
+	//  */
+	// @AutoLog(value = "CPE设备状态表-通过id删除")
+	// @ApiOperation(value="CPE设备状态表-通过id删除", notes="CPE设备状态表-通过id删除")
+	// @DeleteMapping(value = "/deleteCpeDeviceStatus")
+	// public Result<String> deleteCpeDeviceStatus(@RequestParam(name="id",required=true) String id) {
+	// 	cpeDeviceStatusService.removeById(id);
+	// 	return Result.OK("删除成功!");
+	// }
 
-	/**
-	 * 批量删除
-	 * @param ids
-	 * @return
-	 */
-	@AutoLog(value = "CPE设备状态表-批量删除")
-	@ApiOperation(value="CPE设备状态表-批量删除", notes="CPE设备状态表-批量删除")
-	@DeleteMapping(value = "/deleteBatchCpeDeviceStatus")
-	public Result<String> deleteBatchCpeDeviceStatus(@RequestParam(name="ids",required=true) String ids) {
-	    this.cpeDeviceStatusService.removeByIds(Arrays.asList(ids.split(",")));
-		return Result.OK("批量删除成功!");
-	}
+	// /**
+	//  * 批量删除
+	//  * @param ids
+	//  * @return
+	//  */
+	// @AutoLog(value = "CPE设备状态表-批量删除")
+	// @ApiOperation(value="CPE设备状态表-批量删除", notes="CPE设备状态表-批量删除")
+	// @DeleteMapping(value = "/deleteBatchCpeDeviceStatus")
+	// public Result<String> deleteBatchCpeDeviceStatus(@RequestParam(name="ids",required=true) String ids) {
+	//     this.cpeDeviceStatusService.removeByIds(Arrays.asList(ids.split(",")));
+	// 	return Result.OK("批量删除成功!");
+	// }
 
     /**
      * 导出
@@ -305,43 +305,43 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
 		 return mv;
     }
 
-    /**
-     * 导入
-     * @return
-     */
-    @RequestMapping(value = "/importCpeDeviceStatus/{mainId}")
-    public Result<?> importCpeDeviceStatus(HttpServletRequest request, HttpServletResponse response, @PathVariable("mainId") String mainId) {
-		 MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-		 Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
-		 for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
-       // 获取上传文件对象
-			 MultipartFile file = entity.getValue();
-			 ImportParams params = new ImportParams();
-			 params.setTitleRows(2);
-			 params.setHeadRows(1);
-			 params.setNeedSave(true);
-			 try {
-				 List<CpeDeviceStatus> list = ExcelImportUtil.importExcel(file.getInputStream(), CpeDeviceStatus.class, params);
-				 for (CpeDeviceStatus temp : list) {
-                    temp.setCpeId(mainId);
-				 }
-				 long start = System.currentTimeMillis();
-				 cpeDeviceStatusService.saveBatch(list);
-				 log.info("消耗时间" + (System.currentTimeMillis() - start) + "毫秒");
-				 return Result.OK("文件导入成功！数据行数：" + list.size());
-			 } catch (Exception e) {
-				 log.error(e.getMessage(), e);
-				 return Result.error("文件导入失败:" + e.getMessage());
-			 } finally {
-				 try {
-					 file.getInputStream().close();
-				 } catch (IOException e) {
-					 e.printStackTrace();
-				 }
-			 }
-		 }
-		 return Result.error("文件导入失败！");
-    }
+    // /**
+    //  * 导入
+    //  * @return
+    //  */
+    // @RequestMapping(value = "/importCpeDeviceStatus/{mainId}")
+    // public Result<?> importCpeDeviceStatus(HttpServletRequest request, HttpServletResponse response, @PathVariable("mainId") String mainId) {
+	// 	 MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+	// 	 Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+	// 	 for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+    //    // 获取上传文件对象
+	// 		 MultipartFile file = entity.getValue();
+	// 		 ImportParams params = new ImportParams();
+	// 		 params.setTitleRows(2);
+	// 		 params.setHeadRows(1);
+	// 		 params.setNeedSave(true);
+	// 		 try {
+	// 			 List<CpeDeviceStatus> list = ExcelImportUtil.importExcel(file.getInputStream(), CpeDeviceStatus.class, params);
+	// 			 for (CpeDeviceStatus temp : list) {
+    //                 temp.setCpeId(mainId);
+	// 			 }
+	// 			 long start = System.currentTimeMillis();
+	// 			 cpeDeviceStatusService.saveBatch(list);
+	// 			 log.info("消耗时间" + (System.currentTimeMillis() - start) + "毫秒");
+	// 			 return Result.OK("文件导入成功！数据行数：" + list.size());
+	// 		 } catch (Exception e) {
+	// 			 log.error(e.getMessage(), e);
+	// 			 return Result.error("文件导入失败:" + e.getMessage());
+	// 		 } finally {
+	// 			 try {
+	// 				 file.getInputStream().close();
+	// 			 } catch (IOException e) {
+	// 				 e.printStackTrace();
+	// 			 }
+	// 		 }
+	// 	 }
+	// 	 return Result.error("文件导入失败！");
+    // }
 
     /*--------------------------------子表处理-CPE设备状态表-end----------------------------------------------*/
 
@@ -363,57 +363,57 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
         return Result.OK(pageList);
     }
 
-	/**
-	 * 添加
-	 * @param cpeDeviceNeighbor
-	 * @return
-	 */
-	@AutoLog(value = "CPE设备邻区信息-添加")
-	@ApiOperation(value="CPE设备邻区信息-添加", notes="CPE设备邻区信息-添加")
-	@PostMapping(value = "/addCpeDeviceNeighbor")
-	public Result<String> addCpeDeviceNeighbor(@RequestBody CpeDeviceNeighbor cpeDeviceNeighbor) {
-		cpeDeviceNeighborService.save(cpeDeviceNeighbor);
-		return Result.OK("添加成功！");
-	}
+	// /**
+	//  * 添加
+	//  * @param cpeDeviceNeighbor
+	//  * @return
+	//  */
+	// @AutoLog(value = "CPE设备邻区信息-添加")
+	// @ApiOperation(value="CPE设备邻区信息-添加", notes="CPE设备邻区信息-添加")
+	// @PostMapping(value = "/addCpeDeviceNeighbor")
+	// public Result<String> addCpeDeviceNeighbor(@RequestBody CpeDeviceNeighbor cpeDeviceNeighbor) {
+	// 	cpeDeviceNeighborService.save(cpeDeviceNeighbor);
+	// 	return Result.OK("添加成功！");
+	// }
 
-    /**
-	 * 编辑
-	 * @param cpeDeviceNeighbor
-	 * @return
-	 */
-	@AutoLog(value = "CPE设备邻区信息-编辑")
-	@ApiOperation(value="CPE设备邻区信息-编辑", notes="CPE设备邻区信息-编辑")
-	@RequestMapping(value = "/editCpeDeviceNeighbor", method = {RequestMethod.PUT,RequestMethod.POST})
-	public Result<String> editCpeDeviceNeighbor(@RequestBody CpeDeviceNeighbor cpeDeviceNeighbor) {
-		cpeDeviceNeighborService.updateById(cpeDeviceNeighbor);
-		return Result.OK("编辑成功!");
-	}
+    // /**
+	//  * 编辑
+	//  * @param cpeDeviceNeighbor
+	//  * @return
+	//  */
+	// @AutoLog(value = "CPE设备邻区信息-编辑")
+	// @ApiOperation(value="CPE设备邻区信息-编辑", notes="CPE设备邻区信息-编辑")
+	// @RequestMapping(value = "/editCpeDeviceNeighbor", method = {RequestMethod.PUT,RequestMethod.POST})
+	// public Result<String> editCpeDeviceNeighbor(@RequestBody CpeDeviceNeighbor cpeDeviceNeighbor) {
+	// 	cpeDeviceNeighborService.updateById(cpeDeviceNeighbor);
+	// 	return Result.OK("编辑成功!");
+	// }
 
-	/**
-	 * 通过id删除
-	 * @param id
-	 * @return
-	 */
-	@AutoLog(value = "CPE设备邻区信息-通过id删除")
-	@ApiOperation(value="CPE设备邻区信息-通过id删除", notes="CPE设备邻区信息-通过id删除")
-	@DeleteMapping(value = "/deleteCpeDeviceNeighbor")
-	public Result<String> deleteCpeDeviceNeighbor(@RequestParam(name="id",required=true) String id) {
-		cpeDeviceNeighborService.removeById(id);
-		return Result.OK("删除成功!");
-	}
+	// /**
+	//  * 通过id删除
+	//  * @param id
+	//  * @return
+	//  */
+	// @AutoLog(value = "CPE设备邻区信息-通过id删除")
+	// @ApiOperation(value="CPE设备邻区信息-通过id删除", notes="CPE设备邻区信息-通过id删除")
+	// @DeleteMapping(value = "/deleteCpeDeviceNeighbor")
+	// public Result<String> deleteCpeDeviceNeighbor(@RequestParam(name="id",required=true) String id) {
+	// 	cpeDeviceNeighborService.removeById(id);
+	// 	return Result.OK("删除成功!");
+	// }
 
-	/**
-	 * 批量删除
-	 * @param ids
-	 * @return
-	 */
-	@AutoLog(value = "CPE设备邻区信息-批量删除")
-	@ApiOperation(value="CPE设备邻区信息-批量删除", notes="CPE设备邻区信息-批量删除")
-	@DeleteMapping(value = "/deleteBatchCpeDeviceNeighbor")
-	public Result<String> deleteBatchCpeDeviceNeighbor(@RequestParam(name="ids",required=true) String ids) {
-	    this.cpeDeviceNeighborService.removeByIds(Arrays.asList(ids.split(",")));
-		return Result.OK("批量删除成功!");
-	}
+	// /**
+	//  * 批量删除
+	//  * @param ids
+	//  * @return
+	//  */
+	// @AutoLog(value = "CPE设备邻区信息-批量删除")
+	// @ApiOperation(value="CPE设备邻区信息-批量删除", notes="CPE设备邻区信息-批量删除")
+	// @DeleteMapping(value = "/deleteBatchCpeDeviceNeighbor")
+	// public Result<String> deleteBatchCpeDeviceNeighbor(@RequestParam(name="ids",required=true) String ids) {
+	//     this.cpeDeviceNeighborService.removeByIds(Arrays.asList(ids.split(",")));
+	// 	return Result.OK("批量删除成功!");
+	// }
 
     /**
      * 导出
@@ -448,43 +448,43 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
 		 return mv;
     }
 
-    /**
-     * 导入
-     * @return
-     */
-    @RequestMapping(value = "/importCpeDeviceNeighbor/{mainId}")
-    public Result<?> importCpeDeviceNeighbor(HttpServletRequest request, HttpServletResponse response, @PathVariable("mainId") String mainId) {
-		 MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-		 Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
-		 for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
-       // 获取上传文件对象
-			 MultipartFile file = entity.getValue();
-			 ImportParams params = new ImportParams();
-			 params.setTitleRows(2);
-			 params.setHeadRows(1);
-			 params.setNeedSave(true);
-			 try {
-				 List<CpeDeviceNeighbor> list = ExcelImportUtil.importExcel(file.getInputStream(), CpeDeviceNeighbor.class, params);
-				 for (CpeDeviceNeighbor temp : list) {
-                    temp.setCpeId(mainId);
-				 }
-				 long start = System.currentTimeMillis();
-				 cpeDeviceNeighborService.saveBatch(list);
-				 log.info("消耗时间" + (System.currentTimeMillis() - start) + "毫秒");
-				 return Result.OK("文件导入成功！数据行数：" + list.size());
-			 } catch (Exception e) {
-				 log.error(e.getMessage(), e);
-				 return Result.error("文件导入失败:" + e.getMessage());
-			 } finally {
-				 try {
-					 file.getInputStream().close();
-				 } catch (IOException e) {
-					 e.printStackTrace();
-				 }
-			 }
-		 }
-		 return Result.error("文件导入失败！");
-    }
+    // /**
+    //  * 导入
+    //  * @return
+    //  */
+    // @RequestMapping(value = "/importCpeDeviceNeighbor/{mainId}")
+    // public Result<?> importCpeDeviceNeighbor(HttpServletRequest request, HttpServletResponse response, @PathVariable("mainId") String mainId) {
+	// 	 MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+	// 	 Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+	// 	 for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+    //    // 获取上传文件对象
+	// 		 MultipartFile file = entity.getValue();
+	// 		 ImportParams params = new ImportParams();
+	// 		 params.setTitleRows(2);
+	// 		 params.setHeadRows(1);
+	// 		 params.setNeedSave(true);
+	// 		 try {
+	// 			 List<CpeDeviceNeighbor> list = ExcelImportUtil.importExcel(file.getInputStream(), CpeDeviceNeighbor.class, params);
+	// 			 for (CpeDeviceNeighbor temp : list) {
+    //                 temp.setCpeId(mainId);
+	// 			 }
+	// 			 long start = System.currentTimeMillis();
+	// 			 cpeDeviceNeighborService.saveBatch(list);
+	// 			 log.info("消耗时间" + (System.currentTimeMillis() - start) + "毫秒");
+	// 			 return Result.OK("文件导入成功！数据行数：" + list.size());
+	// 		 } catch (Exception e) {
+	// 			 log.error(e.getMessage(), e);
+	// 			 return Result.error("文件导入失败:" + e.getMessage());
+	// 		 } finally {
+	// 			 try {
+	// 				 file.getInputStream().close();
+	// 			 } catch (IOException e) {
+	// 				 e.printStackTrace();
+	// 			 }
+	// 		 }
+	// 	 }
+	// 	 return Result.error("文件导入失败！");
+    // }
 
     /*--------------------------------子表处理-CPE设备邻区信息-end----------------------------------------------*/
 
@@ -506,57 +506,57 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
         return Result.OK(pageList);
     }
 
-	/**
-	 * 添加
-	 * @param cpeDeviceFrp
-	 * @return
-	 */
-	@AutoLog(value = "设备远程控制-添加")
-	@ApiOperation(value="设备远程控制-添加", notes="设备远程控制-添加")
-	@PostMapping(value = "/addCpeDeviceFrp")
-	public Result<String> addCpeDeviceFrp(@RequestBody CpeDeviceFrp cpeDeviceFrp) {
-		cpeDeviceFrpService.save(cpeDeviceFrp);
-		return Result.OK("添加成功！");
-	}
+	// /**
+	//  * 添加
+	//  * @param cpeDeviceFrp
+	//  * @return
+	//  */
+	// @AutoLog(value = "设备远程控制-添加")
+	// @ApiOperation(value="设备远程控制-添加", notes="设备远程控制-添加")
+	// @PostMapping(value = "/addCpeDeviceFrp")
+	// public Result<String> addCpeDeviceFrp(@RequestBody CpeDeviceFrp cpeDeviceFrp) {
+	// 	cpeDeviceFrpService.save(cpeDeviceFrp);
+	// 	return Result.OK("添加成功！");
+	// }
 
-    /**
-	 * 编辑
-	 * @param cpeDeviceFrp
-	 * @return
-	 */
-	@AutoLog(value = "设备远程控制-编辑")
-	@ApiOperation(value="设备远程控制-编辑", notes="设备远程控制-编辑")
-	@RequestMapping(value = "/editCpeDeviceFrp", method = {RequestMethod.PUT,RequestMethod.POST})
-	public Result<String> editCpeDeviceFrp(@RequestBody CpeDeviceFrp cpeDeviceFrp) {
-		cpeDeviceFrpService.updateById(cpeDeviceFrp);
-		return Result.OK("编辑成功!");
-	}
+    // /**
+	//  * 编辑
+	//  * @param cpeDeviceFrp
+	//  * @return
+	//  */
+	// @AutoLog(value = "设备远程控制-编辑")
+	// @ApiOperation(value="设备远程控制-编辑", notes="设备远程控制-编辑")
+	// @RequestMapping(value = "/editCpeDeviceFrp", method = {RequestMethod.PUT,RequestMethod.POST})
+	// public Result<String> editCpeDeviceFrp(@RequestBody CpeDeviceFrp cpeDeviceFrp) {
+	// 	cpeDeviceFrpService.updateById(cpeDeviceFrp);
+	// 	return Result.OK("编辑成功!");
+	// }
 
-	/**
-	 * 通过id删除
-	 * @param id
-	 * @return
-	 */
-	@AutoLog(value = "设备远程控制-通过id删除")
-	@ApiOperation(value="设备远程控制-通过id删除", notes="设备远程控制-通过id删除")
-	@DeleteMapping(value = "/deleteCpeDeviceFrp")
-	public Result<String> deleteCpeDeviceFrp(@RequestParam(name="id",required=true) String id) {
-		cpeDeviceFrpService.removeById(id);
-		return Result.OK("删除成功!");
-	}
+	// /**
+	//  * 通过id删除
+	//  * @param id
+	//  * @return
+	//  */
+	// @AutoLog(value = "设备远程控制-通过id删除")
+	// @ApiOperation(value="设备远程控制-通过id删除", notes="设备远程控制-通过id删除")
+	// @DeleteMapping(value = "/deleteCpeDeviceFrp")
+	// public Result<String> deleteCpeDeviceFrp(@RequestParam(name="id",required=true) String id) {
+	// 	cpeDeviceFrpService.removeById(id);
+	// 	return Result.OK("删除成功!");
+	// }
 
-	/**
-	 * 批量删除
-	 * @param ids
-	 * @return
-	 */
-	@AutoLog(value = "设备远程控制-批量删除")
-	@ApiOperation(value="设备远程控制-批量删除", notes="设备远程控制-批量删除")
-	@DeleteMapping(value = "/deleteBatchCpeDeviceFrp")
-	public Result<String> deleteBatchCpeDeviceFrp(@RequestParam(name="ids",required=true) String ids) {
-	    this.cpeDeviceFrpService.removeByIds(Arrays.asList(ids.split(",")));
-		return Result.OK("批量删除成功!");
-	}
+	// /**
+	//  * 批量删除
+	//  * @param ids
+	//  * @return
+	//  */
+	// @AutoLog(value = "设备远程控制-批量删除")
+	// @ApiOperation(value="设备远程控制-批量删除", notes="设备远程控制-批量删除")
+	// @DeleteMapping(value = "/deleteBatchCpeDeviceFrp")
+	// public Result<String> deleteBatchCpeDeviceFrp(@RequestParam(name="ids",required=true) String ids) {
+	//     this.cpeDeviceFrpService.removeByIds(Arrays.asList(ids.split(",")));
+	// 	return Result.OK("批量删除成功!");
+	// }
 
     /**
      * 导出
@@ -591,43 +591,43 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
 		 return mv;
     }
 
-    /**
-     * 导入
-     * @return
-     */
-    @RequestMapping(value = "/importCpeDeviceFrp/{mainId}")
-    public Result<?> importCpeDeviceFrp(HttpServletRequest request, HttpServletResponse response, @PathVariable("mainId") String mainId) {
-		 MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-		 Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
-		 for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
-       // 获取上传文件对象
-			 MultipartFile file = entity.getValue();
-			 ImportParams params = new ImportParams();
-			 params.setTitleRows(2);
-			 params.setHeadRows(1);
-			 params.setNeedSave(true);
-			 try {
-				 List<CpeDeviceFrp> list = ExcelImportUtil.importExcel(file.getInputStream(), CpeDeviceFrp.class, params);
-				 for (CpeDeviceFrp temp : list) {
-                    temp.setCpeId(mainId);
-				 }
-				 long start = System.currentTimeMillis();
-				 cpeDeviceFrpService.saveBatch(list);
-				 log.info("消耗时间" + (System.currentTimeMillis() - start) + "毫秒");
-				 return Result.OK("文件导入成功！数据行数：" + list.size());
-			 } catch (Exception e) {
-				 log.error(e.getMessage(), e);
-				 return Result.error("文件导入失败:" + e.getMessage());
-			 } finally {
-				 try {
-					 file.getInputStream().close();
-				 } catch (IOException e) {
-					 e.printStackTrace();
-				 }
-			 }
-		 }
-		 return Result.error("文件导入失败！");
-    }
+    // /**
+    //  * 导入
+    //  * @return
+    //  */
+    // @RequestMapping(value = "/importCpeDeviceFrp/{mainId}")
+    // public Result<?> importCpeDeviceFrp(HttpServletRequest request, HttpServletResponse response, @PathVariable("mainId") String mainId) {
+	// 	 MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+	// 	 Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+	// 	 for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+    //    // 获取上传文件对象
+	// 		 MultipartFile file = entity.getValue();
+	// 		 ImportParams params = new ImportParams();
+	// 		 params.setTitleRows(2);
+	// 		 params.setHeadRows(1);
+	// 		 params.setNeedSave(true);
+	// 		 try {
+	// 			 List<CpeDeviceFrp> list = ExcelImportUtil.importExcel(file.getInputStream(), CpeDeviceFrp.class, params);
+	// 			 for (CpeDeviceFrp temp : list) {
+    //                 temp.setCpeId(mainId);
+	// 			 }
+	// 			 long start = System.currentTimeMillis();
+	// 			 cpeDeviceFrpService.saveBatch(list);
+	// 			 log.info("消耗时间" + (System.currentTimeMillis() - start) + "毫秒");
+	// 			 return Result.OK("文件导入成功！数据行数：" + list.size());
+	// 		 } catch (Exception e) {
+	// 			 log.error(e.getMessage(), e);
+	// 			 return Result.error("文件导入失败:" + e.getMessage());
+	// 		 } finally {
+	// 			 try {
+	// 				 file.getInputStream().close();
+	// 			 } catch (IOException e) {
+	// 				 e.printStackTrace();
+	// 			 }
+	// 		 }
+	// 	 }
+	// 	 return Result.error("文件导入失败！");
+    // }
 
     /*--------------------------------子表处理-设备远程控制-end----------------------------------------------*/
 
@@ -763,43 +763,43 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
 		 return mv;
     }
 
-    /**
-     * 导入
-     * @return
-     */
-    @RequestMapping(value = "/importCpeDeviceAutoreboot/{mainId}")
-    public Result<?> importCpeDeviceAutoreboot(HttpServletRequest request, HttpServletResponse response, @PathVariable("mainId") String mainId) {
-		 MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-		 Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
-		 for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
-       // 获取上传文件对象
-			 MultipartFile file = entity.getValue();
-			 ImportParams params = new ImportParams();
-			 params.setTitleRows(2);
-			 params.setHeadRows(1);
-			 params.setNeedSave(true);
-			 try {
-				 List<CpeDeviceAutoreboot> list = ExcelImportUtil.importExcel(file.getInputStream(), CpeDeviceAutoreboot.class, params);
-				 for (CpeDeviceAutoreboot temp : list) {
-                    temp.setCpeId(mainId);
-				 }
-				 long start = System.currentTimeMillis();
-				 cpeDeviceAutorebootService.saveBatch(list);
-				 log.info("消耗时间" + (System.currentTimeMillis() - start) + "毫秒");
-				 return Result.OK("文件导入成功！数据行数：" + list.size());
-			 } catch (Exception e) {
-				 log.error(e.getMessage(), e);
-				 return Result.error("文件导入失败:" + e.getMessage());
-			 } finally {
-				 try {
-					 file.getInputStream().close();
-				 } catch (IOException e) {
-					 e.printStackTrace();
-				 }
-			 }
-		 }
-		 return Result.error("文件导入失败！");
-    }
+    // /**
+    //  * 导入
+    //  * @return
+    //  */
+    // @RequestMapping(value = "/importCpeDeviceAutoreboot/{mainId}")
+    // public Result<?> importCpeDeviceAutoreboot(HttpServletRequest request, HttpServletResponse response, @PathVariable("mainId") String mainId) {
+	// 	 MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+	// 	 Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+	// 	 for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+    //    // 获取上传文件对象
+	// 		 MultipartFile file = entity.getValue();
+	// 		 ImportParams params = new ImportParams();
+	// 		 params.setTitleRows(2);
+	// 		 params.setHeadRows(1);
+	// 		 params.setNeedSave(true);
+	// 		 try {
+	// 			 List<CpeDeviceAutoreboot> list = ExcelImportUtil.importExcel(file.getInputStream(), CpeDeviceAutoreboot.class, params);
+	// 			 for (CpeDeviceAutoreboot temp : list) {
+    //                 temp.setCpeId(mainId);
+	// 			 }
+	// 			 long start = System.currentTimeMillis();
+	// 			 cpeDeviceAutorebootService.saveBatch(list);
+	// 			 log.info("消耗时间" + (System.currentTimeMillis() - start) + "毫秒");
+	// 			 return Result.OK("文件导入成功！数据行数：" + list.size());
+	// 		 } catch (Exception e) {
+	// 			 log.error(e.getMessage(), e);
+	// 			 return Result.error("文件导入失败:" + e.getMessage());
+	// 		 } finally {
+	// 			 try {
+	// 				 file.getInputStream().close();
+	// 			 } catch (IOException e) {
+	// 				 e.printStackTrace();
+	// 			 }
+	// 		 }
+	// 	 }
+	// 	 return Result.error("文件导入失败！");
+    // }
 
     /*--------------------------------子表处理-设备自动重启-end----------------------------------------------*/
 
@@ -821,57 +821,57 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
         return Result.OK(pageList);
     }
 
-	/**
-	 * 添加
-	 * @param cpeOperLog
-	 * @return
-	 */
-	@AutoLog(value = "操作记录表-添加")
-	@ApiOperation(value="操作记录表-添加", notes="操作记录表-添加")
-	@PostMapping(value = "/addCpeOperLog")
-	public Result<String> addCpeOperLog(@RequestBody CpeOperLog cpeOperLog) {
-		cpeOperLogService.save(cpeOperLog);
-		return Result.OK("添加成功！");
-	}
+	// /**
+	//  * 添加
+	//  * @param cpeOperLog
+	//  * @return
+	//  */
+	// @AutoLog(value = "操作记录表-添加")
+	// @ApiOperation(value="操作记录表-添加", notes="操作记录表-添加")
+	// @PostMapping(value = "/addCpeOperLog")
+	// public Result<String> addCpeOperLog(@RequestBody CpeOperLog cpeOperLog) {
+	// 	cpeOperLogService.save(cpeOperLog);
+	// 	return Result.OK("添加成功！");
+	// }
 
-    /**
-	 * 编辑
-	 * @param cpeOperLog
-	 * @return
-	 */
-	@AutoLog(value = "操作记录表-编辑")
-	@ApiOperation(value="操作记录表-编辑", notes="操作记录表-编辑")
-	@RequestMapping(value = "/editCpeOperLog", method = {RequestMethod.PUT,RequestMethod.POST})
-	public Result<String> editCpeOperLog(@RequestBody CpeOperLog cpeOperLog) {
-		cpeOperLogService.updateById(cpeOperLog);
-		return Result.OK("编辑成功!");
-	}
+    // /**
+	//  * 编辑
+	//  * @param cpeOperLog
+	//  * @return
+	//  */
+	// @AutoLog(value = "操作记录表-编辑")
+	// @ApiOperation(value="操作记录表-编辑", notes="操作记录表-编辑")
+	// @RequestMapping(value = "/editCpeOperLog", method = {RequestMethod.PUT,RequestMethod.POST})
+	// public Result<String> editCpeOperLog(@RequestBody CpeOperLog cpeOperLog) {
+	// 	cpeOperLogService.updateById(cpeOperLog);
+	// 	return Result.OK("编辑成功!");
+	// }
 
-	/**
-	 * 通过id删除
-	 * @param id
-	 * @return
-	 */
-	@AutoLog(value = "操作记录表-通过id删除")
-	@ApiOperation(value="操作记录表-通过id删除", notes="操作记录表-通过id删除")
-	@DeleteMapping(value = "/deleteCpeOperLog")
-	public Result<String> deleteCpeOperLog(@RequestParam(name="id",required=true) String id) {
-		cpeOperLogService.removeById(id);
-		return Result.OK("删除成功!");
-	}
+	// /**
+	//  * 通过id删除
+	//  * @param id
+	//  * @return
+	//  */
+	// @AutoLog(value = "操作记录表-通过id删除")
+	// @ApiOperation(value="操作记录表-通过id删除", notes="操作记录表-通过id删除")
+	// @DeleteMapping(value = "/deleteCpeOperLog")
+	// public Result<String> deleteCpeOperLog(@RequestParam(name="id",required=true) String id) {
+	// 	cpeOperLogService.removeById(id);
+	// 	return Result.OK("删除成功!");
+	// }
 
-	/**
-	 * 批量删除
-	 * @param ids
-	 * @return
-	 */
-	@AutoLog(value = "操作记录表-批量删除")
-	@ApiOperation(value="操作记录表-批量删除", notes="操作记录表-批量删除")
-	@DeleteMapping(value = "/deleteBatchCpeOperLog")
-	public Result<String> deleteBatchCpeOperLog(@RequestParam(name="ids",required=true) String ids) {
-	    this.cpeOperLogService.removeByIds(Arrays.asList(ids.split(",")));
-		return Result.OK("批量删除成功!");
-	}
+	// /**
+	//  * 批量删除
+	//  * @param ids
+	//  * @return
+	//  */
+	// @AutoLog(value = "操作记录表-批量删除")
+	// @ApiOperation(value="操作记录表-批量删除", notes="操作记录表-批量删除")
+	// @DeleteMapping(value = "/deleteBatchCpeOperLog")
+	// public Result<String> deleteBatchCpeOperLog(@RequestParam(name="ids",required=true) String ids) {
+	//     this.cpeOperLogService.removeByIds(Arrays.asList(ids.split(",")));
+	// 	return Result.OK("批量删除成功!");
+	// }
 
     /**
      * 导出
@@ -906,43 +906,43 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
 		 return mv;
     }
 
-    /**
-     * 导入
-     * @return
-     */
-    @RequestMapping(value = "/importCpeOperLog/{mainId}")
-    public Result<?> importCpeOperLog(HttpServletRequest request, HttpServletResponse response, @PathVariable("mainId") String mainId) {
-		 MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-		 Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
-		 for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
-       // 获取上传文件对象
-			 MultipartFile file = entity.getValue();
-			 ImportParams params = new ImportParams();
-			 params.setTitleRows(2);
-			 params.setHeadRows(1);
-			 params.setNeedSave(true);
-			 try {
-				 List<CpeOperLog> list = ExcelImportUtil.importExcel(file.getInputStream(), CpeOperLog.class, params);
-				 for (CpeOperLog temp : list) {
-                    temp.setCpeId(mainId);
-				 }
-				 long start = System.currentTimeMillis();
-				 cpeOperLogService.saveBatch(list);
-				 log.info("消耗时间" + (System.currentTimeMillis() - start) + "毫秒");
-				 return Result.OK("文件导入成功！数据行数：" + list.size());
-			 } catch (Exception e) {
-				 log.error(e.getMessage(), e);
-				 return Result.error("文件导入失败:" + e.getMessage());
-			 } finally {
-				 try {
-					 file.getInputStream().close();
-				 } catch (IOException e) {
-					 e.printStackTrace();
-				 }
-			 }
-		 }
-		 return Result.error("文件导入失败！");
-    }
+    // /**
+    //  * 导入
+    //  * @return
+    //  */
+    // @RequestMapping(value = "/importCpeOperLog/{mainId}")
+    // public Result<?> importCpeOperLog(HttpServletRequest request, HttpServletResponse response, @PathVariable("mainId") String mainId) {
+	// 	 MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+	// 	 Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+	// 	 for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+    //    // 获取上传文件对象
+	// 		 MultipartFile file = entity.getValue();
+	// 		 ImportParams params = new ImportParams();
+	// 		 params.setTitleRows(2);
+	// 		 params.setHeadRows(1);
+	// 		 params.setNeedSave(true);
+	// 		 try {
+	// 			 List<CpeOperLog> list = ExcelImportUtil.importExcel(file.getInputStream(), CpeOperLog.class, params);
+	// 			 for (CpeOperLog temp : list) {
+    //                 temp.setCpeId(mainId);
+	// 			 }
+	// 			 long start = System.currentTimeMillis();
+	// 			 cpeOperLogService.saveBatch(list);
+	// 			 log.info("消耗时间" + (System.currentTimeMillis() - start) + "毫秒");
+	// 			 return Result.OK("文件导入成功！数据行数：" + list.size());
+	// 		 } catch (Exception e) {
+	// 			 log.error(e.getMessage(), e);
+	// 			 return Result.error("文件导入失败:" + e.getMessage());
+	// 		 } finally {
+	// 			 try {
+	// 				 file.getInputStream().close();
+	// 			 } catch (IOException e) {
+	// 				 e.printStackTrace();
+	// 			 }
+	// 		 }
+	// 	 }
+	// 	 return Result.error("文件导入失败！");
+    // }
 
     /*--------------------------------子表处理-操作记录表-end----------------------------------------------*/
 

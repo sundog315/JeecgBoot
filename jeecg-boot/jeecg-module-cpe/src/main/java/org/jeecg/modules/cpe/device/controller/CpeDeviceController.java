@@ -74,7 +74,7 @@ public class CpeDeviceController extends JeecgController<CpeDevice, ICpeDeviceSe
 	 */
 	@AutoLog(value = "设备信息表-添加")
 	@ApiOperation(value="设备信息表-添加", notes="设备信息表-添加")
-	@RequiresPermissions("cpe.device:cpe_device:add")
+	//@RequiresPermissions("cpe.device:cpe_device:add")
 	@PostMapping(value = "/add")
 	public Result<String> add(@RequestBody CpeDevice cpeDevice) {
 		cpeDeviceService.save(cpeDevice);
@@ -89,7 +89,7 @@ public class CpeDeviceController extends JeecgController<CpeDevice, ICpeDeviceSe
 	 */
 	@AutoLog(value = "设备信息表-编辑")
 	@ApiOperation(value="设备信息表-编辑", notes="设备信息表-编辑")
-	@RequiresPermissions("cpe.device:cpe_device:edit")
+	//@RequiresPermissions("cpe.device:cpe_device:edit")
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<String> edit(@RequestBody CpeDevice cpeDevice) {
 		cpeDeviceService.updateById(cpeDevice);
@@ -104,7 +104,7 @@ public class CpeDeviceController extends JeecgController<CpeDevice, ICpeDeviceSe
 	 */
 	@AutoLog(value = "设备信息表-通过id删除")
 	@ApiOperation(value="设备信息表-通过id删除", notes="设备信息表-通过id删除")
-	@RequiresPermissions("cpe.device:cpe_device:delete")
+	//@RequiresPermissions("cpe.device:cpe_device:delete")
 	@DeleteMapping(value = "/delete")
 	public Result<String> delete(@RequestParam(name="id",required=true) String id) {
 		cpeDeviceService.removeById(id);
@@ -119,7 +119,7 @@ public class CpeDeviceController extends JeecgController<CpeDevice, ICpeDeviceSe
 	 */
 	@AutoLog(value = "设备信息表-批量删除")
 	@ApiOperation(value="设备信息表-批量删除", notes="设备信息表-批量删除")
-	@RequiresPermissions("cpe.device:cpe_device:deleteBatch")
+	//@RequiresPermissions("cpe.device:cpe_device:deleteBatch")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<String> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		this.cpeDeviceService.removeByIds(Arrays.asList(ids.split(",")));
@@ -149,7 +149,7 @@ public class CpeDeviceController extends JeecgController<CpeDevice, ICpeDeviceSe
     * @param request
     * @param cpeDevice
     */
-    @RequiresPermissions("cpe.device:cpe_device:exportXls")
+    //@RequiresPermissions("cpe.device:cpe_device:exportXls")
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, CpeDevice cpeDevice) {
         return super.exportXls(request, cpeDevice, CpeDevice.class, "设备信息表");
@@ -162,7 +162,7 @@ public class CpeDeviceController extends JeecgController<CpeDevice, ICpeDeviceSe
     * @param response
     * @return
     */
-    @RequiresPermissions("cpe.device:cpe_device:importExcel")
+    //@RequiresPermissions("cpe.device:cpe_device:importExcel")
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
         return super.importExcel(request, response, CpeDevice.class);

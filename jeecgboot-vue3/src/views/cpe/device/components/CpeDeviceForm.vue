@@ -26,12 +26,12 @@
 						</a-col>
 						<a-col :span="24">
 							<a-form-item label="关联卡片" v-bind="validateInfos.cardNo" id="CpeDeviceForm-cardNo" name="cardNo">
-								<j-dict-select-tag v-model:value="formData.cardNo" dictCode="" placeholder="请选择关联卡片"  allow-clear />
+								<j-dict-select-tag v-model:value="formData.cardNo" dictCode="card_info,card_no,id" placeholder="请选择关联卡片"  allow-clear />
 							</a-form-item>
 						</a-col>
 						<a-col :span="24">
 							<a-form-item label="在线卡片" v-bind="validateInfos.onlineCardNo" id="CpeDeviceForm-onlineCardNo" name="onlineCardNo">
-								<j-dict-select-tag v-model:value="formData.onlineCardNo" dictCode="" placeholder="请选择在线卡片"  allow-clear />
+								<j-dict-select-tag v-model:value="formData.onlineCardNo" dictCode="card_info,card_no,id" placeholder="请选择在线卡片"  allow-clear />
 							</a-form-item>
 						</a-col>
 						<a-col :span="24">

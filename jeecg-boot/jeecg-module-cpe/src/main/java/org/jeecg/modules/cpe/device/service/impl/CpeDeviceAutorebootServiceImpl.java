@@ -187,12 +187,6 @@ public class CpeDeviceAutorebootServiceImpl extends ServiceImpl<CpeDeviceAutoreb
 		String newSchedule = autoRebootRecord.getSchedule();
 		String newCmd = autoRebootRecord.getCmd();
 
-		if (!newSchedule.equals(schedule))
-			newSchedule = schedule;
-
-		if (!newCmd.equals(cmd))
-			newCmd = cmd;
-
         // 检查并更新配置
         if (!newSchedule.equals(schedule) || !newCmd.equals(cmd)) {
             createOperationLog(device.getId(), newSchedule, newCmd);

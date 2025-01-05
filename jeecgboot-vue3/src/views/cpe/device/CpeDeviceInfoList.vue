@@ -55,10 +55,10 @@
     </BasicTable>
     <!--子表表格tab-->
     <a-tabs defaultActiveKey="1" style="margin: 10px">
-      <a-tab-pane tab="CPE设备状态表" key="1" >
+      <a-tab-pane tab="设备状态表" key="1" >
         <CpeDeviceStatusList />
       </a-tab-pane>
-      <a-tab-pane tab="CPE设备邻区信息" key="2" forceRender>
+      <a-tab-pane tab="设备邻区信息" key="2" forceRender>
         <CpeDeviceNeighborList />
       </a-tab-pane>
       <a-tab-pane tab="设备远程控制" key="3" forceRender>
