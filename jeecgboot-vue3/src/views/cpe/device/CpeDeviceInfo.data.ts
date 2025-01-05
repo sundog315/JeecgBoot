@@ -302,6 +302,19 @@ export const cpeDeviceFrpColumns: BasicColumn[] = [
   },
 ];
 //子表列表数据
+export const cpeDeviceAutorebootColumns: BasicColumn[] = [
+  {
+    title: '重启定义',
+    align:"center",
+    dataIndex: 'schedule'
+  },
+  {
+    title: '重启命令',
+    align:"center",
+    dataIndex: 'cmd'
+  },
+];
+//子表列表数据
 export const cpeOperLogColumns: BasicColumn[] = [
   {
     title: '创建时间',

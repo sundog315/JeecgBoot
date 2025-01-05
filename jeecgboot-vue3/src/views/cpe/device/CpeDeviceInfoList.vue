@@ -64,6 +64,9 @@
       <a-tab-pane tab="设备远程控制" key="3" forceRender>
         <CpeDeviceFrpList />
       </a-tab-pane>
+      <a-tab-pane tab="自动重启" key="5" forceRender>
+        <CpeDeviceAutorebootList />
+      </a-tab-pane>
       <a-tab-pane tab="操作记录表" key="4" forceRender>
         <CpeOperLogList />
       </a-tab-pane>
@@ -87,6 +90,7 @@
   import CpeDeviceStatusList from './CpeDeviceStatusList.vue'
   import CpeDeviceNeighborList from './CpeDeviceNeighborList.vue'
   import CpeDeviceFrpList from './CpeDeviceFrpList.vue'
+  import CpeDeviceAutorebootList from './CpeDeviceAutorebootList.vue'
   import CpeOperLogList from './CpeOperLogList.vue'
   import { useUserStore } from '/@/store/modules/user';
   import { cloneDeep } from "lodash-es";

@@ -2,6 +2,7 @@ package org.jeecg.modules.cpe.device.controller;
 
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.cpe.device.entity.CpeDevice;
+import org.jeecg.modules.cpe.device.service.ICpeDeviceAutorebootService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceFrpService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceStatusService;
@@ -25,6 +26,9 @@ public class CpeDeviceApi extends JeecgController<CpeDevice, ICpeDeviceService> 
 	private ICpeDeviceStatusService cpeDeviceStatusService;
 	@Autowired
 	private ICpeDeviceFrpService cpeDeviceFrpService;
+	@Autowired
+	private ICpeDeviceAutorebootService cpeDeviceAutorebootService;
+
 
 	/**
 	 *   信息上报
@@ -41,7 +45,8 @@ public class CpeDeviceApi extends JeecgController<CpeDevice, ICpeDeviceService> 
 								@RequestParam(name="ubus_call",required=true) String ubusOutputParam,
 								@RequestParam(name="ip_addr",required=true) String ipAddrParam,
 								@RequestParam(name="lte_status",required=false) String lteStatus,
-								@RequestParam(name="frp",required=false) String frp) {
+								@RequestParam(name="frp",required=false) String frp,
+								@RequestParam(name="auto_reboot",required=false) String autoReboot) {
 
 		switch (deviceType) {
 			case "X25":
@@ -57,6 +62,8 @@ public class CpeDeviceApi extends JeecgController<CpeDevice, ICpeDeviceService> 
 					cpeDeviceStatusService.push(deviceSnParam, ubusOutputParam, ipAddrParam, lteStatus);
 					if ((frp != null) && (!frp.isEmpty()))
 						cpeDeviceFrpService.report(deviceSnParam, frp);
+					if ((autoReboot != null) && (!autoReboot.isEmpty()))
+						cpeDeviceAutorebootService.report(deviceSnParam, autoReboot);
 				}
 				catch (Exception e) {
 					return Result.error(e.getMessage());

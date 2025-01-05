@@ -21,10 +21,12 @@ import org.jeecg.modules.cpe.device.entity.CpeDeviceStatus;
 import org.jeecg.modules.cpe.device.entity.CpeDeviceNeighbor;
 import org.jeecg.modules.cpe.device.entity.CpeDeviceFrp;
 import org.jeecg.modules.cpe.device.entity.CpeOperLog;
+import org.jeecg.modules.cpe.device.entity.CpeDeviceAutoreboot;
 import org.jeecg.modules.cpe.device.entity.CpeDeviceInfo;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceInfoService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceStatusService;
 import org.jeecg.modules.cpe.device.service.ICpeOperLogService;
+import org.jeecg.modules.cpe.device.service.ICpeDeviceAutorebootService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceFrpService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceNeighborService;
 import io.swagger.annotations.Api;
@@ -67,6 +69,9 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
 
 	@Autowired
 	private ICpeDeviceFrpService cpeDeviceFrpService;
+
+	@Autowired
+	private ICpeDeviceAutorebootService cpeDeviceAutorebootService;
 
 	@Autowired
 	private ICpeOperLogService cpeOperLogService;
@@ -625,6 +630,178 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
     }
 
     /*--------------------------------子表处理-设备远程控制-end----------------------------------------------*/
+
+    /*--------------------------------子表处理-设备自动重启-begin----------------------------------------------*/
+	/**
+	 * 通过主表ID查询
+	 * @return
+	 */
+	//@AutoLog(value = "设备自动重启-通过主表ID查询")
+	@ApiOperation(value="设备自动重启-通过主表ID查询", notes="设备自动重启-通过主表ID查询")
+	@GetMapping(value = "/listCpeDeviceAutorebootByMainId")
+    public Result<IPage<CpeDeviceAutoreboot>> listCpeDeviceAutorebootByMainId(CpeDeviceAutoreboot cpeDeviceAutoreboot,
+                                                    @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                                    HttpServletRequest req) {
+        QueryWrapper<CpeDeviceAutoreboot> queryWrapper = QueryGenerator.initQueryWrapper(cpeDeviceAutoreboot, req.getParameterMap());
+        Page<CpeDeviceAutoreboot> page = new Page<CpeDeviceAutoreboot>(pageNo, pageSize);
+        IPage<CpeDeviceAutoreboot> pageList = cpeDeviceAutorebootService.page(page, queryWrapper);
+        return Result.OK(pageList);
+    }
+
+	/**
+	 * 添加
+	 * @param cpeDeviceAutoreboot
+	 * @return
+	 */
+	@AutoLog(value = "设备自动重启-添加")
+	@ApiOperation(value="设备自动重启-添加", notes="设备自动重启-添加")
+	@PostMapping(value = "/addCpeDeviceAutoreboot")
+	public Result<String> addCpeDeviceAutoreboot(@RequestBody CpeDeviceAutoreboot cpeDeviceAutoreboot) {
+		if (cpeDeviceAutorebootService.selectByMainId(cpeDeviceAutoreboot.getCpeId()).size() > 0)
+			return Result.error("自动重启只允许添加一条记录！");
+
+		CpeOperLog oper = new CpeOperLog();
+		oper.setCpeId(cpeDeviceAutoreboot.getCpeId());
+		oper.setCreateBy(cpeDeviceAutoreboot.getCreateBy());
+		oper.setCreateTime(cpeDeviceAutoreboot.getCreateTime());
+		oper.setOperType("autoreboot");
+		oper.setCreateTs(new Date());
+		oper.setOperParam(cpeDeviceAutoreboot.getSchedule() + " " + cpeDeviceAutoreboot.getCmd());
+		oper.setSysOrgCode(cpeDeviceAutoreboot.getSysOrgCode());
+		oper.setUpdateBy(cpeDeviceAutoreboot.getUpdateBy());
+		oper.setUpdateTime(cpeDeviceAutoreboot.getUpdateTime());
+
+		cpeOperLogService.save(oper);
+		cpeDeviceAutorebootService.save(cpeDeviceAutoreboot);
+		return Result.OK("添加成功！");
+	}
+
+    /**
+	 * 编辑
+	 * @param cpeDeviceAutoreboot
+	 * @return
+	 */
+	@AutoLog(value = "设备自动重启-编辑")
+	@ApiOperation(value="设备自动重启-编辑", notes="设备自动重启-编辑")
+	@RequestMapping(value = "/editCpeDeviceAutoreboot", method = {RequestMethod.PUT,RequestMethod.POST})
+	public Result<String> editCpeDeviceAutoreboot(@RequestBody CpeDeviceAutoreboot cpeDeviceAutoreboot) {
+		cpeDeviceAutorebootService.updateById(cpeDeviceAutoreboot);
+		return Result.OK("编辑成功!");
+	}
+
+	/**
+	 * 通过id删除
+	 * @param id
+	 * @return
+	 */
+	@AutoLog(value = "设备自动重启-通过id删除")
+	@ApiOperation(value="设备自动重启-通过id删除", notes="设备自动重启-通过id删除")
+	@DeleteMapping(value = "/deleteCpeDeviceAutoreboot")
+	public Result<String> deleteCpeDeviceAutoreboot(@RequestParam(name="id",required=true) String id) {
+		CpeDeviceAutoreboot cpeDeviceAutoreboot = cpeDeviceAutorebootService.getById(id);
+
+		CpeOperLog oper = new CpeOperLog();
+		oper.setCpeId(cpeDeviceAutoreboot.getCpeId());
+		oper.setCreateBy(cpeDeviceAutoreboot.getCreateBy());
+		oper.setCreateTime(new Date());
+		oper.setOperType("autoreboot");
+		oper.setCreateTs(new Date());
+		oper.setOperParam("del");
+		oper.setSysOrgCode(cpeDeviceAutoreboot.getSysOrgCode());
+		oper.setUpdateBy(cpeDeviceAutoreboot.getUpdateBy());
+		oper.setUpdateTime(cpeDeviceAutoreboot.getUpdateTime());
+
+		cpeOperLogService.save(oper);
+		cpeDeviceAutorebootService.removeById(id);
+		return Result.OK("删除成功!");
+	}
+
+	/**
+	 * 批量删除
+	 * @param ids
+	 * @return
+	 */
+	@AutoLog(value = "设备自动重启-批量删除")
+	@ApiOperation(value="设备自动重启-批量删除", notes="设备自动重启-批量删除")
+	@DeleteMapping(value = "/deleteBatchCpeDeviceAutoreboot")
+	public Result<String> deleteBatchCpeDeviceAutoreboot(@RequestParam(name="ids",required=true) String ids) {
+	    this.cpeDeviceAutorebootService.removeByIds(Arrays.asList(ids.split(",")));
+		return Result.OK("批量删除成功!");
+	}
+
+    /**
+     * 导出
+     * @return
+     */
+    @RequestMapping(value = "/exportCpeDeviceAutoreboot")
+    public ModelAndView exportCpeDeviceAutoreboot(HttpServletRequest request, CpeDeviceAutoreboot cpeDeviceAutoreboot) {
+		 // Step.1 组装查询条件
+		 QueryWrapper<CpeDeviceAutoreboot> queryWrapper = QueryGenerator.initQueryWrapper(cpeDeviceAutoreboot, request.getParameterMap());
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+
+		 // Step.2 获取导出数据
+		 List<CpeDeviceAutoreboot> pageList = cpeDeviceAutorebootService.list(queryWrapper);
+		 List<CpeDeviceAutoreboot> exportList = null;
+
+		 // 过滤选中数据
+		 String selections = request.getParameter("selections");
+		 if (oConvertUtils.isNotEmpty(selections)) {
+			 List<String> selectionList = Arrays.asList(selections.split(","));
+			 exportList = pageList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
+		 } else {
+			 exportList = pageList;
+		 }
+
+		 // Step.3 AutoPoi 导出Excel
+		 ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		 //此处设置的filename无效,前端会重更新设置一下
+		 mv.addObject(NormalExcelConstants.FILE_NAME, "设备自动重启");
+		 mv.addObject(NormalExcelConstants.CLASS, CpeDeviceAutoreboot.class);
+		 mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("设备自动重启报表", "导出人:" + sysUser.getRealname(), "设备自动重启"));
+		 mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+		 return mv;
+    }
+
+    /**
+     * 导入
+     * @return
+     */
+    @RequestMapping(value = "/importCpeDeviceAutoreboot/{mainId}")
+    public Result<?> importCpeDeviceAutoreboot(HttpServletRequest request, HttpServletResponse response, @PathVariable("mainId") String mainId) {
+		 MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+		 Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+		 for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+       // 获取上传文件对象
+			 MultipartFile file = entity.getValue();
+			 ImportParams params = new ImportParams();
+			 params.setTitleRows(2);
+			 params.setHeadRows(1);
+			 params.setNeedSave(true);
+			 try {
+				 List<CpeDeviceAutoreboot> list = ExcelImportUtil.importExcel(file.getInputStream(), CpeDeviceAutoreboot.class, params);
+				 for (CpeDeviceAutoreboot temp : list) {
+                    temp.setCpeId(mainId);
+				 }
+				 long start = System.currentTimeMillis();
+				 cpeDeviceAutorebootService.saveBatch(list);
+				 log.info("消耗时间" + (System.currentTimeMillis() - start) + "毫秒");
+				 return Result.OK("文件导入成功！数据行数：" + list.size());
+			 } catch (Exception e) {
+				 log.error(e.getMessage(), e);
+				 return Result.error("文件导入失败:" + e.getMessage());
+			 } finally {
+				 try {
+					 file.getInputStream().close();
+				 } catch (IOException e) {
+					 e.printStackTrace();
+				 }
+			 }
+		 }
+		 return Result.error("文件导入失败！");
+    }
+
+    /*--------------------------------子表处理-设备自动重启-end----------------------------------------------*/
 
  /*--------------------------------子表处理-操作记录表-begin----------------------------------------------*/
 	/**

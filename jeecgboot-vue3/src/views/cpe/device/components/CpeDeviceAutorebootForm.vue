@@ -2,31 +2,16 @@
   <a-spin :spinning="confirmLoading">
     <JFormContainer :disabled="disabled">
       <template #detail>
-        <a-form class="antd-modal-form" v-bind="formItemLayout" ref="formRef" name="CpeDeviceFrpForm">
+        <a-form class="antd-modal-form" v-bind="formItemLayout" ref="formRef" name="CpeDeviceAutorebootForm">
           <a-row>
 						<a-col :span="24">
-							<a-form-item label="服务器地址" v-bind="validateInfos.serverAddr" id="CpeDeviceFrp-serverAddr" name="serverAddr">
-								<a-input v-model:value="formData.serverAddr" placeholder="请输入服务器地址"  allow-clear ></a-input>
+							<a-form-item label="重启定义" v-bind="validateInfos.schedule" id="CpeDeviceAutoreboot-schedule" name="schedule">
+								<a-input v-model:value="formData.schedule" placeholder="请输入重启定义"  allow-clear ></a-input>
 							</a-form-item>
 						</a-col>
 						<a-col :span="24">
-							<a-form-item label="服务器端口" v-bind="validateInfos.serverPort" id="CpeDeviceFrp-serverPort" name="serverPort">
-								<a-input-number v-model:value="formData.serverPort" placeholder="请输入服务器端口" style="width: 100%" />
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="令牌" v-bind="validateInfos.token" id="CpeDeviceFrp-token" name="token">
-								<a-input v-model:value="formData.token" placeholder="请输入令牌"  allow-clear ></a-input>
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="SSH映射端口" v-bind="validateInfos.proxySshRemotePort" id="CpeDeviceFrp-proxySshRemotePort" name="proxySshRemotePort">
-								<a-input-number v-model:value="formData.proxySshRemotePort" placeholder="请输入SSH映射端口" style="width: 100%" />
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="HTTP映射端口" v-bind="validateInfos.proxyHttpRemotePort" id="CpeDeviceFrp-proxyHttpRemotePort" name="proxyHttpRemotePort">
-								<a-input-number v-model:value="formData.proxyHttpRemotePort" placeholder="请输入HTTP映射端口" style="width: 100%" />
+							<a-form-item label="重启命令" v-bind="validateInfos.cmd" id="CpeDeviceAutoreboot-cmd" name="cmd">
+								<a-input v-model:value="formData.cmd" placeholder="请输入重启命令" disabled allow-clear ></a-input>
 							</a-form-item>
 						</a-col>
           </a-row>
@@ -41,7 +26,7 @@
   import { defHttp } from '/@/utils/http/axios';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { getValueType } from '/@/utils';
-  import { cpeDeviceFrpSaveOrUpdate } from '../CpeDeviceInfo.api';
+  import { cpeDeviceAutorebootSaveOrUpdate } from '../CpeDeviceInfo.api';
   import { Form } from 'ant-design-vue';
   import JFormContainer from '/@/components/Form/src/container/JFormContainer.vue';
 
@@ -52,11 +37,8 @@
   const emit = defineEmits(['register', 'ok']);
   const formData = reactive<Record<string, any>>({
     id: '',
-        serverAddr: '',   
-        serverPort: undefined,
-        token: '',   
-        proxySshRemotePort: undefined,
-        proxyHttpRemotePort: undefined,
+        schedule: '',   
+        cmd: 'sleep 5 && touch /etc/banner && reboot',   
   });
   const { createMessage } = useMessage();
   const labelCol = ref<any>({ xs: { span: 24 }, sm: { span: 5 } });
@@ -64,11 +46,8 @@
   const confirmLoading = ref<boolean>(false);
   //表单验证
   const validatorRules = {
-    serverAddr: [{ required: true, message: '请输入服务器地址!'},],
-    serverPort: [{ required: true, message: '请输入服务器端口!'},],
-    token: [{ required: true, message: '请输入令牌!'},],
-    proxySshRemotePort: [{ required: true, message: '请输入SSH映射端口!'},],
-    proxyHttpRemotePort: [{ required: true, message: '请输入HTTP映射端口!'},],
+    schedule: [{ required: true, message: '请输入重启定义!'},],
+    cmd: [{ required: true, message: '请输入重启命令!'},],
   };
   const { resetFields, validate, validateInfos } = useForm(formData, validatorRules, { immediate: false });
   const props = defineProps({
@@ -142,7 +121,7 @@
     if (unref(mainId)) {
       model['cpeId'] = unref(mainId);
     }
-    await cpeDeviceFrpSaveOrUpdate(model, isUpdate.value)
+    await cpeDeviceAutorebootSaveOrUpdate(model, isUpdate.value)
       .then((res) => {
         if (res.success) {
           createMessage.success(res.message);

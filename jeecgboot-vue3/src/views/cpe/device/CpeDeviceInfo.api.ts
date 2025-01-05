@@ -27,6 +27,11 @@ enum Api {
   cpeDeviceFrpEdit= '/cpe/device/cpeDeviceInfo/editCpeDeviceFrp',
   cpeDeviceFrpDelete = '/cpe/device/cpeDeviceInfo/deleteCpeDeviceFrp',
   cpeDeviceFrpDeleteBatch = '/cpe/device/cpeDeviceInfo/deleteBatchCpeDeviceFrp',
+  cpeDeviceAutorebootList = '/cpe/device/cpeDeviceInfo/listCpeDeviceAutorebootByMainId',
+  cpeDeviceAutorebootSave= '/cpe/device/cpeDeviceInfo/addCpeDeviceAutoreboot',
+  cpeDeviceAutorebootEdit= '/cpe/device/cpeDeviceInfo/editCpeDeviceAutoreboot',
+  cpeDeviceAutorebootDelete = '/cpe/device/cpeDeviceInfo/deleteCpeDeviceAutoreboot',
+  cpeDeviceAutorebootDeleteBatch = '/cpe/device/cpeDeviceInfo/deleteBatchCpeDeviceAutoreboot',
   cpeOperLogList = '/cpe/device/cpeDeviceInfo/listCpeOperLogByMainId',
   cpeOperLogSave= '/cpe/device/cpeDeviceInfo/addCpeOperLog',
   cpeOperLogEdit= '/cpe/device/cpeDeviceInfo/editCpeOperLog',
@@ -271,7 +276,64 @@ export const cpeDeviceFrpImportUrl = '/cpe/device/cpeDeviceInfo/importCpeDeviceF
  * 导出
  */
 export const cpeDeviceFrpExportXlsUrl = '/cpe/device/cpeDeviceInfo/exportCpeDeviceFrp'
- 
+
+/**
+ * 列表接口
+ * @param params
+ */
+export const cpeDeviceAutorebootList = (params) => {
+  if(params['cpeId']){
+    return defHttp.get({ url: Api.cpeDeviceAutorebootList, params });
+  }
+  return Promise.resolve({});
+}
+
+/**
+ * 删除单个
+ */
+export const cpeDeviceAutorebootDelete = (params,handleSuccess) => {
+  return defHttp.delete({ url: Api.cpeDeviceAutorebootDelete, params }, { joinParamsToUrl: true }).then(() => {
+    handleSuccess();
+  });
+}
+
+/**
+ * 批量删除
+ * @param params
+ */
+export const cpeDeviceAutorebootDeleteBatch = (params, handleSuccess) => {
+  createConfirm({
+    iconType: 'warning',
+    title: '确认删除',
+    content: '是否删除选中数据',
+    okText: '确认',
+    cancelText: '取消',
+    onOk: () => {
+      return defHttp.delete({ url: Api.cpeDeviceAutorebootDeleteBatch, data: params }, { joinParamsToUrl: true }).then(() => {
+        handleSuccess();
+      });
+    }
+  });
+}
+
+/**
+ * 保存或者更新
+ * @param params
+ */
+export const  cpeDeviceAutorebootSaveOrUpdate = (params, isUpdate) => {
+  let url = isUpdate ? Api.cpeDeviceAutorebootEdit : Api.cpeDeviceAutorebootSave;
+  return defHttp.post({ url: url, params },{ isTransformResponse: false });
+}
+
+/**
+ * 导入
+ */
+export const cpeDeviceAutorebootImportUrl = '/cpe/device/cpeDeviceInfo/importCpeDeviceAutoreboot'
+
+/**
+ * 导出
+ */
+export const cpeDeviceAutorebootExportXlsUrl = '/cpe/device/cpeDeviceInfo/exportCpeDeviceAutoreboot'
 
 /**
  * 列表接口
