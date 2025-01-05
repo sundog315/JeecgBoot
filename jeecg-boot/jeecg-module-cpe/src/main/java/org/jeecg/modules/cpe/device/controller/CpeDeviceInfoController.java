@@ -18,12 +18,14 @@ import java.util.Date;
 import java.util.HashMap;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.cpe.device.entity.CpeDeviceStatus;
-import org.jeecg.modules.cpe.device.entity.CpeOperLog;
 import org.jeecg.modules.cpe.device.entity.CpeDeviceNeighbor;
+import org.jeecg.modules.cpe.device.entity.CpeDeviceFrp;
+import org.jeecg.modules.cpe.device.entity.CpeOperLog;
 import org.jeecg.modules.cpe.device.entity.CpeDeviceInfo;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceInfoService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceStatusService;
 import org.jeecg.modules.cpe.device.service.ICpeOperLogService;
+import org.jeecg.modules.cpe.device.service.ICpeDeviceFrpService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceNeighborService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -62,6 +64,9 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
 
 	@Autowired
 	private ICpeDeviceNeighborService cpeDeviceNeighborService;
+
+	@Autowired
+	private ICpeDeviceFrpService cpeDeviceFrpService;
 
 	@Autowired
 	private ICpeOperLogService cpeOperLogService;
@@ -477,6 +482,149 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
     }
 
     /*--------------------------------子表处理-CPE设备邻区信息-end----------------------------------------------*/
+
+/*--------------------------------子表处理-设备远程控制-begin----------------------------------------------*/
+	/**
+	 * 通过主表ID查询
+	 * @return
+	 */
+	//@AutoLog(value = "设备远程控制-通过主表ID查询")
+	@ApiOperation(value="设备远程控制-通过主表ID查询", notes="设备远程控制-通过主表ID查询")
+	@GetMapping(value = "/listCpeDeviceFrpByMainId")
+    public Result<IPage<CpeDeviceFrp>> listCpeDeviceFrpByMainId(CpeDeviceFrp cpeDeviceFrp,
+                                                    @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                                    HttpServletRequest req) {
+        QueryWrapper<CpeDeviceFrp> queryWrapper = QueryGenerator.initQueryWrapper(cpeDeviceFrp, req.getParameterMap());
+        Page<CpeDeviceFrp> page = new Page<CpeDeviceFrp>(pageNo, pageSize);
+        IPage<CpeDeviceFrp> pageList = cpeDeviceFrpService.page(page, queryWrapper);
+        return Result.OK(pageList);
+    }
+
+	/**
+	 * 添加
+	 * @param cpeDeviceFrp
+	 * @return
+	 */
+	@AutoLog(value = "设备远程控制-添加")
+	@ApiOperation(value="设备远程控制-添加", notes="设备远程控制-添加")
+	@PostMapping(value = "/addCpeDeviceFrp")
+	public Result<String> addCpeDeviceFrp(@RequestBody CpeDeviceFrp cpeDeviceFrp) {
+		cpeDeviceFrpService.save(cpeDeviceFrp);
+		return Result.OK("添加成功！");
+	}
+
+    /**
+	 * 编辑
+	 * @param cpeDeviceFrp
+	 * @return
+	 */
+	@AutoLog(value = "设备远程控制-编辑")
+	@ApiOperation(value="设备远程控制-编辑", notes="设备远程控制-编辑")
+	@RequestMapping(value = "/editCpeDeviceFrp", method = {RequestMethod.PUT,RequestMethod.POST})
+	public Result<String> editCpeDeviceFrp(@RequestBody CpeDeviceFrp cpeDeviceFrp) {
+		cpeDeviceFrpService.updateById(cpeDeviceFrp);
+		return Result.OK("编辑成功!");
+	}
+
+	/**
+	 * 通过id删除
+	 * @param id
+	 * @return
+	 */
+	@AutoLog(value = "设备远程控制-通过id删除")
+	@ApiOperation(value="设备远程控制-通过id删除", notes="设备远程控制-通过id删除")
+	@DeleteMapping(value = "/deleteCpeDeviceFrp")
+	public Result<String> deleteCpeDeviceFrp(@RequestParam(name="id",required=true) String id) {
+		cpeDeviceFrpService.removeById(id);
+		return Result.OK("删除成功!");
+	}
+
+	/**
+	 * 批量删除
+	 * @param ids
+	 * @return
+	 */
+	@AutoLog(value = "设备远程控制-批量删除")
+	@ApiOperation(value="设备远程控制-批量删除", notes="设备远程控制-批量删除")
+	@DeleteMapping(value = "/deleteBatchCpeDeviceFrp")
+	public Result<String> deleteBatchCpeDeviceFrp(@RequestParam(name="ids",required=true) String ids) {
+	    this.cpeDeviceFrpService.removeByIds(Arrays.asList(ids.split(",")));
+		return Result.OK("批量删除成功!");
+	}
+
+    /**
+     * 导出
+     * @return
+     */
+    @RequestMapping(value = "/exportCpeDeviceFrp")
+    public ModelAndView exportCpeDeviceFrp(HttpServletRequest request, CpeDeviceFrp cpeDeviceFrp) {
+		 // Step.1 组装查询条件
+		 QueryWrapper<CpeDeviceFrp> queryWrapper = QueryGenerator.initQueryWrapper(cpeDeviceFrp, request.getParameterMap());
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+
+		 // Step.2 获取导出数据
+		 List<CpeDeviceFrp> pageList = cpeDeviceFrpService.list(queryWrapper);
+		 List<CpeDeviceFrp> exportList = null;
+
+		 // 过滤选中数据
+		 String selections = request.getParameter("selections");
+		 if (oConvertUtils.isNotEmpty(selections)) {
+			 List<String> selectionList = Arrays.asList(selections.split(","));
+			 exportList = pageList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
+		 } else {
+			 exportList = pageList;
+		 }
+
+		 // Step.3 AutoPoi 导出Excel
+		 ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		 //此处设置的filename无效,前端会重更新设置一下
+		 mv.addObject(NormalExcelConstants.FILE_NAME, "设备远程控制");
+		 mv.addObject(NormalExcelConstants.CLASS, CpeDeviceFrp.class);
+		 mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("设备远程控制报表", "导出人:" + sysUser.getRealname(), "设备远程控制"));
+		 mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+		 return mv;
+    }
+
+    /**
+     * 导入
+     * @return
+     */
+    @RequestMapping(value = "/importCpeDeviceFrp/{mainId}")
+    public Result<?> importCpeDeviceFrp(HttpServletRequest request, HttpServletResponse response, @PathVariable("mainId") String mainId) {
+		 MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+		 Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+		 for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+       // 获取上传文件对象
+			 MultipartFile file = entity.getValue();
+			 ImportParams params = new ImportParams();
+			 params.setTitleRows(2);
+			 params.setHeadRows(1);
+			 params.setNeedSave(true);
+			 try {
+				 List<CpeDeviceFrp> list = ExcelImportUtil.importExcel(file.getInputStream(), CpeDeviceFrp.class, params);
+				 for (CpeDeviceFrp temp : list) {
+                    temp.setCpeId(mainId);
+				 }
+				 long start = System.currentTimeMillis();
+				 cpeDeviceFrpService.saveBatch(list);
+				 log.info("消耗时间" + (System.currentTimeMillis() - start) + "毫秒");
+				 return Result.OK("文件导入成功！数据行数：" + list.size());
+			 } catch (Exception e) {
+				 log.error(e.getMessage(), e);
+				 return Result.error("文件导入失败:" + e.getMessage());
+			 } finally {
+				 try {
+					 file.getInputStream().close();
+				 } catch (IOException e) {
+					 e.printStackTrace();
+				 }
+			 }
+		 }
+		 return Result.error("文件导入失败！");
+    }
+
+    /*--------------------------------子表处理-设备远程控制-end----------------------------------------------*/
 
  /*--------------------------------子表处理-操作记录表-begin----------------------------------------------*/
 	/**

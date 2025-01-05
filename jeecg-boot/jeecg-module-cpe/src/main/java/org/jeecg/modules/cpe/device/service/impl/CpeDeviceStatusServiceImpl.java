@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -152,8 +153,17 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
         BANDWIDTH_MAP_LTE = Collections.unmodifiableMap(mapLte);
     }
 
-    /** 并发控制锁 */
-    private final Lock deviceLock = new ReentrantLock();
+    // 设备锁管理器
+    private final ConcurrentHashMap<String, Lock> deviceLocks = new ConcurrentHashMap<>();
+
+    /**
+     * 获取设备锁
+     * @param deviceSn 设备序列号
+     * @return 设备对应的锁对象
+     */
+    private Lock getDeviceLock(String deviceSn) {
+        return deviceLocks.computeIfAbsent(deviceSn, k -> new ReentrantLock());
+    }
 
     /**
      * 根据主ID查询设备状态列表
@@ -482,6 +492,9 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 		if (cpeDevice == null) {
 			throw new Exception("设备未找到！");
 		}
+
+        // 获取设备对应的锁
+        Lock deviceLock = getDeviceLock(deviceSn);
 
 		try {
 			// 尝试获取设备锁，防止并发操作

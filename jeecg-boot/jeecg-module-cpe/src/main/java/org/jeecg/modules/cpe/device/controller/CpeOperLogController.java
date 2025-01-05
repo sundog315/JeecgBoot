@@ -113,7 +113,7 @@ public class CpeOperLogController extends JeecgController<CpeOperLog, ICpeOperLo
 							{
 								if (oper.getOperTs() == null)
 								{
-									return Result.OK(oper.getId() + '|' + oper.getOperType() + '|' + oper.getOperParam());
+									return Result.OK(oper.getId() + '|' + oper.getOperType() + '|' + oper.getOperParam().replace("|", "%7C").replace(",", "%2C"));
 								}
 							}
 

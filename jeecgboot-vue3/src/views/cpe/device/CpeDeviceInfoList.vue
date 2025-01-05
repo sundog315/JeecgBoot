@@ -61,7 +61,10 @@
       <a-tab-pane tab="CPE设备邻区信息" key="2" forceRender>
         <CpeDeviceNeighborList />
       </a-tab-pane>
-      <a-tab-pane tab="操作记录表" key="3" forceRender>
+      <a-tab-pane tab="设备远程控制" key="3" forceRender>
+        <CpeDeviceFrpList />
+      </a-tab-pane>
+      <a-tab-pane tab="操作记录表" key="4" forceRender>
         <CpeOperLogList />
       </a-tab-pane>
      </a-tabs>
@@ -83,6 +86,7 @@
   import JSelectMultiple from '/@/components/Form/src/jeecg/components/JSelectMultiple.vue';
   import CpeDeviceStatusList from './CpeDeviceStatusList.vue'
   import CpeDeviceNeighborList from './CpeDeviceNeighborList.vue'
+  import CpeDeviceFrpList from './CpeDeviceFrpList.vue'
   import CpeOperLogList from './CpeOperLogList.vue'
   import { useUserStore } from '/@/store/modules/user';
   import { cloneDeep } from "lodash-es";

@@ -274,6 +274,34 @@ export const cpeDeviceNeighborColumns: BasicColumn[] = [
   },
 ];
 //子表列表数据
+export const cpeDeviceFrpColumns: BasicColumn[] = [
+  {
+    title: '服务器地址',
+    align:"center",
+    dataIndex: 'serverAddr'
+  },
+  {
+    title: '服务器端口',
+    align:"center",
+    dataIndex: 'serverPort'
+  },
+  {
+    title: '令牌',
+    align:"center",
+    dataIndex: 'token'
+  },
+  {
+    title: 'SSH映射端口',
+    align:"center",
+    dataIndex: 'proxySshRemotePort'
+  },
+  {
+    title: 'HTTP映射端口',
+    align:"center",
+    dataIndex: 'proxyHttpRemotePort'
+  },
+];
+//子表列表数据
 export const cpeOperLogColumns: BasicColumn[] = [
   {
     title: '创建时间',

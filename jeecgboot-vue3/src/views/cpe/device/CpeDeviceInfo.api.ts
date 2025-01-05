@@ -22,6 +22,11 @@ enum Api {
   cpeDeviceNeighborEdit= '/cpe/device/cpeDeviceInfo/editCpeDeviceNeighbor',
   cpeDeviceNeighborDelete = '/cpe/device/cpeDeviceInfo/deleteCpeDeviceNeighbor',
   cpeDeviceNeighborDeleteBatch = '/cpe/device/cpeDeviceInfo/deleteBatchCpeDeviceNeighbor',
+  cpeDeviceFrpList = '/cpe/device/cpeDeviceInfo/listCpeDeviceFrpByMainId',
+  cpeDeviceFrpSave= '/cpe/device/cpeDeviceInfo/addCpeDeviceFrp',
+  cpeDeviceFrpEdit= '/cpe/device/cpeDeviceInfo/editCpeDeviceFrp',
+  cpeDeviceFrpDelete = '/cpe/device/cpeDeviceInfo/deleteCpeDeviceFrp',
+  cpeDeviceFrpDeleteBatch = '/cpe/device/cpeDeviceInfo/deleteBatchCpeDeviceFrp',
   cpeOperLogList = '/cpe/device/cpeDeviceInfo/listCpeOperLogByMainId',
   cpeOperLogSave= '/cpe/device/cpeDeviceInfo/addCpeOperLog',
   cpeOperLogEdit= '/cpe/device/cpeDeviceInfo/editCpeOperLog',
@@ -207,7 +212,67 @@ export const cpeDeviceNeighborImportUrl = '/cpe/device/cpeDeviceInfo/importCpeDe
  * 导出
  */
 export const cpeDeviceNeighborExportXlsUrl = '/cpe/device/cpeDeviceInfo/exportCpeDeviceNeighbor'
-  
+
+
+/**
+ * 列表接口
+ * @param params
+ */
+export const cpeDeviceFrpList = (params) => {
+  if(params['cpeId']){
+    return defHttp.get({ url: Api.cpeDeviceFrpList, params });
+  }
+  return Promise.resolve({});
+}
+
+/**
+ * 删除单个
+ */
+export const cpeDeviceFrpDelete = (params,handleSuccess) => {
+  return defHttp.delete({ url: Api.cpeDeviceFrpDelete, params }, { joinParamsToUrl: true }).then(() => {
+    handleSuccess();
+  });
+}
+
+/**
+ * 批量删除
+ * @param params
+ */
+export const cpeDeviceFrpDeleteBatch = (params, handleSuccess) => {
+  createConfirm({
+    iconType: 'warning',
+    title: '确认删除',
+    content: '是否删除选中数据',
+    okText: '确认',
+    cancelText: '取消',
+    onOk: () => {
+      return defHttp.delete({ url: Api.cpeDeviceFrpDeleteBatch, data: params }, { joinParamsToUrl: true }).then(() => {
+        handleSuccess();
+      });
+    }
+  });
+}
+
+/**
+ * 保存或者更新
+ * @param params
+ */
+export const  cpeDeviceFrpSaveOrUpdate = (params, isUpdate) => {
+  let url = isUpdate ? Api.cpeDeviceFrpEdit : Api.cpeDeviceFrpSave;
+  return defHttp.post({ url: url, params },{ isTransformResponse: false });
+}
+
+/**
+ * 导入
+ */
+export const cpeDeviceFrpImportUrl = '/cpe/device/cpeDeviceInfo/importCpeDeviceFrp'
+
+/**
+ * 导出
+ */
+export const cpeDeviceFrpExportXlsUrl = '/cpe/device/cpeDeviceInfo/exportCpeDeviceFrp'
+ 
+
 /**
  * 列表接口
  * @param params
