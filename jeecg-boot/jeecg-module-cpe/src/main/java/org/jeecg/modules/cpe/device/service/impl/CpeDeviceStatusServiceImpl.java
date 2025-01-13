@@ -687,38 +687,50 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 	private TrafficData calculateTrafficData(String id,double reportedUp, double reportedDown, 
 										   double accuUp, double accuDown,
 										   double beginUp, double beginDown) {
-		double calculatedUp = reportedUp;
-		double calculatedDown = reportedDown;
-
-        // 获取Redis缓存数据
-        double redisUpBytes = getRedisTraffic(id, "upBytes");
-        double redisDownBytes = getRedisTraffic(id, "downBytes");
-
-		// 去除上次上报的数据量，等于此次新增数据量
-		if (calculatedUp >= redisUpBytes)
-			calculatedUp -= redisUpBytes;
-		if (calculatedDown >= redisDownBytes)
-			calculatedDown -= redisDownBytes;
-
-		upBytes = calculatedUp;
-		downBytes = calculatedDown;
-
-		calculatedUp += accuUp;
-		calculatedDown += accuDown;
-
-		// 保存本次上报数据
-		setRedisTraffic(id, "downBytes", reportedDown);
-		setRedisTraffic(id, "upBytes", reportedUp);
+		// 获取Redis缓存的上次上报数据
+		double redisUpBytes = getRedisTraffic(id, "upBytes");
+		double redisDownBytes = getRedisTraffic(id, "downBytes");
 		
-		// 处理期初值
+		// 计算增量
+		double upIncrement;
+		double downIncrement;
+		
+		// 处理设备重启情况
+		if (reportedUp < redisUpBytes) {
+			// 设备重启，当前值小于上次值，说明是新的累计值
+			upIncrement = reportedUp;
+		} else {
+			upIncrement = reportedUp - redisUpBytes;
+		}
+		
+		if (reportedDown < redisDownBytes) {
+			// 设备重启，当前值小于上次值，说明是新的累计值
+			downIncrement = reportedDown;
+		} else {
+			downIncrement = reportedDown - redisDownBytes;
+		}
+		
+		// 更新Redis中的最新值
+		setRedisTraffic(id, "upBytes", reportedUp);
+		setRedisTraffic(id, "downBytes", reportedDown);
+		
+		// 计算当月总流量（累计值 + 本次增量）
+		double totalUp = accuUp + upIncrement;
+		double totalDown = accuDown + downIncrement;
+		
+		// 如果有期初值，需要减去期初值得到当月实际使用量
 		if (beginUp > 0) {
-			calculatedUp = reportedUp - beginUp;
+			totalUp = totalUp - beginUp;
 		}
 		if (beginDown > 0) {
-			calculatedDown = reportedDown - beginDown;
+			totalDown = totalDown - beginDown;
 		}
 		
-		return new TrafficData(calculatedUp, calculatedDown, beginUp, beginDown);
+		// 保存本次增量，用于更新状态表
+		upBytes = upIncrement;
+		downBytes = downIncrement;
+		
+		return new TrafficData(totalUp, totalDown, beginUp, beginDown);
 	}
 
     /**

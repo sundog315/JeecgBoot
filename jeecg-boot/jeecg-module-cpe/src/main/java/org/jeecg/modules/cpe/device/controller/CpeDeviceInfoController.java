@@ -11,7 +11,6 @@ import org.jeecg.common.api.vo.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 import java.util.Arrays;
 import java.util.Date;
@@ -26,22 +25,20 @@ import org.jeecg.modules.cpe.device.entity.CpeDeviceInfo;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceInfoService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceStatusService;
 import org.jeecg.modules.cpe.device.service.ICpeOperLogService;
+import org.jeecg.modules.cpe.device.entity.CpeDeviceNetwork;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceAutorebootService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceFrpService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceNeighborService;
+import org.jeecg.modules.cpe.device.service.ICpeDeviceNetworkService;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.system.vo.LoginUser;
-import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
-import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -72,6 +69,9 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
 
 	@Autowired
 	private ICpeDeviceAutorebootService cpeDeviceAutorebootService;
+
+	@Autowired
+	private ICpeDeviceNetworkService cpeDeviceNetworkService;
 
 	@Autowired
 	private ICpeOperLogService cpeOperLogService;
@@ -803,7 +803,150 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
 
     /*--------------------------------子表处理-设备自动重启-end----------------------------------------------*/
 
- /*--------------------------------子表处理-操作记录表-begin----------------------------------------------*/
+    /*--------------------------------子表处理-设备内网配置-begin----------------------------------------------*/
+	/**
+	 * 通过主表ID查询
+	 * @return
+	 */
+	//@AutoLog(value = "设备内网配置-通过主表ID查询")
+	@ApiOperation(value="设备内网配置-通过主表ID查询", notes="设备内网配置-通过主表ID查询")
+	@GetMapping(value = "/listCpeDeviceNetworkByMainId")
+    public Result<IPage<CpeDeviceNetwork>> listCpeDeviceNetworkByMainId(CpeDeviceNetwork cpeDeviceNetwork,
+                                                    @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                                    HttpServletRequest req) {
+        QueryWrapper<CpeDeviceNetwork> queryWrapper = QueryGenerator.initQueryWrapper(cpeDeviceNetwork, req.getParameterMap());
+        Page<CpeDeviceNetwork> page = new Page<CpeDeviceNetwork>(pageNo, pageSize);
+        IPage<CpeDeviceNetwork> pageList = cpeDeviceNetworkService.page(page, queryWrapper);
+        return Result.OK(pageList);
+    }
+
+	/**
+	 * 添加
+	 * @param cpeDeviceNetwork
+	 * @return
+	 */
+	// @AutoLog(value = "设备内网配置-添加")
+	// @ApiOperation(value="设备内网配置-添加", notes="设备内网配置-添加")
+	// @PostMapping(value = "/addCpeDeviceNetwork")
+	// public Result<String> addCpeDeviceNetwork(@RequestBody CpeDeviceNetwork cpeDeviceNetwork) {
+	// 	cpeDeviceNetworkService.save(cpeDeviceNetwork);
+	// 	return Result.OK("添加成功！");
+	// }
+
+    /**
+	 * 编辑
+	 * @param cpeDeviceNetwork
+	 * @return
+	 */
+	@AutoLog(value = "设备内网配置-编辑")
+	@ApiOperation(value="设备内网配置-编辑", notes="设备内网配置-编辑")
+	@RequestMapping(value = "/editCpeDeviceNetwork", method = {RequestMethod.PUT,RequestMethod.POST})
+	public Result<String> editCpeDeviceNetwork(@RequestBody CpeDeviceNetwork cpeDeviceNetwork) {
+		cpeDeviceNetworkService.updateById(cpeDeviceNetwork);
+		return Result.OK("编辑成功!");
+	}
+
+	/**
+	 * 通过id删除
+	 * @param id
+	 * @return
+	 */
+	// @AutoLog(value = "设备内网配置-通过id删除")
+	// @ApiOperation(value="设备内网配置-通过id删除", notes="设备内网配置-通过id删除")
+	// @DeleteMapping(value = "/deleteCpeDeviceNetwork")
+	// public Result<String> deleteCpeDeviceNetwork(@RequestParam(name="id",required=true) String id) {
+	// 	cpeDeviceNetworkService.removeById(id);
+	// 	return Result.OK("删除成功!");
+	// }
+
+	/**
+	 * 批量删除
+	 * @param ids
+	 * @return
+	 */
+	// @AutoLog(value = "设备内网配置-批量删除")
+	// @ApiOperation(value="设备内网配置-批量删除", notes="设备内网配置-批量删除")
+	// @DeleteMapping(value = "/deleteBatchCpeDeviceNetwork")
+	// public Result<String> deleteBatchCpeDeviceNetwork(@RequestParam(name="ids",required=true) String ids) {
+	//     this.cpeDeviceNetworkService.removeByIds(Arrays.asList(ids.split(",")));
+	// 	return Result.OK("批量删除成功!");
+	// }
+
+    /**
+     * 导出
+     * @return
+     */
+    @RequestMapping(value = "/exportCpeDeviceNetwork")
+    public ModelAndView exportCpeDeviceNetwork(HttpServletRequest request, CpeDeviceNetwork cpeDeviceNetwork) {
+		 // Step.1 组装查询条件
+		 QueryWrapper<CpeDeviceNetwork> queryWrapper = QueryGenerator.initQueryWrapper(cpeDeviceNetwork, request.getParameterMap());
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+
+		 // Step.2 获取导出数据
+		 List<CpeDeviceNetwork> pageList = cpeDeviceNetworkService.list(queryWrapper);
+		 List<CpeDeviceNetwork> exportList = null;
+
+		 // 过滤选中数据
+		 String selections = request.getParameter("selections");
+		 if (oConvertUtils.isNotEmpty(selections)) {
+			 List<String> selectionList = Arrays.asList(selections.split(","));
+			 exportList = pageList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
+		 } else {
+			 exportList = pageList;
+		 }
+
+		 // Step.3 AutoPoi 导出Excel
+		 ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		 //此处设置的filename无效,前端会重更新设置一下
+		 mv.addObject(NormalExcelConstants.FILE_NAME, "设备内网配置");
+		 mv.addObject(NormalExcelConstants.CLASS, CpeDeviceNetwork.class);
+		 mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("设备内网配置报表", "导出人:" + sysUser.getRealname(), "设备内网配置"));
+		 mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+		 return mv;
+    }
+
+    /**
+     * 导入
+     * @return
+     */
+    // @RequestMapping(value = "/importCpeDeviceNetwork/{mainId}")
+    // public Result<?> importCpeDeviceNetwork(HttpServletRequest request, HttpServletResponse response, @PathVariable("mainId") String mainId) {
+	// 	 MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+	// 	 Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+	// 	 for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+    //    // 获取上传文件对象
+	// 		 MultipartFile file = entity.getValue();
+	// 		 ImportParams params = new ImportParams();
+	// 		 params.setTitleRows(2);
+	// 		 params.setHeadRows(1);
+	// 		 params.setNeedSave(true);
+	// 		 try {
+	// 			 List<CpeDeviceNetwork> list = ExcelImportUtil.importExcel(file.getInputStream(), CpeDeviceNetwork.class, params);
+	// 			 for (CpeDeviceNetwork temp : list) {
+    //                 temp.setCpeId(mainId);
+	// 			 }
+	// 			 long start = System.currentTimeMillis();
+	// 			 cpeDeviceNetworkService.saveBatch(list);
+	// 			 log.info("消耗时间" + (System.currentTimeMillis() - start) + "毫秒");
+	// 			 return Result.OK("文件导入成功！数据行数：" + list.size());
+	// 		 } catch (Exception e) {
+	// 			 log.error(e.getMessage(), e);
+	// 			 return Result.error("文件导入失败:" + e.getMessage());
+	// 		 } finally {
+	// 			 try {
+	// 				 file.getInputStream().close();
+	// 			 } catch (IOException e) {
+	// 				 e.printStackTrace();
+	// 			 }
+	// 		 }
+	// 	 }
+	// 	 return Result.error("文件导入失败！");
+    // }
+
+    /*--------------------------------子表处理-设备内网配置-end----------------------------------------------*/
+
+	/*--------------------------------子表处理-操作记录表-begin----------------------------------------------*/
 	/**
 	 * 通过主表ID查询
 	 * @return

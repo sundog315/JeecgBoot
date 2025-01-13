@@ -32,6 +32,11 @@ enum Api {
   cpeDeviceAutorebootEdit= '/cpe/device/cpeDeviceInfo/editCpeDeviceAutoreboot',
   cpeDeviceAutorebootDelete = '/cpe/device/cpeDeviceInfo/deleteCpeDeviceAutoreboot',
   cpeDeviceAutorebootDeleteBatch = '/cpe/device/cpeDeviceInfo/deleteBatchCpeDeviceAutoreboot',
+  cpeDeviceNetworkList = '/cpe/device/cpeDeviceInfo/listCpeDeviceNetworkByMainId',
+  cpeDeviceNetworkSave= '/cpe/device/cpeDeviceInfo/addCpeDeviceNetwork',
+  cpeDeviceNetworkEdit= '/cpe/device/cpeDeviceInfo/editCpeDeviceNetwork',
+  cpeDeviceNetworkDelete = '/cpe/device/cpeDeviceInfo/deleteCpeDeviceNetwork',
+  cpeDeviceNetworkDeleteBatch = '/cpe/device/cpeDeviceInfo/deleteBatchCpeDeviceNetwork',
   cpeOperLogList = '/cpe/device/cpeDeviceInfo/listCpeOperLogByMainId',
   cpeOperLogSave= '/cpe/device/cpeDeviceInfo/addCpeOperLog',
   cpeOperLogEdit= '/cpe/device/cpeDeviceInfo/editCpeOperLog',
@@ -334,6 +339,64 @@ export const cpeDeviceAutorebootImportUrl = '/cpe/device/cpeDeviceInfo/importCpe
  * 导出
  */
 export const cpeDeviceAutorebootExportXlsUrl = '/cpe/device/cpeDeviceInfo/exportCpeDeviceAutoreboot'
+
+/**
+ * 列表接口
+ * @param params
+ */
+export const cpeDeviceNetworkList = (params) => {
+  if(params['cpeId']){
+    return defHttp.get({ url: Api.cpeDeviceNetworkList, params });
+  }
+  return Promise.resolve({});
+}
+
+/**
+ * 删除单个
+ */
+export const cpeDeviceNetworkDelete = (params,handleSuccess) => {
+  return defHttp.delete({ url: Api.cpeDeviceNetworkDelete, params }, { joinParamsToUrl: true }).then(() => {
+    handleSuccess();
+  });
+}
+
+/**
+ * 批量删除
+ * @param params
+ */
+export const cpeDeviceNetworkDeleteBatch = (params, handleSuccess) => {
+  createConfirm({
+    iconType: 'warning',
+    title: '确认删除',
+    content: '是否删除选中数据',
+    okText: '确认',
+    cancelText: '取消',
+    onOk: () => {
+      return defHttp.delete({ url: Api.cpeDeviceNetworkDeleteBatch, data: params }, { joinParamsToUrl: true }).then(() => {
+        handleSuccess();
+      });
+    }
+  });
+}
+
+/**
+ * 保存或者更新
+ * @param params
+ */
+export const  cpeDeviceNetworkSaveOrUpdate = (params, isUpdate) => {
+  let url = isUpdate ? Api.cpeDeviceNetworkEdit : Api.cpeDeviceNetworkSave;
+  return defHttp.post({ url: url, params },{ isTransformResponse: false });
+}
+
+/**
+ * 导入
+ */
+export const cpeDeviceNetworkImportUrl = '/cpe/device/cpeDeviceInfo/importCpeDeviceNetwork'
+
+/**
+ * 导出
+ */
+export const cpeDeviceNetworkExportXlsUrl = '/cpe/device/cpeDeviceInfo/exportCpeDeviceNetwork'
 
 /**
  * 列表接口

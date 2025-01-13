@@ -14,10 +14,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface CpeDeviceMapper extends BaseMapper<CpeDevice> {
     /**
-   * 通过device_sn查询主表数据
-   *
-   * @param deviceSn 主表设备编码
-   * @return List<CpeDevice>
-   */
-  public List<CpeDevice> selectByDeviceSn(@Param("deviceSn") String deviceSn);
+     * 根据设备序列号查询设备信息
+     * @param deviceSn 设备序列号
+     * @return 设备信息列表
+     */
+    List<CpeDevice> selectByDeviceSn(@Param("deviceSn") String deviceSn);
 }

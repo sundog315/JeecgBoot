@@ -6,6 +6,7 @@ import org.jeecg.modules.cpe.device.service.ICpeDeviceAutorebootService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceFrpService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceStatusService;
+import org.jeecg.modules.cpe.device.service.ICpeDeviceNetworkService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,6 +29,8 @@ public class CpeDeviceApi extends JeecgController<CpeDevice, ICpeDeviceService> 
 	private ICpeDeviceFrpService cpeDeviceFrpService;
 	@Autowired
 	private ICpeDeviceAutorebootService cpeDeviceAutorebootService;
+	@Autowired
+	private ICpeDeviceNetworkService cpeDeviceNetworkService;
 
 
 	/**
@@ -46,7 +49,8 @@ public class CpeDeviceApi extends JeecgController<CpeDevice, ICpeDeviceService> 
 								@RequestParam(name="ip_addr",required=true) String ipAddrParam,
 								@RequestParam(name="lte_status",required=false) String lteStatus,
 								@RequestParam(name="frp",required=false) String frp,
-								@RequestParam(name="auto_reboot",required=false) String autoReboot) {
+								@RequestParam(name="auto_reboot",required=false) String autoReboot,
+								@RequestParam(name="network",required=false) String network) {
 
 		switch (deviceType) {
 			case "X25":
@@ -64,6 +68,8 @@ public class CpeDeviceApi extends JeecgController<CpeDevice, ICpeDeviceService> 
 						cpeDeviceFrpService.report(deviceSnParam, frp);
 					if ((autoReboot != null) && (!autoReboot.isEmpty()))
 						cpeDeviceAutorebootService.report(deviceSnParam, autoReboot);
+					if ((network != null) && (!network.isEmpty()))
+						cpeDeviceNetworkService.report(deviceSnParam, network);
 				}
 				catch (Exception e) {
 					return Result.error(e.getMessage());

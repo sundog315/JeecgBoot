@@ -315,6 +315,34 @@ export const cpeDeviceAutorebootColumns: BasicColumn[] = [
   },
 ];
 //子表列表数据
+export const cpeDeviceNetworkColumns: BasicColumn[] = [
+  {
+    title: '内网地址',
+    align:"center",
+    dataIndex: 'ipaddr'
+  },
+  {
+    title: '子网掩码',
+    align:"center",
+    dataIndex: 'netmask'
+  },
+  {
+    title: 'DHCP起始地址',
+    align:"center",
+    dataIndex: 'dhcpStart'
+  },
+  {
+    title: 'DHCP截至地址',
+    align:"center",
+    dataIndex: 'dhcpEnd'
+  },
+  {
+    title: 'DHCP租期',
+    align:"center",
+    dataIndex: 'dhcpLeasetime'
+  },
+];
+//子表列表数据
 export const cpeOperLogColumns: BasicColumn[] = [
   {
     title: '创建时间',
