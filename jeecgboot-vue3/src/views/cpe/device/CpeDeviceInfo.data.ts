@@ -343,6 +343,19 @@ export const cpeDeviceNetworkColumns: BasicColumn[] = [
   },
 ];
 //子表列表数据
+export const cpeSpeedLimitColumns: BasicColumn[] = [
+  {
+    title: '上传速率',
+    align:"center",
+    dataIndex: 'upLimit'
+  },
+  {
+    title: '下载速率',
+    align:"center",
+    dataIndex: 'downLimit'
+  },
+];
+//子表列表数据
 export const cpeOperLogColumns: BasicColumn[] = [
   {
     title: '创建时间',

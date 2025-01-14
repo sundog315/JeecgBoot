@@ -14,7 +14,7 @@
       </template>
     </BasicTable>
 
-    <CpeDeviceStatusModal ref="registerModal" @success="handleSuccess"/>
+    <CpeSpeedLimitModal ref="registerModal" @success="handleSuccess"/>
    </div>
 </template>
 
@@ -22,9 +22,9 @@
   import { ref, reactive, unref, inject, watch } from 'vue';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { useListPage } from '/@/hooks/system/useListPage'
-  import CpeDeviceStatusModal from './components/CpeDeviceStatusModal.vue'
-  import { cpeDeviceStatusColumns } from './CpeDeviceInfo.data';
-  import { cpeDeviceStatusList, cpeDeviceStatusDelete, cpeDeviceStatusDeleteBatch, cpeDeviceStatusExportXlsUrl, cpeDeviceStatusImportUrl } from './CpeDeviceInfo.api';
+  import CpeSpeedLimitModal from './components/CpeSpeedLimitModal.vue'
+  import { cpeSpeedLimitColumns } from './CpeDeviceInfo.data';
+  import { cpeSpeedLimitList, cpeSpeedLimitDelete, cpeSpeedLimitDeleteBatch, cpeSpeedLimitExportXlsUrl, cpeSpeedLimitImportUrl } from './CpeDeviceInfo.api';
   import { isEmpty } from "/@/utils/is";
   import { useMessage } from '/@/hooks/web/useMessage';
   import { downloadFile } from '/@/utils/common/renderUtils';
@@ -38,8 +38,8 @@
   // 列表页面公共参数、方法
   const { prefixCls, tableContext, onImportXls, onExportXls } = useListPage({
     tableProps: {
-      api: cpeDeviceStatusList,
-      columns: cpeDeviceStatusColumns,
+      api: cpeSpeedLimitList,
+      columns: cpeSpeedLimitColumns,
       canResize: false,
       useSearchForm: false,
       actionColumn: {
@@ -51,21 +51,21 @@
       },
     },
     exportConfig: {
-      name: 'CPE设备状态表',
-      url: cpeDeviceStatusExportXlsUrl,
+      name: '设备速率',
+      url: cpeSpeedLimitExportXlsUrl,
       params: {
         'cpeId': mainId
       }
     },
     importConfig: {
       url: ()=>{
-        return cpeDeviceStatusImportUrl + '/' + unref(mainId)
+        return cpeSpeedLimitImportUrl + '/' + unref(mainId)
       }
     }
   });
 
   //注册table数据
-  const [registerTable, { reload}, { rowSelection, selectedRowKeys }] = tableContext;
+  const [registerTable, { reload,getDataSource}, { rowSelection, selectedRowKeys }] = tableContext;
   const registerModal = ref();
   const formRef = ref();
   const labelCol = reactive({
@@ -86,6 +86,11 @@
     if (isEmpty(unref(mainId))) {
         $message.createMessage.warning('请选择一个主表信息')
         return;
+    }
+    let dataSource = getDataSource();
+    if(dataSource.length >= 1){
+      $message.createMessage.warning('一对一子表只能添加一条数据')
+      return;
     }
     registerModal.value.disableSubmit = false;
     registerModal.value.add();
@@ -111,14 +116,14 @@
    * 删除事件
    */
   async function handleDelete(record) {
-    await cpeDeviceStatusDelete({id: record.id}, handleSuccess);
+    await cpeSpeedLimitDelete({id: record.id}, handleSuccess);
   }
 
   /**
    * 批量删除事件
    */
   async function batchHandleDelete() {
-    await cpeDeviceStatusDeleteBatch({ids: selectedRowKeys.value}, handleSuccess);
+    await cpeSpeedLimitDeleteBatch({ids: selectedRowKeys.value}, handleSuccess);
   }
 
   /**
@@ -138,6 +143,15 @@
         onClick: handleEdit.bind(null, record),
       },
     ]
+  }
+  
+  /**
+   * 下拉操作栏
+   */
+  function getDropDownAction(record){
+    return [
+
+    ];
   }
   
   /**

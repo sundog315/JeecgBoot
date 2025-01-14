@@ -37,6 +37,11 @@ enum Api {
   cpeDeviceNetworkEdit= '/cpe/device/cpeDeviceInfo/editCpeDeviceNetwork',
   cpeDeviceNetworkDelete = '/cpe/device/cpeDeviceInfo/deleteCpeDeviceNetwork',
   cpeDeviceNetworkDeleteBatch = '/cpe/device/cpeDeviceInfo/deleteBatchCpeDeviceNetwork',
+  cpeSpeedLimitList = '/cpe/device/cpeDeviceInfo/listCpeSpeedLimitByMainId',
+  cpeSpeedLimitSave= '/cpe/device/cpeDeviceInfo/addCpeSpeedLimit',
+  cpeSpeedLimitEdit= '/cpe/device/cpeDeviceInfo/editCpeSpeedLimit',
+  cpeSpeedLimitDelete = '/cpe/device/cpeDeviceInfo/deleteCpeSpeedLimit',
+  cpeSpeedLimitDeleteBatch = '/cpe/device/cpeDeviceInfo/deleteBatchCpeSpeedLimit',
   cpeOperLogList = '/cpe/device/cpeDeviceInfo/listCpeOperLogByMainId',
   cpeOperLogSave= '/cpe/device/cpeDeviceInfo/addCpeOperLog',
   cpeOperLogEdit= '/cpe/device/cpeDeviceInfo/editCpeOperLog',
@@ -397,6 +402,64 @@ export const cpeDeviceNetworkImportUrl = '/cpe/device/cpeDeviceInfo/importCpeDev
  * 导出
  */
 export const cpeDeviceNetworkExportXlsUrl = '/cpe/device/cpeDeviceInfo/exportCpeDeviceNetwork'
+
+/**
+ * 列表接口
+ * @param params
+ */
+export const cpeSpeedLimitList = (params) => {
+  if(params['cpeId']){
+    return defHttp.get({ url: Api.cpeSpeedLimitList, params });
+  }
+  return Promise.resolve({});
+}
+
+/**
+ * 删除单个
+ */
+export const cpeSpeedLimitDelete = (params,handleSuccess) => {
+  return defHttp.delete({ url: Api.cpeSpeedLimitDelete, params }, { joinParamsToUrl: true }).then(() => {
+    handleSuccess();
+  });
+}
+
+/**
+ * 批量删除
+ * @param params
+ */
+export const cpeSpeedLimitDeleteBatch = (params, handleSuccess) => {
+  createConfirm({
+    iconType: 'warning',
+    title: '确认删除',
+    content: '是否删除选中数据',
+    okText: '确认',
+    cancelText: '取消',
+    onOk: () => {
+      return defHttp.delete({ url: Api.cpeSpeedLimitDeleteBatch, data: params }, { joinParamsToUrl: true }).then(() => {
+        handleSuccess();
+      });
+    }
+  });
+}
+
+/**
+ * 保存或者更新
+ * @param params
+ */
+export const  cpeSpeedLimitSaveOrUpdate = (params, isUpdate) => {
+  let url = isUpdate ? Api.cpeSpeedLimitEdit : Api.cpeSpeedLimitSave;
+  return defHttp.post({ url: url, params },{ isTransformResponse: false });
+}
+
+/**
+ * 导入
+ */
+export const cpeSpeedLimitImportUrl = '/cpe/device/cpeDeviceInfo/importCpeSpeedLimit'
+
+/**
+ * 导出
+ */
+export const cpeSpeedLimitExportXlsUrl = '/cpe/device/cpeDeviceInfo/exportCpeSpeedLimit'
 
 /**
  * 列表接口

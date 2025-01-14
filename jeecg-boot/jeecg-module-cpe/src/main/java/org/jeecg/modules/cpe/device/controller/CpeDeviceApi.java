@@ -6,6 +6,7 @@ import org.jeecg.modules.cpe.device.service.ICpeDeviceAutorebootService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceFrpService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceStatusService;
+import org.jeecg.modules.cpe.device.service.ICpeSpeedLimitService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceNetworkService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,8 @@ public class CpeDeviceApi extends JeecgController<CpeDevice, ICpeDeviceService> 
 	private ICpeDeviceAutorebootService cpeDeviceAutorebootService;
 	@Autowired
 	private ICpeDeviceNetworkService cpeDeviceNetworkService;
+	@Autowired
+	private ICpeSpeedLimitService cpeSpeedLimitService;
 
 
 	/**
@@ -50,7 +53,8 @@ public class CpeDeviceApi extends JeecgController<CpeDevice, ICpeDeviceService> 
 								@RequestParam(name="lte_status",required=false) String lteStatus,
 								@RequestParam(name="frp",required=false) String frp,
 								@RequestParam(name="auto_reboot",required=false) String autoReboot,
-								@RequestParam(name="network",required=false) String network) {
+								@RequestParam(name="network",required=false) String network,
+								@RequestParam(name="speed_limit",required=false) String speedLimitParam) {
 
 		switch (deviceType) {
 			case "X25":
@@ -70,8 +74,13 @@ public class CpeDeviceApi extends JeecgController<CpeDevice, ICpeDeviceService> 
 						cpeDeviceAutorebootService.report(deviceSnParam, autoReboot);
 					if ((network != null) && (!network.isEmpty()))
 						cpeDeviceNetworkService.report(deviceSnParam, network);
+						if ((speedLimitParam != null) && (!speedLimitParam.isEmpty()))
+						cpeSpeedLimitService.report(deviceSnParam, speedLimitParam);
+
+					log.info("{}设备状态上报成功",deviceSnParam);
 				}
 				catch (Exception e) {
+					log.info("{}设备状态上报失败",deviceSnParam);
 					return Result.error(e.getMessage());
 				}
 				
