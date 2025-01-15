@@ -23,7 +23,6 @@ import org.springframework.web.servlet.ModelAndView;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jeecg.common.aspect.annotation.AutoLog;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 
  /**
  * @Description: 设备信息表

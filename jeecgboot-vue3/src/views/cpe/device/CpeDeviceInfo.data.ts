@@ -297,8 +297,21 @@ export const cpeDeviceFrpColumns: BasicColumn[] = [
   },
   {
     title: 'HTTP映射端口',
-    align:"center",
-    dataIndex: 'proxyHttpRemotePort'
+    align: "center",
+    dataIndex: 'proxyHttpRemotePort',
+    customRender: ({ text, record }) => {
+      if (!text || !record.serverAddr) {
+        return text;
+      }
+      const props = {
+        style: { color: '#1890ff', cursor: 'pointer' },
+        onClick: () => {
+          const url = `http://${record.serverAddr}:${text}`;
+          window.open(url, '_blank');
+        },
+      };
+      return h('a', props, text);
+    },
   },
 ];
 //子表列表数据
