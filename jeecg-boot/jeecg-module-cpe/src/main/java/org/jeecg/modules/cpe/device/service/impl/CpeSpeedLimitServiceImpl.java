@@ -35,16 +35,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Service
 @Slf4j
 public class CpeSpeedLimitServiceImpl extends ServiceImpl<CpeSpeedLimitMapper, CpeSpeedLimit> implements ICpeSpeedLimitService {
-	
+
     @Autowired
     private CpeSpeedLimitMapper cpeSpeedLimitMapper;
-    
+
     @Autowired
     private ICpeDeviceService cpeDeviceService;
-    
+
     @Autowired
     private ICpeOperLogService cpeOperLogService;
-    
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -65,31 +65,31 @@ public class CpeSpeedLimitServiceImpl extends ServiceImpl<CpeSpeedLimitMapper, C
         if (!lock.tryLock(LOCK_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
             throw new Exception("获取设备锁超时");
         }
-        
+
         try {
 			// 标准化设备序列号格式（移除冒号并转换为大写）
 			deviceSn = deviceSn.replace(":", "").toUpperCase();
-            
+
             // 查询设备信息
             List<CpeDevice> devices = cpeDeviceService.selectByDeviceSn(deviceSn);
             if (devices == null || devices.isEmpty()) {
                 throw new Exception("设备不存在: " + deviceSn);
             }
             CpeDevice device = devices.get(0);
-            
+
             // 解析速率限制JSON
             JsonNode speedLimitNode = objectMapper.readTree(speedLimitJson);
             String upLimit = speedLimitNode.get("up").asText();
             String downLimit = speedLimitNode.get("down").asText();
-            
+
             // 查询现有速率限制记录
             QueryWrapper<CpeSpeedLimit> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("cpe_id", device.getId());
             CpeSpeedLimit existingLimit = getOne(queryWrapper);
-            
+
             // 获取当前时间
             Date now = new Date();
-            
+
             if (existingLimit == null) {
                 // 创建新记录
                 CpeSpeedLimit newLimit = new CpeSpeedLimit();
@@ -102,14 +102,14 @@ public class CpeSpeedLimitServiceImpl extends ServiceImpl<CpeSpeedLimitMapper, C
 				newLimit.setUpdateBy(ADMIN_USER);
 				newLimit.setSysOrgCode(SYS_ORG_CODE);
                 save(newLimit);
-                
+
                 log.info("新增速率限制记录: 设备={}, 上传={}, 下载={}", deviceSn, upLimit, downLimit);
             } else if (!upLimit.equals(existingLimit.getUpLimit()) || 
-                      !downLimit.equals(existingLimit.getDownLimit())) {
+                    !downLimit.equals(existingLimit.getDownLimit())) {
                 // 记录变更前的值
                 String oldValue = String.format("%s,%s", 
                     existingLimit.getUpLimit(), existingLimit.getDownLimit());
-                
+
                 // 创建操作日志
                 CpeOperLog operLog = new CpeOperLog();
                 operLog.setCpeId(device.getId());
@@ -120,7 +120,7 @@ public class CpeSpeedLimitServiceImpl extends ServiceImpl<CpeSpeedLimitMapper, C
 				operLog.setCreateTs(new Date());
 				operLog.setSysOrgCode(SYS_ORG_CODE);
                 cpeOperLogService.save(operLog);
-                
+
                 log.info("更新速率限制记录: 设备={}, 上传={}, 下载={}, 原值={}", 
                     deviceSn, upLimit, downLimit, oldValue);
             }
@@ -128,7 +128,7 @@ public class CpeSpeedLimitServiceImpl extends ServiceImpl<CpeSpeedLimitMapper, C
             lock.unlock();
         }
     }
-    
+
     @Override
     public List<CpeSpeedLimit> selectByMainId(String mainId) {
         return cpeSpeedLimitMapper.selectByMainId(mainId);

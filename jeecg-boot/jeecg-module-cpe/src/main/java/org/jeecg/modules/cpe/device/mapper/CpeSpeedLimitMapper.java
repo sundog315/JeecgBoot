@@ -1,3 +1,11 @@
+/*
+ * @Author: Janelle.Liu sundog315@foxmail.com
+ * @Date: 2025-01-13 22:17:50
+ * @LastEditors: Janelle.Liu sundog315@foxmail.com
+ * @LastEditTime: 2025-01-20 14:01:43
+ * @FilePath: /JeecgBoot/jeecg-boot/jeecg-module-cpe/src/main/java/org/jeecg/modules/cpe/device/mapper/CpeSpeedLimitMapper.java
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 package org.jeecg.modules.cpe.device.mapper;
 
 import java.util.List;
@@ -21,7 +29,7 @@ public interface CpeSpeedLimitMapper extends BaseMapper<CpeSpeedLimit> {
 	 */
 	public boolean deleteByMainId(@Param("mainId") String mainId);
 
-   /**
+	/**
     * 通过主表id查询子表数据
     *
     * @param mainId 主表id

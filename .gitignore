@@ -57,3 +57,6 @@ logs/
 *.bak
 *.patch
 *.diff
+
+## history files
+**/.history

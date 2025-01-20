@@ -3,16 +3,16 @@
 <mapper namespace="org.jeecg.modules.cpe.device.mapper.CpeSpeedLimitMapper">
 
 	<delete id="deleteByMainId" parameterType="java.lang.String">
-		DELETE 
-		FROM  cpe_speed_limit 
-		WHERE
-			 cpe_id = #{mainId} 
-	</delete>
-	
-	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.cpe.device.entity.CpeSpeedLimit">
-		SELECT * 
+		DELETE
 		FROM  cpe_speed_limit
 		WHERE
-			 cpe_id = #{mainId} 
+			cpe_id = #{mainId}
+	</delete>
+
+	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.cpe.device.entity.CpeSpeedLimit">
+		SELECT *
+		FROM  cpe_speed_limit
+		WHERE
+			cpe_id = #{mainId}
 	</select>
 </mapper>

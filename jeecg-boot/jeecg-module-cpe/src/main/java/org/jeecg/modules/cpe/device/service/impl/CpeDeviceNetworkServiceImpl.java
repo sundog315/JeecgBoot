@@ -34,7 +34,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class CpeDeviceNetworkServiceImpl extends ServiceImpl<CpeDeviceNetworkMapper, CpeDeviceNetwork> implements ICpeDeviceNetworkService {
 	@Autowired
 	private ICpeDeviceService cpeDeviceService;
-	
+
 	@Autowired
 	private ICpeOperLogService cpeOperLogService;
 
@@ -109,7 +109,7 @@ public class CpeDeviceNetworkServiceImpl extends ServiceImpl<CpeDeviceNetworkMap
 					!deviceNetwork.getDhcpEnd().equals(newDhcpEnd) ||
 					!deviceNetwork.getDhcpLeasetime().equals(newDhcpLease)) {
 					log.info("设备网络配置发生变化，旧配置：{}，新配置：{}", oldConfig, newIpaddr+","+newNetmask+","+newDhcpStart+","+newDhcpEnd+","+newDhcpLease);
-					
+
 					// 创建操作日志
 					CpeOperLog operLog = new CpeOperLog();
 					operLog.setCpeId(cpeDevice.getId());
@@ -119,7 +119,7 @@ public class CpeDeviceNetworkServiceImpl extends ServiceImpl<CpeDeviceNetworkMap
 					operLog.setCreateTime(new Date());
 					operLog.setCreateTs(new Date());
 					operLog.setSysOrgCode(SYS_ORG_CODE);
-					
+
 					// 保存操作日志
 					cpeOperLogService.save(operLog);
 

@@ -33,7 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Slf4j
 @Service
 public class CpeDeviceAutorebootServiceImpl extends ServiceImpl<CpeDeviceAutorebootMapper, CpeDeviceAutoreboot> implements ICpeDeviceAutorebootService {
-	
+
 	@Autowired
 	private CpeDeviceAutorebootMapper cpeDeviceAutorebootMapper;
 
@@ -60,7 +60,7 @@ public class CpeDeviceAutorebootServiceImpl extends ServiceImpl<CpeDeviceAutoreb
     private Lock getDeviceLock(String deviceSn) {
         return deviceLocks.computeIfAbsent(deviceSn, k -> new ReentrantLock());
     }
-	
+
 	@Override
 	public List<CpeDeviceAutoreboot> selectByMainId(String mainId) {
 		return cpeDeviceAutorebootMapper.selectByMainId(mainId);
@@ -153,14 +153,14 @@ public class CpeDeviceAutorebootServiceImpl extends ServiceImpl<CpeDeviceAutoreb
     private CpeDevice getDevice(String deviceSnParam) {
         // 标准化设备序列号
         String deviceSn = standardizeDeviceSn(deviceSnParam);
-        
+
         // 查询设备
         List<CpeDevice> deviceList = cpeDeviceService.selectByDeviceSn(deviceSn);
         if (deviceList.isEmpty()) {
             log.warn("找不到设备，设备ID为：{}", deviceSn);
             return null;
         }
-        
+
         return deviceList.get(0);
     }
 
@@ -206,7 +206,7 @@ public class CpeDeviceAutorebootServiceImpl extends ServiceImpl<CpeDeviceAutoreb
         autoRebootRecord.setUpdateTime(new Date());
 		autoRebootRecord.setSchedule(schedule);
 		autoRebootRecord.setCmd(cmd);
-        
+
         save(autoRebootRecord);
         return autoRebootRecord;
     }
@@ -225,7 +225,7 @@ public class CpeDeviceAutorebootServiceImpl extends ServiceImpl<CpeDeviceAutoreb
         operLog.setCreateTs(new Date());
         operLog.setOperType("autoreboot");
 		operLog.setOperParam(schedule + " " + cmd);
-        
+
         cpeOperLogService.save(operLog);
     }
 }

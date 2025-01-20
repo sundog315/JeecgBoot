@@ -37,8 +37,8 @@
   const emit = defineEmits(['register', 'ok']);
   const formData = reactive<Record<string, any>>({
     id: '',
-        schedule: '',   
-        cmd: 'sleep 5 && touch /etc/banner && reboot',   
+    schedule: '',
+    cmd: 'sleep 5 && touch /etc/banner && reboot',
   });
   const { createMessage } = useMessage();
   const labelCol = ref<any>({ xs: { span: 24 }, sm: { span: 5 } });

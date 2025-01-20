@@ -3,16 +3,16 @@
 <mapper namespace="org.jeecg.modules.cpe.device.mapper.CpeDeviceNetworkMapper">
 
 	<delete id="deleteByMainId" parameterType="java.lang.String">
-		DELETE 
-		FROM  cpe_device_network 
-		WHERE
-			 cpe_id = #{mainId} 
-	</delete>
-	
-	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.cpe.device.entity.CpeDeviceNetwork">
-		SELECT * 
+		DELETE
 		FROM  cpe_device_network
 		WHERE
-			 cpe_id = #{mainId} 
+			cpe_id = #{mainId}
+	</delete>
+
+	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.cpe.device.entity.CpeDeviceNetwork">
+		SELECT *
+		FROM  cpe_device_network
+		WHERE
+			cpe_id = #{mainId}
 	</select>
 </mapper>
