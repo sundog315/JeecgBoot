@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.HashMap;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.cpe.device.entity.CpeDeviceStatus;
+import org.jeecg.modules.cpe.device.entity.CpeDeviceWireless;
 import org.jeecg.modules.cpe.device.entity.CpeDeviceNeighbor;
 import org.jeecg.modules.cpe.device.entity.CpeDeviceFrp;
 import org.jeecg.modules.cpe.device.entity.CpeOperLog;
@@ -27,6 +28,7 @@ import org.jeecg.modules.cpe.device.entity.CpeDeviceAutoreboot;
 import org.jeecg.modules.cpe.device.entity.CpeDeviceInfo;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceInfoService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceStatusService;
+import org.jeecg.modules.cpe.device.service.ICpeDeviceWirelessService;
 import org.jeecg.modules.cpe.device.service.ICpeOperLogService;
 import org.jeecg.modules.cpe.device.service.ICpeSpeedLimitService;
 import org.jeecg.modules.cpe.device.entity.CpeSpeedLimit;
@@ -48,7 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
- /**
+/**
  * @Description: 设备信息表
  * @Author: jeecg-boot
  * @Date:   2024-12-29
@@ -82,6 +84,9 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
 	private ICpeSpeedLimitService cpeSpeedLimitService;
 
 	@Autowired
+	private ICpeDeviceWirelessService cpeDeviceWirelessService;
+
+	@Autowired
 	private ICpeOperLogService cpeOperLogService;
 
 
@@ -99,9 +104,9 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
 	@ApiOperation(value="设备信息表-分页列表查询", notes="设备信息表-分页列表查询")
 	@GetMapping(value = "/list")
 	public Result<IPage<CpeDeviceInfo>> queryPageList(CpeDeviceInfo cpeDeviceInfo,
-								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-								   HttpServletRequest req) {
+									@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+									@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+									HttpServletRequest req) {
         // 自定义查询规则
         Map<String, QueryRuleEnum> customeRuleMap = new HashMap<>();
         // 自定义多选的查询规则为：LIKE_WITH_OR
@@ -208,7 +213,6 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
     //     return super.importExcel(request, response, CpeDeviceInfo.class);
     // }
 	/*---------------------------------主表处理-end-------------------------------------*/
-	
 
     /*--------------------------------子表处理-CPE设备状态表-begin----------------------------------------------*/
 	/**
@@ -286,31 +290,31 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
      */
     @RequestMapping(value = "/exportCpeDeviceStatus")
     public ModelAndView exportCpeDeviceStatus(HttpServletRequest request, CpeDeviceStatus cpeDeviceStatus) {
-		 // Step.1 组装查询条件
-		 QueryWrapper<CpeDeviceStatus> queryWrapper = QueryGenerator.initQueryWrapper(cpeDeviceStatus, request.getParameterMap());
-		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		// Step.1 组装查询条件
+		QueryWrapper<CpeDeviceStatus> queryWrapper = QueryGenerator.initQueryWrapper(cpeDeviceStatus, request.getParameterMap());
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 
-		 // Step.2 获取导出数据
-		 List<CpeDeviceStatus> pageList = cpeDeviceStatusService.list(queryWrapper);
-		 List<CpeDeviceStatus> exportList = null;
+		// Step.2 获取导出数据
+		List<CpeDeviceStatus> pageList = cpeDeviceStatusService.list(queryWrapper);
+		List<CpeDeviceStatus> exportList = null;
 
-		 // 过滤选中数据
-		 String selections = request.getParameter("selections");
-		 if (oConvertUtils.isNotEmpty(selections)) {
-			 List<String> selectionList = Arrays.asList(selections.split(","));
-			 exportList = pageList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
-		 } else {
-			 exportList = pageList;
-		 }
+		// 过滤选中数据
+		String selections = request.getParameter("selections");
+		if (oConvertUtils.isNotEmpty(selections)) {
+			List<String> selectionList = Arrays.asList(selections.split(","));
+			exportList = pageList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
+		} else {
+			exportList = pageList;
+		}
 
-		 // Step.3 AutoPoi 导出Excel
-		 ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-		 //此处设置的filename无效,前端会重更新设置一下
-		 mv.addObject(NormalExcelConstants.FILE_NAME, "CPE设备状态表");
-		 mv.addObject(NormalExcelConstants.CLASS, CpeDeviceStatus.class);
-		 mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("CPE设备状态表报表", "导出人:" + sysUser.getRealname(), "CPE设备状态表"));
-		 mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
-		 return mv;
+		// Step.3 AutoPoi 导出Excel
+		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		//此处设置的filename无效,前端会重更新设置一下
+		mv.addObject(NormalExcelConstants.FILE_NAME, "CPE设备状态表");
+		mv.addObject(NormalExcelConstants.CLASS, CpeDeviceStatus.class);
+		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("CPE设备状态表报表", "导出人:" + sysUser.getRealname(), "CPE设备状态表"));
+		mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+		return mv;
     }
 
     // /**
@@ -429,31 +433,31 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
      */
     @RequestMapping(value = "/exportCpeDeviceNeighbor")
     public ModelAndView exportCpeDeviceNeighbor(HttpServletRequest request, CpeDeviceNeighbor cpeDeviceNeighbor) {
-		 // Step.1 组装查询条件
-		 QueryWrapper<CpeDeviceNeighbor> queryWrapper = QueryGenerator.initQueryWrapper(cpeDeviceNeighbor, request.getParameterMap());
-		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		// Step.1 组装查询条件
+		QueryWrapper<CpeDeviceNeighbor> queryWrapper = QueryGenerator.initQueryWrapper(cpeDeviceNeighbor, request.getParameterMap());
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 
-		 // Step.2 获取导出数据
-		 List<CpeDeviceNeighbor> pageList = cpeDeviceNeighborService.list(queryWrapper);
-		 List<CpeDeviceNeighbor> exportList = null;
+		// Step.2 获取导出数据
+		List<CpeDeviceNeighbor> pageList = cpeDeviceNeighborService.list(queryWrapper);
+		List<CpeDeviceNeighbor> exportList = null;
 
-		 // 过滤选中数据
-		 String selections = request.getParameter("selections");
-		 if (oConvertUtils.isNotEmpty(selections)) {
-			 List<String> selectionList = Arrays.asList(selections.split(","));
-			 exportList = pageList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
-		 } else {
-			 exportList = pageList;
-		 }
+		// 过滤选中数据
+		String selections = request.getParameter("selections");
+		if (oConvertUtils.isNotEmpty(selections)) {
+			List<String> selectionList = Arrays.asList(selections.split(","));
+			exportList = pageList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
+		} else {
+			exportList = pageList;
+		}
 
-		 // Step.3 AutoPoi 导出Excel
-		 ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-		 //此处设置的filename无效,前端会重更新设置一下
-		 mv.addObject(NormalExcelConstants.FILE_NAME, "CPE设备邻区信息");
-		 mv.addObject(NormalExcelConstants.CLASS, CpeDeviceNeighbor.class);
-		 mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("CPE设备邻区信息报表", "导出人:" + sysUser.getRealname(), "CPE设备邻区信息"));
-		 mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
-		 return mv;
+		// Step.3 AutoPoi 导出Excel
+		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		//此处设置的filename无效,前端会重更新设置一下
+		mv.addObject(NormalExcelConstants.FILE_NAME, "CPE设备邻区信息");
+		mv.addObject(NormalExcelConstants.CLASS, CpeDeviceNeighbor.class);
+		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("CPE设备邻区信息报表", "导出人:" + sysUser.getRealname(), "CPE设备邻区信息"));
+		mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+		return mv;
     }
 
     // /**
@@ -527,18 +531,18 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
 	// 	return Result.OK("添加成功！");
 	// }
 
-    // /**
-	//  * 编辑
-	//  * @param cpeDeviceFrp
-	//  * @return
-	//  */
-	// @AutoLog(value = "设备远程控制-编辑")
-	// @ApiOperation(value="设备远程控制-编辑", notes="设备远程控制-编辑")
-	// @RequestMapping(value = "/editCpeDeviceFrp", method = {RequestMethod.PUT,RequestMethod.POST})
-	// public Result<String> editCpeDeviceFrp(@RequestBody CpeDeviceFrp cpeDeviceFrp) {
-	// 	cpeDeviceFrpService.updateById(cpeDeviceFrp);
-	// 	return Result.OK("编辑成功!");
-	// }
+    /**
+	 * 编辑
+	 * @param cpeDeviceFrp
+	 * @return
+	 */
+	@AutoLog(value = "设备远程控制-编辑")
+	@ApiOperation(value="设备远程控制-编辑", notes="设备远程控制-编辑")
+	@RequestMapping(value = "/editCpeDeviceFrp", method = {RequestMethod.PUT,RequestMethod.POST})
+	public Result<String> editCpeDeviceFrp(@RequestBody CpeDeviceFrp cpeDeviceFrp) {
+		cpeDeviceFrpService.updateById(cpeDeviceFrp);
+		return Result.OK("编辑成功!");
+	}
 
 	// /**
 	//  * 通过id删除
@@ -572,31 +576,31 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
      */
     @RequestMapping(value = "/exportCpeDeviceFrp")
     public ModelAndView exportCpeDeviceFrp(HttpServletRequest request, CpeDeviceFrp cpeDeviceFrp) {
-		 // Step.1 组装查询条件
-		 QueryWrapper<CpeDeviceFrp> queryWrapper = QueryGenerator.initQueryWrapper(cpeDeviceFrp, request.getParameterMap());
-		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		// Step.1 组装查询条件
+		QueryWrapper<CpeDeviceFrp> queryWrapper = QueryGenerator.initQueryWrapper(cpeDeviceFrp, request.getParameterMap());
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 
-		 // Step.2 获取导出数据
-		 List<CpeDeviceFrp> pageList = cpeDeviceFrpService.list(queryWrapper);
-		 List<CpeDeviceFrp> exportList = null;
+		// Step.2 获取导出数据
+		List<CpeDeviceFrp> pageList = cpeDeviceFrpService.list(queryWrapper);
+		List<CpeDeviceFrp> exportList = null;
 
-		 // 过滤选中数据
-		 String selections = request.getParameter("selections");
-		 if (oConvertUtils.isNotEmpty(selections)) {
-			 List<String> selectionList = Arrays.asList(selections.split(","));
-			 exportList = pageList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
-		 } else {
-			 exportList = pageList;
-		 }
+		// 过滤选中数据
+		String selections = request.getParameter("selections");
+		if (oConvertUtils.isNotEmpty(selections)) {
+			List<String> selectionList = Arrays.asList(selections.split(","));
+			exportList = pageList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
+		} else {
+			exportList = pageList;
+		}
 
-		 // Step.3 AutoPoi 导出Excel
-		 ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-		 //此处设置的filename无效,前端会重更新设置一下
-		 mv.addObject(NormalExcelConstants.FILE_NAME, "设备远程控制");
-		 mv.addObject(NormalExcelConstants.CLASS, CpeDeviceFrp.class);
-		 mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("设备远程控制报表", "导出人:" + sysUser.getRealname(), "设备远程控制"));
-		 mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
-		 return mv;
+		// Step.3 AutoPoi 导出Excel
+		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		//此处设置的filename无效,前端会重更新设置一下
+		mv.addObject(NormalExcelConstants.FILE_NAME, "设备远程控制");
+		mv.addObject(NormalExcelConstants.CLASS, CpeDeviceFrp.class);
+		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("设备远程控制报表", "导出人:" + sysUser.getRealname(), "设备远程控制"));
+		mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+		return mv;
     }
 
     // /**
@@ -734,7 +738,7 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
 	@ApiOperation(value="设备自动重启-批量删除", notes="设备自动重启-批量删除")
 	@DeleteMapping(value = "/deleteBatchCpeDeviceAutoreboot")
 	public Result<String> deleteBatchCpeDeviceAutoreboot(@RequestParam(name="ids",required=true) String ids) {
-	    this.cpeDeviceAutorebootService.removeByIds(Arrays.asList(ids.split(",")));
+		this.cpeDeviceAutorebootService.removeByIds(Arrays.asList(ids.split(",")));
 		return Result.OK("批量删除成功!");
 	}
 
@@ -744,31 +748,31 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
      */
     @RequestMapping(value = "/exportCpeDeviceAutoreboot")
     public ModelAndView exportCpeDeviceAutoreboot(HttpServletRequest request, CpeDeviceAutoreboot cpeDeviceAutoreboot) {
-		 // Step.1 组装查询条件
-		 QueryWrapper<CpeDeviceAutoreboot> queryWrapper = QueryGenerator.initQueryWrapper(cpeDeviceAutoreboot, request.getParameterMap());
-		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		// Step.1 组装查询条件
+		QueryWrapper<CpeDeviceAutoreboot> queryWrapper = QueryGenerator.initQueryWrapper(cpeDeviceAutoreboot, request.getParameterMap());
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 
-		 // Step.2 获取导出数据
-		 List<CpeDeviceAutoreboot> pageList = cpeDeviceAutorebootService.list(queryWrapper);
-		 List<CpeDeviceAutoreboot> exportList = null;
+		// Step.2 获取导出数据
+		List<CpeDeviceAutoreboot> pageList = cpeDeviceAutorebootService.list(queryWrapper);
+		List<CpeDeviceAutoreboot> exportList = null;
 
-		 // 过滤选中数据
-		 String selections = request.getParameter("selections");
-		 if (oConvertUtils.isNotEmpty(selections)) {
-			 List<String> selectionList = Arrays.asList(selections.split(","));
-			 exportList = pageList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
-		 } else {
-			 exportList = pageList;
-		 }
+		// 过滤选中数据
+		String selections = request.getParameter("selections");
+		if (oConvertUtils.isNotEmpty(selections)) {
+			List<String> selectionList = Arrays.asList(selections.split(","));
+			exportList = pageList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
+		} else {
+			exportList = pageList;
+		}
 
 		 // Step.3 AutoPoi 导出Excel
-		 ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
 		 //此处设置的filename无效,前端会重更新设置一下
-		 mv.addObject(NormalExcelConstants.FILE_NAME, "设备自动重启");
-		 mv.addObject(NormalExcelConstants.CLASS, CpeDeviceAutoreboot.class);
-		 mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("设备自动重启报表", "导出人:" + sysUser.getRealname(), "设备自动重启"));
-		 mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
-		 return mv;
+		mv.addObject(NormalExcelConstants.FILE_NAME, "设备自动重启");
+		mv.addObject(NormalExcelConstants.CLASS, CpeDeviceAutoreboot.class);
+		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("设备自动重启报表", "导出人:" + sysUser.getRealname(), "设备自动重启"));
+		mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+		return mv;
     }
 
     // /**
@@ -887,31 +891,31 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
      */
     @RequestMapping(value = "/exportCpeDeviceNetwork")
     public ModelAndView exportCpeDeviceNetwork(HttpServletRequest request, CpeDeviceNetwork cpeDeviceNetwork) {
-		 // Step.1 组装查询条件
-		 QueryWrapper<CpeDeviceNetwork> queryWrapper = QueryGenerator.initQueryWrapper(cpeDeviceNetwork, request.getParameterMap());
-		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		// Step.1 组装查询条件
+		QueryWrapper<CpeDeviceNetwork> queryWrapper = QueryGenerator.initQueryWrapper(cpeDeviceNetwork, request.getParameterMap());
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 
-		 // Step.2 获取导出数据
-		 List<CpeDeviceNetwork> pageList = cpeDeviceNetworkService.list(queryWrapper);
-		 List<CpeDeviceNetwork> exportList = null;
+		// Step.2 获取导出数据
+		List<CpeDeviceNetwork> pageList = cpeDeviceNetworkService.list(queryWrapper);
+		List<CpeDeviceNetwork> exportList = null;
 
-		 // 过滤选中数据
-		 String selections = request.getParameter("selections");
-		 if (oConvertUtils.isNotEmpty(selections)) {
-			 List<String> selectionList = Arrays.asList(selections.split(","));
-			 exportList = pageList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
-		 } else {
-			 exportList = pageList;
-		 }
+		// 过滤选中数据
+		String selections = request.getParameter("selections");
+		if (oConvertUtils.isNotEmpty(selections)) {
+			List<String> selectionList = Arrays.asList(selections.split(","));
+			exportList = pageList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
+		} else {
+			exportList = pageList;
+		}
 
-		 // Step.3 AutoPoi 导出Excel
-		 ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-		 //此处设置的filename无效,前端会重更新设置一下
-		 mv.addObject(NormalExcelConstants.FILE_NAME, "设备内网配置");
-		 mv.addObject(NormalExcelConstants.CLASS, CpeDeviceNetwork.class);
-		 mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("设备内网配置报表", "导出人:" + sysUser.getRealname(), "设备内网配置"));
-		 mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
-		 return mv;
+		// Step.3 AutoPoi 导出Excel
+		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		//此处设置的filename无效,前端会重更新设置一下
+		mv.addObject(NormalExcelConstants.FILE_NAME, "设备内网配置");
+		mv.addObject(NormalExcelConstants.CLASS, CpeDeviceNetwork.class);
+		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("设备内网配置报表", "导出人:" + sysUser.getRealname(), "设备内网配置"));
+		mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+		return mv;
     }
 
     /**
@@ -1030,31 +1034,31 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
      */
     @RequestMapping(value = "/exportCpeSpeedLimit")
     public ModelAndView exportCpeSpeedLimit(HttpServletRequest request, CpeSpeedLimit cpeSpeedLimit) {
-		 // Step.1 组装查询条件
-		 QueryWrapper<CpeSpeedLimit> queryWrapper = QueryGenerator.initQueryWrapper(cpeSpeedLimit, request.getParameterMap());
-		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		// Step.1 组装查询条件
+		QueryWrapper<CpeSpeedLimit> queryWrapper = QueryGenerator.initQueryWrapper(cpeSpeedLimit, request.getParameterMap());
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 
-		 // Step.2 获取导出数据
-		 List<CpeSpeedLimit> pageList = cpeSpeedLimitService.list(queryWrapper);
-		 List<CpeSpeedLimit> exportList = null;
+		// Step.2 获取导出数据
+		List<CpeSpeedLimit> pageList = cpeSpeedLimitService.list(queryWrapper);
+		List<CpeSpeedLimit> exportList = null;
 
-		 // 过滤选中数据
-		 String selections = request.getParameter("selections");
-		 if (oConvertUtils.isNotEmpty(selections)) {
-			 List<String> selectionList = Arrays.asList(selections.split(","));
-			 exportList = pageList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
-		 } else {
-			 exportList = pageList;
-		 }
+		// 过滤选中数据
+		String selections = request.getParameter("selections");
+		if (oConvertUtils.isNotEmpty(selections)) {
+			List<String> selectionList = Arrays.asList(selections.split(","));
+			exportList = pageList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
+		} else {
+			exportList = pageList;
+		}
 
-		 // Step.3 AutoPoi 导出Excel
-		 ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-		 //此处设置的filename无效,前端会重更新设置一下
-		 mv.addObject(NormalExcelConstants.FILE_NAME, "设备速率");
-		 mv.addObject(NormalExcelConstants.CLASS, CpeSpeedLimit.class);
-		 mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("设备速率报表", "导出人:" + sysUser.getRealname(), "设备速率"));
-		 mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
-		 return mv;
+		// Step.3 AutoPoi 导出Excel
+		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		//此处设置的filename无效,前端会重更新设置一下
+		mv.addObject(NormalExcelConstants.FILE_NAME, "设备速率");
+		mv.addObject(NormalExcelConstants.CLASS, CpeSpeedLimit.class);
+		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("设备速率报表", "导出人:" + sysUser.getRealname(), "设备速率"));
+		mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+		return mv;
     }
 
     // /**
@@ -1096,6 +1100,149 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
     // }
 
     /*--------------------------------子表处理-设备速率-end----------------------------------------------*/
+
+    /*--------------------------------子表处理-设备无线配置-begin----------------------------------------------*/
+	/**
+	 * 通过主表ID查询
+	 * @return
+	 */
+	//@AutoLog(value = "设备无线配置-通过主表ID查询")
+	@ApiOperation(value="设备无线配置-通过主表ID查询", notes="设备无线配置-通过主表ID查询")
+	@GetMapping(value = "/listCpeDeviceWirelessByMainId")
+    public Result<IPage<CpeDeviceWireless>> listCpeDeviceWirelessByMainId(CpeDeviceWireless cpeDeviceWireless,
+                                                    @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                                    HttpServletRequest req) {
+        QueryWrapper<CpeDeviceWireless> queryWrapper = QueryGenerator.initQueryWrapper(cpeDeviceWireless, req.getParameterMap());
+        Page<CpeDeviceWireless> page = new Page<CpeDeviceWireless>(pageNo, pageSize);
+        IPage<CpeDeviceWireless> pageList = cpeDeviceWirelessService.page(page, queryWrapper);
+        return Result.OK(pageList);
+    }
+
+	// /**
+	//  * 添加
+	//  * @param cpeDeviceWireless
+	//  * @return
+	//  */
+	// @AutoLog(value = "设备无线配置-添加")
+	// @ApiOperation(value="设备无线配置-添加", notes="设备无线配置-添加")
+	// @PostMapping(value = "/addCpeDeviceWireless")
+	// public Result<String> addCpeDeviceWireless(@RequestBody CpeDeviceWireless cpeDeviceWireless) {
+	// 	cpeDeviceWirelessService.save(cpeDeviceWireless);
+	// 	return Result.OK("添加成功！");
+	// }
+
+    /**
+	 * 编辑
+	 * @param cpeDeviceWireless
+	 * @return
+	 */
+	@AutoLog(value = "设备无线配置-编辑")
+	@ApiOperation(value="设备无线配置-编辑", notes="设备无线配置-编辑")
+	@RequestMapping(value = "/editCpeDeviceWireless", method = {RequestMethod.PUT,RequestMethod.POST})
+	public Result<String> editCpeDeviceWireless(@RequestBody CpeDeviceWireless cpeDeviceWireless) {
+		cpeDeviceWirelessService.updateById(cpeDeviceWireless);
+		return Result.OK("编辑成功!");
+	}
+
+	// /**
+	//  * 通过id删除
+	//  * @param id
+	//  * @return
+	//  */
+	// @AutoLog(value = "设备无线配置-通过id删除")
+	// @ApiOperation(value="设备无线配置-通过id删除", notes="设备无线配置-通过id删除")
+	// @DeleteMapping(value = "/deleteCpeDeviceWireless")
+	// public Result<String> deleteCpeDeviceWireless(@RequestParam(name="id",required=true) String id) {
+	// 	cpeDeviceWirelessService.removeById(id);
+	// 	return Result.OK("删除成功!");
+	// }
+
+	// /**
+	//  * 批量删除
+	//  * @param ids
+	//  * @return
+	//  */
+	// @AutoLog(value = "设备无线配置-批量删除")
+	// @ApiOperation(value="设备无线配置-批量删除", notes="设备无线配置-批量删除")
+	// @DeleteMapping(value = "/deleteBatchCpeDeviceWireless")
+	// public Result<String> deleteBatchCpeDeviceWireless(@RequestParam(name="ids",required=true) String ids) {
+	//     this.cpeDeviceWirelessService.removeByIds(Arrays.asList(ids.split(",")));
+	// 	return Result.OK("批量删除成功!");
+	// }
+
+    /**
+     * 导出
+     * @return
+     */
+    @RequestMapping(value = "/exportCpeDeviceWireless")
+    public ModelAndView exportCpeDeviceWireless(HttpServletRequest request, CpeDeviceWireless cpeDeviceWireless) {
+		// Step.1 组装查询条件
+		QueryWrapper<CpeDeviceWireless> queryWrapper = QueryGenerator.initQueryWrapper(cpeDeviceWireless, request.getParameterMap());
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+
+		// Step.2 获取导出数据
+		List<CpeDeviceWireless> pageList = cpeDeviceWirelessService.list(queryWrapper);
+		List<CpeDeviceWireless> exportList = null;
+
+		// 过滤选中数据
+		String selections = request.getParameter("selections");
+		if (oConvertUtils.isNotEmpty(selections)) {
+			List<String> selectionList = Arrays.asList(selections.split(","));
+			exportList = pageList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
+		} else {
+			exportList = pageList;
+		}
+
+		// Step.3 AutoPoi 导出Excel
+		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		//此处设置的filename无效,前端会重更新设置一下
+		mv.addObject(NormalExcelConstants.FILE_NAME, "设备无线配置");
+		mv.addObject(NormalExcelConstants.CLASS, CpeDeviceWireless.class);
+		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("设备无线配置报表", "导出人:" + sysUser.getRealname(), "设备无线配置"));
+		mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+		return mv;
+    }
+
+    // /**
+    //  * 导入
+    //  * @return
+    //  */
+    // @RequestMapping(value = "/importCpeDeviceWireless/{mainId}")
+    // public Result<?> importCpeDeviceWireless(HttpServletRequest request, HttpServletResponse response, @PathVariable("mainId") String mainId) {
+	// 	 MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+	// 	 Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+	// 	 for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+    //    // 获取上传文件对象
+	// 		 MultipartFile file = entity.getValue();
+	// 		 ImportParams params = new ImportParams();
+	// 		 params.setTitleRows(2);
+	// 		 params.setHeadRows(1);
+	// 		 params.setNeedSave(true);
+	// 		 try {
+	// 			 List<CpeDeviceWireless> list = ExcelImportUtil.importExcel(file.getInputStream(), CpeDeviceWireless.class, params);
+	// 			 for (CpeDeviceWireless temp : list) {
+    //                 temp.setCpeId(mainId);
+	// 			 }
+	// 			 long start = System.currentTimeMillis();
+	// 			 cpeDeviceWirelessService.saveBatch(list);
+	// 			 log.info("消耗时间" + (System.currentTimeMillis() - start) + "毫秒");
+	// 			 return Result.OK("文件导入成功！数据行数：" + list.size());
+	// 		 } catch (Exception e) {
+	// 			 log.error(e.getMessage(), e);
+	// 			 return Result.error("文件导入失败:" + e.getMessage());
+	// 		 } finally {
+	// 			 try {
+	// 				 file.getInputStream().close();
+	// 			 } catch (IOException e) {
+	// 				 e.printStackTrace();
+	// 			 }
+	// 		 }
+	// 	 }
+	// 	 return Result.error("文件导入失败！");
+    // }
+
+    /*--------------------------------子表处理-设备无线配置-end----------------------------------------------*/
 
 	/*--------------------------------子表处理-操作记录表-begin----------------------------------------------*/
 	/**
@@ -1173,31 +1320,31 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
      */
     @RequestMapping(value = "/exportCpeOperLog")
     public ModelAndView exportCpeOperLog(HttpServletRequest request, CpeOperLog cpeOperLog) {
-		 // Step.1 组装查询条件
-		 QueryWrapper<CpeOperLog> queryWrapper = QueryGenerator.initQueryWrapper(cpeOperLog, request.getParameterMap());
-		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		// Step.1 组装查询条件
+		QueryWrapper<CpeOperLog> queryWrapper = QueryGenerator.initQueryWrapper(cpeOperLog, request.getParameterMap());
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 
-		 // Step.2 获取导出数据
-		 List<CpeOperLog> pageList = cpeOperLogService.list(queryWrapper);
-		 List<CpeOperLog> exportList = null;
+		// Step.2 获取导出数据
+		List<CpeOperLog> pageList = cpeOperLogService.list(queryWrapper);
+		List<CpeOperLog> exportList = null;
 
-		 // 过滤选中数据
-		 String selections = request.getParameter("selections");
-		 if (oConvertUtils.isNotEmpty(selections)) {
-			 List<String> selectionList = Arrays.asList(selections.split(","));
-			 exportList = pageList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
-		 } else {
-			 exportList = pageList;
-		 }
+		// 过滤选中数据
+		String selections = request.getParameter("selections");
+		if (oConvertUtils.isNotEmpty(selections)) {
+			List<String> selectionList = Arrays.asList(selections.split(","));
+			exportList = pageList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
+		} else {
+			exportList = pageList;
+		}
 
-		 // Step.3 AutoPoi 导出Excel
-		 ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-		 //此处设置的filename无效,前端会重更新设置一下
-		 mv.addObject(NormalExcelConstants.FILE_NAME, "操作记录表");
-		 mv.addObject(NormalExcelConstants.CLASS, CpeOperLog.class);
-		 mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("操作记录表报表", "导出人:" + sysUser.getRealname(), "操作记录表"));
-		 mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
-		 return mv;
+		// Step.3 AutoPoi 导出Excel
+		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		//此处设置的filename无效,前端会重更新设置一下
+		mv.addObject(NormalExcelConstants.FILE_NAME, "操作记录表");
+		mv.addObject(NormalExcelConstants.CLASS, CpeOperLog.class);
+		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("操作记录表报表", "导出人:" + sysUser.getRealname(), "操作记录表"));
+		mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+		return mv;
     }
 
     // /**

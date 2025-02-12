@@ -514,30 +514,30 @@ handle_wireless() {
 
     # 更新2.4G配置
     sed -i "/config wifi-device 'radio0'/,/config wifi-iface/ {
-        s/option channel '[^']*'/option channel '$g2_channel'/
-        s/option power '[^']*'/option power '$g2_power'/
+        s/option channel ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option channel '$g2_channel'/
+        s/option power ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option power '$g2_power'/
     }" "$temp_file"
 
     sed -i "/config wifi-iface 'wlan0'/,/config wifi-iface/ {
-        s/option disabled '[^']*'/option disabled '$g2_disabled'/
-        s/option ssid '[^']*'/option ssid '$g2_ssid'/
-        s/option encryption '[^']*'/option encryption '$g2_encryption'/
-        s/option key '[^']*'/option key '$g2_key'/
-        s/option maxsta '[^']*'/option maxsta '$g2_maxsta'/
+        s/option disabled ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option disabled '$g2_disabled'/
+        s/option ssid ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option ssid '$g2_ssid'/
+        s/option encryption ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option encryption '$g2_encryption'/
+        s/option key ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option key '$g2_key'/
+        s/option maxsta ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option maxsta '$g2_maxsta'/
     }" "$temp_file"
 
     # 更新5G配置
     sed -i "/config wifi-device 'radio1'/,/config wifi-iface/ {
-        s/option channel '[^']*'/option channel '$g5_channel'/
-        s/option power '[^']*'/option power '$g5_power'/
+        s/option channel ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option channel '$g5_channel'/
+        s/option power ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option power '$g5_power'/
     }" "$temp_file"
 
     sed -i "/config wifi-iface 'wlan1'/,/config wifi-iface/ {
-        s/option disabled '[^']*'/option disabled '$g5_disabled'/
-        s/option ssid '[^']*'/option ssid '$g5_ssid'/
-        s/option encryption '[^']*'/option encryption '$g5_encryption'/
-        s/option key '[^']*'/option key '$g5_key'/
-        s/option maxsta '[^']*'/option maxsta '$g5_maxsta'/
+        s/option disabled ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option disabled '$g5_disabled'/
+        s/option ssid ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option ssid '$g5_ssid'/
+        s/option encryption ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option encryption '$g5_encryption'/
+        s/option key ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option key '$g5_key'/
+        s/option maxsta ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option maxsta '$g5_maxsta'/
     }" "$temp_file"
 
     # 验证并应用配置

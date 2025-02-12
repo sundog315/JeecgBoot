@@ -73,7 +73,10 @@
       <a-tab-pane tab="设备速率" key="6" forceRender>
         <CpeSpeedLimitList />
       </a-tab-pane>
-      <a-tab-pane tab="操作记录表" key="7" forceRender>
+      <a-tab-pane tab="设备无线配置" key="7" forceRender>
+        <CpeDeviceWirelessList />
+      </a-tab-pane>
+      <a-tab-pane tab="操作记录表" key="8" forceRender>
         <CpeOperLogList />
       </a-tab-pane>
      </a-tabs>
@@ -99,6 +102,7 @@
   import CpeDeviceAutorebootList from './CpeDeviceAutorebootList.vue'
   import CpeDeviceNetworkList from './CpeDeviceNetworkList.vue'
   import CpeSpeedLimitList from './CpeSpeedLimitList.vue'
+  import CpeDeviceWirelessList from './CpeDeviceWirelessList.vue'
   import CpeOperLogList from './CpeOperLogList.vue'
   import { useUserStore } from '/@/store/modules/user';
   import { cloneDeep } from "lodash-es";

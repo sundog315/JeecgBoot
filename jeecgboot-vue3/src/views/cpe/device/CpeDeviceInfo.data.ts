@@ -40,18 +40,6 @@ export const columns: BasicColumn[] = [
     align: "center",
     width: 180,
     dataIndex: 'cardNo_dictText',
-    customRender: ({ text, record }) => {
-      const go = useGo();
-      const props = {
-        style: { color: '#1890ff', cursor: 'pointer' },
-        onClick: () => {
-          if (record.onlineCardNo) {
-            go('/cpe/card/cardInfoList?cardNo=' + record.iccid);
-          }
-        },
-      };
-      return h('a', props, text);
-    },
   },
   {
     title: '在线卡片',
@@ -277,18 +265,38 @@ export const cpeDeviceNeighborColumns: BasicColumn[] = [
 export const cpeDeviceFrpColumns: BasicColumn[] = [
   {
     title: '服务器地址',
-    align:"center",
-    dataIndex: 'serverAddr'
+    align: 'center',
+    dataIndex: 'serverAddr',
   },
   {
     title: '服务器端口',
-    align:"center",
-    dataIndex: 'serverPort'
+    align: 'center',
+    dataIndex: 'serverPort',
   },
   {
     title: '令牌',
-    align:"center",
-    dataIndex: 'token'
+    align: 'center',
+    dataIndex: 'token',
+    customRender: ({ text }) => {
+      return h('div', { class: 'password-cell' }, [
+        h('span', { class: 'password-text' }, text ? '********' : ''),
+        h('span', {
+          class: 'eye-icon',
+          onClick: (e) => {
+            e.stopPropagation();
+            const textEl = e.currentTarget.previousElementSibling;
+            const eyeEl = e.currentTarget;
+            if (textEl.textContent === '********') {
+              textEl.textContent = text;
+              eyeEl.classList.add('visible');
+            } else {
+              textEl.textContent = '********';
+              eyeEl.classList.remove('visible');
+            }
+          },
+        }, '👁')
+      ]);
+    },
   },
   {
     title: 'SSH映射端口',
@@ -366,6 +374,125 @@ export const cpeSpeedLimitColumns: BasicColumn[] = [
     title: '下载速率',
     align:"center",
     dataIndex: 'downLimit'
+  },
+];
+//子表列表数据
+export const cpeDeviceWirelessColumns: BasicColumn[] = [
+  {
+    title: '2.4G WiFi功能',
+    align: 'center',
+    dataIndex: 'radio24Disabled',
+    customRender: ({ text }) => {
+      return h(Tag, { color: text === '0' ? 'success' : 'error' }, () => text === '0' ? '启用' : '禁用');
+    },
+  },
+  {
+    title: '2.4G信道',
+    align: 'center',
+    dataIndex: 'radio24Channel_dictText',
+  },
+  {
+    title: '2.4G SSID',
+    align: 'center',
+    dataIndex: 'radio24Ssid',
+  },
+  {
+    title: '2.4G加密',
+    align: 'center',
+    dataIndex: 'radio24Encryption_dictText',
+  },
+  {
+    title: '2.4G密钥',
+    align: 'center',
+    dataIndex: 'radio24Key',
+    customRender: ({ text }) => {
+      return h('div', { class: 'password-cell' }, [
+        h('span', { class: 'password-text' }, text ? '********' : ''),
+        h('span', {
+          class: 'eye-icon',
+          onClick: (e) => {
+            e.stopPropagation();
+            const textEl = e.currentTarget.previousElementSibling;
+            const eyeEl = e.currentTarget;
+            if (textEl.textContent === '********') {
+              textEl.textContent = text;
+              eyeEl.classList.add('visible');
+            } else {
+              textEl.textContent = '********';
+              eyeEl.classList.remove('visible');
+            }
+          },
+        }, '👁')
+      ]);
+    },
+  },
+  {
+    title: '2.4G最大终端数',
+    align: 'center',
+    dataIndex: 'radio24MaxSta',
+  },
+  {
+    title: '2.4G功率',
+    align: 'center',
+    dataIndex: 'radio24Power',
+  },
+  {
+    title: '5G WiFi功能',
+    align: 'center',
+    dataIndex: 'radio5Disabled',
+    customRender: ({ text }) => {
+      return h(Tag, { color: text === '0' ? 'success' : 'error' }, () => text === '0' ? '启用' : '禁用');
+    },
+  },
+  {
+    title: '5G信道',
+    align: 'center',
+    dataIndex: 'radio5Channel_dictText',
+  },
+  {
+    title: '5G SSID',
+    align: 'center',
+    dataIndex: 'radio5Ssid',
+  },
+  {
+    title: '5G加密',
+    align: 'center',
+    dataIndex: 'radio5Encryption_dictText',
+  },
+  {
+    title: '5G密钥',
+    align: 'center',
+    dataIndex: 'radio5Key',
+    customRender: ({ text }) => {
+      return h('div', { class: 'password-cell' }, [
+        h('span', { class: 'password-text' }, text ? '********' : ''),
+        h('span', {
+          class: 'eye-icon',
+          onClick: (e) => {
+            e.stopPropagation();
+            const textEl = e.currentTarget.previousElementSibling;
+            const eyeEl = e.currentTarget;
+            if (textEl.textContent === '********') {
+              textEl.textContent = text;
+              eyeEl.classList.add('visible');
+            } else {
+              textEl.textContent = '********';
+              eyeEl.classList.remove('visible');
+            }
+          },
+        }, '👁')
+      ]);
+    },
+  },
+  {
+    title: '5G最大终端数',
+    align: 'center',
+    dataIndex: 'radio5MaxSta',
+  },
+  {
+    title: '5G功率',
+    align: 'center',
+    dataIndex: 'radio5Power',
   },
 ];
 //子表列表数据

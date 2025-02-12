@@ -1,0 +1,150 @@
+version: 2.0
+
+# ================ 工程总览 ================
+project_blueprint:
+  name: JEECG全栈平台
+  tech_stack:
+    backend: "SpringBoot 3.2 + Java 17 + MyBatis-Plus 3.5"
+    frontend: "Vue3.4 + Vite5 + TypeScript5 + Pinia2"
+    iot: "OpenWRT 23.05 + BusyBox 1.36 + Bash5"
+  directory_layout:
+    root: .
+    frontend: ./jeecgboot-vue3
+    backend: ./jeecg-boot
+    scripts: ./scripts
+    sql: ./sql
+
+# ================ 跨栈通用规则 ================
+cross_stack:
+  code_quality:
+    principles: [SOLID, DRY, KISS, YAGNI]
+    security: OWASP_TOP_10_2023
+    error_handling: unified-logging
+  git_strategy:
+    commit_message: conventional-commits
+    branch_model: git-flow
+  ci_cd:
+    stages: [build, test, security-scan, deploy]
+    parallel_jobs: 
+      frontend: vitest-cypress
+      backend: junit5-loadtest
+      scripts: shellcheck
+
+# ================ 后端专属规则 ================
+spring_boot:
+  patterns:
+    - "**/jeecg-boot/src/main/**/*.java"
+    - "**/jeecg-boot/src/test/**/*.java"
+
+  layered_architecture:
+    controller:
+      annotations: [RestController, RequestMapping]
+      response_wrapper: ResponseEntity<ApiResponse>
+    service:
+      interface_required: true
+      transaction: "@Transactional"
+    repository:
+      base_class: JpaRepository
+      query_style: JPQL
+
+  mybatis_plus:
+    codegen_rules:
+      entity_suffix: Entity
+      mapper_annotation: @Mapper
+      logic_delete: deleted
+      version_control: version
+    sql_quality:
+      index_naming: "idx_${table}_${columns}"
+      explain_plan: required-for-complex-queries
+
+  security:
+    auth_scheme: JWT-RBAC
+    validation:
+      request_dto: jakarta-validation
+      response_sanitization: owasp-esapi
+
+# ================ 前端专属规则 ================
+vue3:
+  patterns:
+    - "**/jeecgboot-vue3/src/**/*.vue"
+    - "**/jeecgboot-vue3/src/**/*.ts"
+
+  composition_api:
+    setup_syntax: script-setup
+    reactivity_mode: shallowRef-proxy
+    hook_convention: useCamelCase
+
+  state_management:
+    store_library: pinia
+    store_structure:
+      state: factory-function
+      actions: async-with-abort
+    api_integration:
+      client: axios-with-retry
+      error_handling: error-boundary-chain
+
+  styling_engine:
+    atomic_css: tailwind-3.4
+    css_modules: stylus-bem
+    hybrid_rules:
+      - "tailwind用于布局和响应式"
+      - "Stylus模块处理复杂动画"
+      - "禁用@apply保持可维护性"
+
+# ================ 设备端规则 ================
+openwrt_shell:
+  patterns: 
+    - "scripts/**/*.sh"
+    - "scripts/**/*.ash"
+
+  shell_profile:
+    shebang: "#!/bin/sh"
+    compatibility: 
+      - busybox-1.36
+      - ash-compatibility
+    forbidden_commands: [systemctl, docker]
+
+  resource_constraints:
+    max_memory: 128MB
+    max_process: 50
+    filesystem: squashfs
+
+# ================ 基础设施规则 ================
+infrastructure:
+  database:
+    mysql: 8.0
+    connection_pool: HikariCP
+    migration: flyway
+  caching:
+    strategy: redis-cluster
+    ttl_policy: tiered-expiration
+  monitoring:
+    metrics: prometheus
+    tracing: jaeger
+    logging: elk-stack
+
+# ================ 联调规范 ================
+collaboration:
+  api_contract:
+    format: openapi-3.1
+    linting: spectral-ruleset
+  mock_service:
+    backend: wiremock-3.3
+    frontend: msw-2.0
+  data_consistency:
+    type_safety: zod-schema
+    enum_sync: shared-types
+
+# ================ 智能编码助手配置 ================
+ai_assistant:
+  code_generation:
+    java_template: spring-boot-3-pattern
+    vue_template: composition-api-ts
+    shell_template: posix-compliant
+  context_aware:
+    cross_stack_ref: enabled
+    error_chain: 3-level
+  learning_mode:
+    project_specific: 
+      enabled: true
+      patterns: [controller-dto-map, pinia-store]

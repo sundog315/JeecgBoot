@@ -612,7 +612,6 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 		if (isMonthlyReset(cpeDevice.getId())) {
 			// 执行月度流量重置
 			trafficData = handleMonthlyReset(trafficData);
-			resetBeginBytes(card);
 		}
 		
 		// 更新卡片流量数据
@@ -719,11 +718,13 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 		double totalDown = accuDown + downIncrement;
 		
 		// 如果有期初值，需要减去期初值得到当月实际使用量
-		if (beginUp > 0) {
+		if (beginUp > 0 && (totalUp - beginUp) > 0) {
 			totalUp = totalUp - beginUp;
+			beginUp = 0.0;
 		}
-		if (beginDown > 0) {
+		if (beginDown > 0 && (totalDown - beginDown) > 0) {
 			totalDown = totalDown - beginDown;
+			beginDown = 0.0;
 		}
 		
 		// 保存本次增量，用于更新状态表

@@ -16,6 +16,7 @@ import org.jeecg.modules.cpe.device.service.ICpeDeviceService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceStatusService;
 import org.jeecg.modules.cpe.device.service.ICpeSpeedLimitService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceNetworkService;
+import org.jeecg.modules.cpe.device.service.ICpeDeviceWirelessService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,6 +43,8 @@ public class CpeDeviceApi extends JeecgController<CpeDevice, ICpeDeviceService> 
 	private ICpeDeviceNetworkService cpeDeviceNetworkService;
 	@Autowired
 	private ICpeSpeedLimitService cpeSpeedLimitService;
+	@Autowired
+	private ICpeDeviceWirelessService cpeDeviceWirelessService;
 
 
 	/**
@@ -62,7 +65,8 @@ public class CpeDeviceApi extends JeecgController<CpeDevice, ICpeDeviceService> 
 								@RequestParam(name="frp",required=false) String frp,
 								@RequestParam(name="auto_reboot",required=false) String autoReboot,
 								@RequestParam(name="network",required=false) String network,
-								@RequestParam(name="speed_limit",required=false) String speedLimitParam) {
+								@RequestParam(name="speed_limit",required=false) String speedLimitParam,
+								@RequestParam(name="wireless",required=false) String wireless) {
 
 		switch (deviceType) {
 			case "X25":
@@ -82,8 +86,10 @@ public class CpeDeviceApi extends JeecgController<CpeDevice, ICpeDeviceService> 
 						cpeDeviceAutorebootService.report(deviceSnParam, autoReboot);
 					if ((network != null) && (!network.isEmpty()))
 						cpeDeviceNetworkService.report(deviceSnParam, network);
-						if ((speedLimitParam != null) && (!speedLimitParam.isEmpty()))
+					if ((speedLimitParam != null) && (!speedLimitParam.isEmpty()))
 						cpeSpeedLimitService.report(deviceSnParam, speedLimitParam);
+					if ((wireless != null) && (!wireless.isEmpty()))
+						cpeDeviceWirelessService.report(deviceSnParam, wireless);
 
 					log.info("{}设备状态上报成功",deviceSnParam);
 				}

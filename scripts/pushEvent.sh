@@ -151,26 +151,48 @@ get_speed_limit() {
 
 # 获取无线配置信息
 get_wireless_config() {
+    # 通用awk函数，支持带引号和不带引号的格式
+    get_wifi_option() {
+        local section="$1"
+        local option="$2"
+        awk -v section="$section" -v option="$option" '
+            $0 ~ "config.*"section{p=1;next}
+            p&&$0~/^config/{p=0}
+            p&&$0~"option.*"option{
+                # 移除开头的option和字段名
+                sub(/^[[:space:]]*option[[:space:]]+[^[:space:]]+[[:space:]]+/, "")
+                # 移除可能存在的引号
+                gsub(/'\''/, "")
+                print
+                exit
+            }
+        ' /etc/config/wireless
+    }
+
     # 2.4G配置
-    local wlan0_disabled=$(awk '/config wifi-iface '\''wlan0'\''/{p=1;next} p&&/option disabled/{split($0,a,"'\''"); print a[2];exit}' /etc/config/wireless)
-    local radio0_channel=$(awk '/config wifi-device '\''radio0'\''/{p=1;next} p&&/option channel/{split($0,a,"'\''"); print a[2];exit}' /etc/config/wireless)
-    local wlan0_ssid=$(awk '/config wifi-iface '\''wlan0'\''/{p=1;next} p&&/option ssid/{split($0,a,"'\''"); print a[2];exit}' /etc/config/wireless)
-    local wlan0_encryption=$(awk '/config wifi-iface '\''wlan0'\''/{p=1;next} p&&/option encryption/{split($0,a,"'\''"); print a[2];exit}' /etc/config/wireless)
-    local wlan0_key=$(awk '/config wifi-iface '\''wlan0'\''/{p=1;next} p&&/option key/{split($0,a,"'\''"); print a[2];exit}' /etc/config/wireless)
-    local wlan0_maxsta=$(awk '/config wifi-iface '\''wlan0'\''/{p=1;next} p&&/option maxsta/{split($0,a,"'\''"); print a[2];exit}' /etc/config/wireless)
-    local radio0_power=$(awk '/config wifi-device '\''radio0'\''/{p=1;next} p&&/option power/{split($0,a,"'\''"); print a[2];exit}' /etc/config/wireless)
+    local wlan0_disabled=$(get_wifi_option "wlan0" "disabled")
+    local radio0_channel=$(get_wifi_option "radio0" "channel")
+    local wlan0_ssid=$(get_wifi_option "wlan0" "ssid")
+    local wlan0_encryption=$(get_wifi_option "wlan0" "encryption")
+    local wlan0_key=$(get_wifi_option "wlan0" "key")
+    local wlan0_maxsta=$(get_wifi_option "wlan0" "maxsta")
+    local radio0_power=$(get_wifi_option "radio0" "power")
+    local wlan0_macfilter=$(get_wifi_option "wlan0" "macfilter")
+    local wlan0_hidden=$(get_wifi_option "wlan0" "hidden")
 
     # 5G配置
-    local wlan1_disabled=$(awk '/config wifi-iface '\''wlan1'\''/{p=1;next} p&&/option disabled/{split($0,a,"'\''"); print a[2];exit}' /etc/config/wireless)
-    local radio1_channel=$(awk '/config wifi-device '\''radio1'\''/{p=1;next} p&&/option channel/{split($0,a,"'\''"); print a[2];exit}' /etc/config/wireless)
-    local wlan1_ssid=$(awk '/config wifi-iface '\''wlan1'\''/{p=1;next} p&&/option ssid/{split($0,a,"'\''"); print a[2];exit}' /etc/config/wireless)
-    local wlan1_encryption=$(awk '/config wifi-iface '\''wlan1'\''/{p=1;next} p&&/option encryption/{split($0,a,"'\''"); print a[2];exit}' /etc/config/wireless)
-    local wlan1_key=$(awk '/config wifi-iface '\''wlan1'\''/{p=1;next} p&&/option key/{split($0,a,"'\''"); print a[2];exit}' /etc/config/wireless)
-    local wlan1_maxsta=$(awk '/config wifi-iface '\''wlan1'\''/{p=1;next} p&&/option maxsta/{split($0,a,"'\''"); print a[2];exit}' /etc/config/wireless)
-    local radio1_power=$(awk '/config wifi-device '\''radio1'\''/{p=1;next} p&&/option power/{split($0,a,"'\''"); print a[2];exit}' /etc/config/wireless)
+    local wlan1_disabled=$(get_wifi_option "wlan1" "disabled")
+    local radio1_channel=$(get_wifi_option "radio1" "channel")
+    local wlan1_ssid=$(get_wifi_option "wlan1" "ssid")
+    local wlan1_encryption=$(get_wifi_option "wlan1" "encryption")
+    local wlan1_key=$(get_wifi_option "wlan1" "key")
+    local wlan1_maxsta=$(get_wifi_option "wlan1" "maxsta")
+    local radio1_power=$(get_wifi_option "radio1" "power")
+    local wlan1_macfilter=$(get_wifi_option "wlan1" "macfilter")
+    local wlan1_hidden=$(get_wifi_option "wlan1" "hidden")
 
     # 组合所有无线配置信息为JSON格式
-    echo "{\"2g_disabled\":\"$wlan0_disabled\",\"2g_channel\":\"$radio0_channel\",\"2g_ssid\":\"$wlan0_ssid\",\"2g_encryption\":\"$wlan0_encryption\",\"2g_key\":\"$wlan0_key\",\"2g_maxsta\":\"$wlan0_maxsta\",\"2g_power\":\"$radio0_power\",\"5g_disabled\":\"$wlan1_disabled\",\"5g_channel\":\"$radio1_channel\",\"5g_ssid\":\"$wlan1_ssid\",\"5g_encryption\":\"$wlan1_encryption\",\"5g_key\":\"$wlan1_key\",\"5g_maxsta\":\"$wlan1_maxsta\",\"5g_power\":\"$radio1_power\"}"
+    echo "{\"2g_disabled\":\"$wlan0_disabled\",\"2g_channel\":\"$radio0_channel\",\"2g_ssid\":\"$wlan0_ssid\",\"2g_encryption\":\"$wlan0_encryption\",\"2g_key\":\"$wlan0_key\",\"2g_maxsta\":\"$wlan0_maxsta\",\"2g_power\":\"$radio0_power\",\"2g_macfilter\":\"$wlan0_macfilter\",\"2g_hidden\":\"$wlan0_hidden\",\"5g_disabled\":\"$wlan1_disabled\",\"5g_channel\":\"$radio1_channel\",\"5g_ssid\":\"$wlan1_ssid\",\"5g_encryption\":\"$wlan1_encryption\",\"5g_key\":\"$wlan1_key\",\"5g_maxsta\":\"$wlan1_maxsta\",\"5g_power\":\"$radio1_power\",\"5g_macfilter\":\"$wlan1_macfilter\",\"5g_hidden\":\"$wlan1_hidden\"}"
 }
 
 # HTTP请求函数

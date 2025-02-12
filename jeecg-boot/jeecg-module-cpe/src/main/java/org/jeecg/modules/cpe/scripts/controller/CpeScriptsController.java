@@ -40,7 +40,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 public class CpeScriptsController extends JeecgController<CpeScripts, ICpeScriptsService> {
 	@Autowired
 	private ICpeScriptsService cpeScriptsService;
-	
+
 	/**
 	 * 分页列表查询
 	 *
@@ -54,9 +54,9 @@ public class CpeScriptsController extends JeecgController<CpeScripts, ICpeScript
 	@ApiOperation(value="设备脚本管理-分页列表查询", notes="设备脚本管理-分页列表查询")
 	@GetMapping(value = "/list")
 	public Result<IPage<CpeScripts>> queryPageList(CpeScripts cpeScripts,
-								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-								   HttpServletRequest req) {
+									@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+									@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+									HttpServletRequest req) {
         // 自定义查询规则
         Map<String, QueryRuleEnum> customeRuleMap = new HashMap<>();
         // 自定义多选的查询规则为：LIKE_WITH_OR
@@ -67,7 +67,7 @@ public class CpeScriptsController extends JeecgController<CpeScripts, ICpeScript
 		IPage<CpeScripts> pageList = cpeScriptsService.page(page, queryWrapper);
 		return Result.OK(pageList);
 	}
-	
+
 	/**
 	 *   添加
 	 *
@@ -82,7 +82,7 @@ public class CpeScriptsController extends JeecgController<CpeScripts, ICpeScript
 		cpeScriptsService.save(cpeScripts);
 		return Result.OK("添加成功！");
 	}
-	
+
 	/**
 	 *  编辑
 	 *
@@ -97,7 +97,7 @@ public class CpeScriptsController extends JeecgController<CpeScripts, ICpeScript
 		cpeScriptsService.updateById(cpeScripts);
 		return Result.OK("编辑成功!");
 	}
-	
+
 	/**
 	 *   通过id删除
 	 *
@@ -112,7 +112,7 @@ public class CpeScriptsController extends JeecgController<CpeScripts, ICpeScript
 		cpeScriptsService.removeById(id);
 		return Result.OK("删除成功!");
 	}
-	
+
 	/**
 	 *  批量删除
 	 *
@@ -127,7 +127,7 @@ public class CpeScriptsController extends JeecgController<CpeScripts, ICpeScript
 		this.cpeScriptsService.removeByIds(Arrays.asList(ids.split(",")));
 		return Result.OK("批量删除成功!");
 	}
-	
+
 	/**
 	 * 通过id查询
 	 *
@@ -175,12 +175,12 @@ public class CpeScriptsController extends JeecgController<CpeScripts, ICpeScript
 		// 1. 构建查询条件
 		QueryWrapper<CpeScripts> queryWrapper = new QueryWrapper<>();
 		queryWrapper.eq("enable_flag", "1")
-				   .like("device_module_no", deviceModule)
-				   .select("script_name", "script_path", "version"); 
-			
+					.like("device_module_no", deviceModule)
+					.select("script_name", "script_path", "version");
+
 		// 2. 获取所有生效的脚本记录
 		List<CpeScripts> scripts = cpeScriptsService.list(queryWrapper);
-			
+
 		// 3. 转换为前端所需格式
 		List<Map<String, Object>> result = scripts.stream().map(script -> {
 			Map<String, Object> map = new HashMap<>();
@@ -191,33 +191,33 @@ public class CpeScriptsController extends JeecgController<CpeScripts, ICpeScript
 			map.put("content", script.getContent());
 			return map;
 		}).collect(Collectors.toList());
-		
+
 		return Result.OK(result);
 	}
-	
+
 	@GetMapping("/getScriptContent")
 	public Result<String> getScriptContent(@RequestParam String scriptPath) {
 		// 拆分完整路径为目录路径和文件名
 		String scriptName = scriptPath.substring(scriptPath.lastIndexOf('/') + 1);
 		String path = scriptPath.substring(0, scriptPath.lastIndexOf('/'));
-		
+
 		// 构建查询条件
 		QueryWrapper<CpeScripts> queryWrapper = new QueryWrapper<>();
 		queryWrapper.eq("script_path", path)
 				.eq("script_name", scriptName)
 				.eq("enable_flag", "1")
 				.select("content");
-			
+
 		// 获取脚本内容
 		CpeScripts script = cpeScriptsService.getOne(queryWrapper);
-			
+
 		if (script == null || script.getContent() == null) {
 			return Result.error("脚本不存在或内容为空");
 		}
 
 		// 对脚本内容进行Base64编码
 		String encodedContent = java.util.Base64.getEncoder().encodeToString(script.getContent().getBytes());
-			
+
 		return Result.OK(encodedContent);
 	}
 }
