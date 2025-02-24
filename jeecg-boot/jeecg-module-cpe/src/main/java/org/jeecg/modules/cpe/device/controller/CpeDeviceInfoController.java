@@ -41,6 +41,7 @@ import org.jeecg.modules.cpe.device.service.ICpeDeviceNetworkService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jeecg.common.aspect.annotation.AutoLog;
+import org.jeecg.common.aspect.annotation.PermissionData;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
@@ -107,12 +108,14 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
 									@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 									HttpServletRequest req) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         // 自定义查询规则
         Map<String, QueryRuleEnum> customeRuleMap = new HashMap<>();
         // 自定义多选的查询规则为：LIKE_WITH_OR
         customeRuleMap.put("deviceStatusNo", QueryRuleEnum.LIKE_WITH_OR);
         customeRuleMap.put("customerName", QueryRuleEnum.LIKE_WITH_OR);
         QueryWrapper<CpeDeviceInfo> queryWrapper = QueryGenerator.initQueryWrapper(cpeDeviceInfo, req.getParameterMap(),customeRuleMap);
+		queryWrapper.likeRight("sys_org_code", sysUser.getOrgCode());
 		Page<CpeDeviceInfo> page = new Page<CpeDeviceInfo>(pageNo, pageSize);
 		IPage<CpeDeviceInfo> pageList = cpeDeviceInfoService.page(page, queryWrapper);
 		return Result.OK(pageList);

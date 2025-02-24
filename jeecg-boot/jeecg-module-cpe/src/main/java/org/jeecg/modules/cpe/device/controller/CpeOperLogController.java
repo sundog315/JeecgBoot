@@ -96,13 +96,13 @@ public class CpeOperLogController extends JeecgController<CpeOperLog, ICpeOperLo
 
 		switch (deviceType) {
 			case "X25":
-				
+
 				break;
 
 			case "YR500":
-				
+
 				break;
-		
+
 			default:
 				if (deviceSnParam != null) {
 					try{

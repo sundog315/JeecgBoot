@@ -13,14 +13,14 @@
           <a-col :lg="6">
             <a-form-item name="deviceStatusNo">
               <template #label><span title="设备状态">设备状态</span></template>
-              <j-select-multiple placeholder="请选择设备状态" v-model:value="queryParam.deviceStatusNo" dictCode="cpe_device_status" allow-clear />
+              <j-dict-select-tag placeholder="请选择设备状态" v-model:value="queryParam.deviceStatusNo" dictCode="cpe_device_status" allow-clear />
             </a-form-item>
           </a-col>
           <template v-if="toggleSearchStatus">
             <a-col :lg="6">
-              <a-form-item name="customerName">
+              <a-form-item name="sysOrgCode">
                 <template #label><span title="所属客户">所属客户</span></template>
-                <a-input placeholder="请输入所属客户" v-model:value="queryParam.customerName" allow-clear ></a-input>
+                <j-dict-select-tag placeholder="请输入所属客户" v-model:value="queryParam.sysOrgCode" dictCode="sys_depart,depart_name,org_code" allow-clear />
               </a-form-item>
             </a-col>
           </template>

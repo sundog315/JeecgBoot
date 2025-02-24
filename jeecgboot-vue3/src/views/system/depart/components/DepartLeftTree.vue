@@ -1,14 +1,14 @@
 <template>
   <a-card :bordered="false" style="height: 100%">
     <div class="j-table-operator" style="width: 100%">
-      <a-button type="primary" preIcon="ant-design:plus-outlined" @click="onAddDepart">新增</a-button>
+      <!--<a-button type="primary" preIcon="ant-design:plus-outlined" @click="onAddDepart">新增</a-button>-->
       <a-button type="primary" preIcon="ant-design:plus-outlined" @click="onAddChildDepart()">添加下级</a-button>
       <a-upload name="file" :showUploadList="false" :customRequest="onImportXls">
         <a-button type="primary" preIcon="ant-design:import-outlined">导入</a-button>
       </a-upload>
       <a-button type="primary" preIcon="ant-design:export-outlined" @click="onExportXls">导出</a-button>
-      <a-button type="primary" preIcon="ant-design:sync-outlined">同步企微?</a-button>
-      <a-button type="primary" preIcon="ant-design:sync-outlined">同步钉钉?</a-button>
+      <!--<a-button type="primary" preIcon="ant-design:sync-outlined">同步企微?</a-button>
+      <a-button type="primary" preIcon="ant-design:sync-outlined">同步钉钉?</a-button>-->
       <template v-if="checkedKeys.length > 0">
         <a-dropdown>
           <template #overlay>
@@ -92,7 +92,7 @@
   import { useModal } from '/@/components/Modal';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { useMethods } from '/@/hooks/system/useMethods';
-  import { Api, deleteBatchDepart, queryDepartTreeSync } from '../depart.api';
+  import { Api, deleteBatchDepart, queryDepartTreeSync, queryMyDeptTreeList } from '../depart.api';
   import { searchByKeywords } from '/@/views/system/departUser/depart.user.api';
   import DepartFormModal from '/@/views/system/depart/components/DepartFormModal.vue';
   import { Popconfirm } from 'ant-design-vue';
@@ -130,7 +130,7 @@
     try {
       loading.value = true;
       treeData.value = [];
-      const result = await queryDepartTreeSync();
+      const result = await queryMyDeptTreeList();
       if (Array.isArray(result)) {
         treeData.value = result;
       }

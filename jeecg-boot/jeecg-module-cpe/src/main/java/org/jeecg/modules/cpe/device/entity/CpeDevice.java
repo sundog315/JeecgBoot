@@ -48,9 +48,9 @@ public class CpeDevice implements Serializable {
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "更新日期")
     private java.util.Date updateTime;
-	/**所属部门*/
-    @ApiModelProperty(value = "所属部门")
-    private java.lang.String sysOrgCode;
+	// /**所属部门*/
+    // @ApiModelProperty(value = "所属部门")
+    // private java.lang.String sysOrgCode;
 	/**设备标识*/
 	@Excel(name = "设备标识", width = 15)
     @ApiModelProperty(value = "设备标识")
@@ -90,9 +90,10 @@ public class CpeDevice implements Serializable {
     @ApiModelProperty(value = "在线频段")
     private java.lang.String onlineBand;
 	/**所属客户*/
-	@Excel(name = "所属客户", width = 15)
+	@Excel(name = "所属客户", width = 15, dictTable = "sys_depart", dicText = "depart_name", dicCode = "org_code")
+    @Dict(dictTable = "sys_depart", dicText = "depart_name", dicCode = "org_code")
     @ApiModelProperty(value = "所属客户")
-    private java.lang.String customerName;
+    private java.lang.String sysOrgCode;
 	/**安装位置*/
 	@Excel(name = "安装位置", width = 15)
     @ApiModelProperty(value = "安装位置")

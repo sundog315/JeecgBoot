@@ -5,9 +5,12 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.query.QueryRuleEnum;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.cpe.device.entity.CpeDevice;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceService;
 
@@ -23,6 +26,9 @@ import org.springframework.web.servlet.ModelAndView;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jeecg.common.aspect.annotation.AutoLog;
+import org.jeecg.common.aspect.annotation.PermissionData;
+import org.apache.shiro.SecurityUtils;
+import java.util.Date;
 
  /**
  * @Description: 设备信息表
@@ -37,7 +43,7 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 public class CpeDeviceController extends JeecgController<CpeDevice, ICpeDeviceService> {
 	@Autowired
 	private ICpeDeviceService cpeDeviceService;
-	
+
 	/**
 	 * 分页列表查询
 	 *
@@ -51,9 +57,9 @@ public class CpeDeviceController extends JeecgController<CpeDevice, ICpeDeviceSe
 	@ApiOperation(value="设备信息表-分页列表查询", notes="设备信息表-分页列表查询")
 	@GetMapping(value = "/list")
 	public Result<IPage<CpeDevice>> queryPageList(CpeDevice cpeDevice,
-								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-								   HttpServletRequest req) {
+									@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+									@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+									HttpServletRequest req) {
         // 自定义查询规则
         Map<String, QueryRuleEnum> customeRuleMap = new HashMap<>();
         // 自定义多选的查询规则为：LIKE_WITH_OR
@@ -64,7 +70,7 @@ public class CpeDeviceController extends JeecgController<CpeDevice, ICpeDeviceSe
 		IPage<CpeDevice> pageList = cpeDeviceService.page(page, queryWrapper);
 		return Result.OK(pageList);
 	}
-	
+
 	/**
 	 *   添加
 	 *
@@ -79,7 +85,7 @@ public class CpeDeviceController extends JeecgController<CpeDevice, ICpeDeviceSe
 		cpeDeviceService.save(cpeDevice);
 		return Result.OK("添加成功！");
 	}
-	
+
 	/**
 	 *  编辑
 	 *
@@ -94,7 +100,7 @@ public class CpeDeviceController extends JeecgController<CpeDevice, ICpeDeviceSe
 		cpeDeviceService.updateById(cpeDevice);
 		return Result.OK("编辑成功!");
 	}
-	
+
 	/**
 	 *   通过id删除
 	 *
@@ -109,7 +115,7 @@ public class CpeDeviceController extends JeecgController<CpeDevice, ICpeDeviceSe
 		cpeDeviceService.removeById(id);
 		return Result.OK("删除成功!");
 	}
-	
+
 	/**
 	 *  批量删除
 	 *
@@ -124,7 +130,7 @@ public class CpeDeviceController extends JeecgController<CpeDevice, ICpeDeviceSe
 		this.cpeDeviceService.removeByIds(Arrays.asList(ids.split(",")));
 		return Result.OK("批量删除成功!");
 	}
-	
+
 	/**
 	 * 通过id查询
 	 *
@@ -166,5 +172,4 @@ public class CpeDeviceController extends JeecgController<CpeDevice, ICpeDeviceSe
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
         return super.importExcel(request, response, CpeDevice.class);
     }
-
 }

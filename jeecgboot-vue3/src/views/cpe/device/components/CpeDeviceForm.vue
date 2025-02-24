@@ -45,8 +45,8 @@
 							</a-form-item>
 						</a-col>
 						<a-col :span="24">
-							<a-form-item label="所属客户" v-bind="validateInfos.customerName" id="CpeDeviceForm-customerName" name="customerName">
-								<j-dict-select-tag v-model:value="formData.customerName" dictCode="" placeholder="请选择所属客户"  allow-clear />
+							<a-form-item label="所属客户" v-bind="validateInfos.sysOrgCode" id="CpeDeviceForm-sysOrgCode" name="sysOrgCode">
+								<j-dict-select-tag v-model:value="formData.sysOrgCode" dictCode="sys_depart,depart_name,org_code" placeholder="请选择所属客户"  allow-clear />
 							</a-form-item>
 						</a-col>
 						<a-col :span="24">

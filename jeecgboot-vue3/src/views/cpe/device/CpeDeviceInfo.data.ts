@@ -72,7 +72,7 @@ export const columns: BasicColumn[] = [
   {
     title: '所属客户',
     align:"center",
-    dataIndex: 'customerName_dictText'
+    dataIndex: 'sysOrgCode_dictText'
   },
   {
     title: '安装位置',
