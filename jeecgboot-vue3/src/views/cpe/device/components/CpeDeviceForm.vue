@@ -93,7 +93,7 @@
     onlineCardNo: '',   
     onlineNetNo: '',   
     onlineBand: '',   
-    customerName: '',   
+    sysOrgCode: '',   
     position: '',   
     memo: '',   
   });

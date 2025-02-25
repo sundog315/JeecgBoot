@@ -182,6 +182,25 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
         return Result.OK("操作成功!");
     }
 
+	/**
+     * 重启Frp服务操作
+     * @param id
+     * @return
+     */
+    @AutoLog(value = "设备信息表-重启Frp服务操作")
+    @ApiOperation(value="设备信息表-重启Frp服务操作", notes="设备信息表-重启Frp服务操作")
+    //@RequiresPermissions("cpe.device:cpe_device_info:rebootFrp")
+    @PostMapping(value = "/rebootFrp")
+    public Result<String> rebootFrp(@RequestParam(name="id",required=true) String id) {
+		CpeOperLog oper = new CpeOperLog();
+		oper.setCpeId(id);
+		oper.setOperType("restartFrp");
+		oper.setCreateTs(new Date());
+
+		cpeOperLogService.save(oper);
+        return Result.OK("操作成功!");
+    }
+
     // /**
     //  * 批量删除
     //  * @param ids

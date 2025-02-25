@@ -116,7 +116,7 @@ public class SysUserController {
     @PermissionData(pageComponent = "system/UserList")
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public Result<IPage<SysUser>> queryPageList(SysUser user,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
+									    @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
 		QueryWrapper<SysUser> queryWrapper = QueryGenerator.initQueryWrapper(user, req.getParameterMap());
         //------------------------------------------------------------------------------------------------
         //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
@@ -128,6 +128,12 @@ public class SysUserController {
             }else{
                 queryWrapper.eq("id", "通过租户查询不到任何用户");
             }
+        }
+        // 非admin用户只能查看自己创建的用户
+        LoginUser currentUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (!currentUser.getUsername().equals("admin"))
+        {
+            queryWrapper.likeRight("org_code", currentUser.getOrgCode());
         }
         //------------------------------------------------------------------------------------------------
         return sysUserService.queryPageList(req, queryWrapper, pageSize, pageNo);
@@ -145,8 +151,14 @@ public class SysUserController {
     @RequiresPermissions("system:user:listAll")
     @RequestMapping(value = "/listAll", method = RequestMethod.GET)
     public Result<IPage<SysUser>> queryAllPageList(SysUser user, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-                                                   @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest req) {
+                                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest req) {
         QueryWrapper<SysUser> queryWrapper = QueryGenerator.initQueryWrapper(user, req.getParameterMap());
+        // 非admin用户只能查看自己创建的用户
+        LoginUser currentUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (!currentUser.getUsername().equals("admin"))
+        {
+            queryWrapper.likeRight("org_code", currentUser.getOrgCode());
+        }
         return sysUserService.queryPageList(req, queryWrapper, pageSize, pageNo);
     }
 

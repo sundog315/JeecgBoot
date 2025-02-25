@@ -194,6 +194,16 @@ handle_reboot() {
     fi
 }
 
+# 处理重启操作
+handle_restarFrp() {
+    local id="$1"
+    log_info "Executing restartFrp operation, ID: $id"
+
+    make_http_push "${API_BASE_URL}/push" "${id}" "Restarted" ""
+
+    restart_frp_service
+}
+
 # 处理FRP操作
 handle_frp() {
     local id="$1"
@@ -597,6 +607,9 @@ main() {
             ;;
         "frp")
             handle_frp "$id" "$param"
+            ;;
+        "restartFrp")
+            handle_restarFrp "$id" "$param"
             ;;
         "autoreboot")
             handle_autoreboot "$id" "$param"

@@ -8,6 +8,7 @@ enum Api {
   save= '/cpe/device/cpeDeviceInfo/add',
   edit= '/cpe/device/cpeDeviceInfo/edit',
   rebootOne = '/cpe/device/cpeDeviceInfo/reboot',
+  rebootFrp = '/cpe/device/cpeDeviceInfo/rebootFrp',
   deleteOne = '/cpe/device/cpeDeviceInfo/delete',
   deleteBatch = '/cpe/device/cpeDeviceInfo/deleteBatch',
   importExcel = '/cpe/device/cpeDeviceInfo/importExcel',
@@ -76,6 +77,15 @@ export const list = (params) =>
  */
 export const rebootOne = (params,handleSuccess) => {
   return defHttp.post({url: Api.rebootOne, params}, { joinParamsToUrl: true }).then(() => {
+    handleSuccess();
+  });
+}
+
+/**
+ * 重启Frp
+ */
+export const rebootFrp = (params,handleSuccess) => {
+  return defHttp.post({url: Api.rebootFrp, params}, { joinParamsToUrl: true }).then(() => {
     handleSuccess();
   });
 }

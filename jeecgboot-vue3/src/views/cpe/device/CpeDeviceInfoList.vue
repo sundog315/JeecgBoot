@@ -92,7 +92,7 @@
   import { useListPage } from '/@/hooks/system/useListPage'
   import CpeDeviceInfoModal from './components/CpeDeviceInfoModal.vue'
   import { columns, superQuerySchema } from './CpeDeviceInfo.data';
-  import { list, rebootOne, deleteOne, batchDelete, getImportUrl,getExportUrl } from './CpeDeviceInfo.api';
+  import { list, rebootFrp, rebootOne, deleteOne, batchDelete, getImportUrl,getExportUrl } from './CpeDeviceInfo.api';
   import { downloadFile } from '/@/utils/common/renderUtils';
   import JDictSelectTag from '/@/components/Form/src/jeecg/components/JDictSelectTag.vue';
   import JSelectMultiple from '/@/components/Form/src/jeecg/components/JSelectMultiple.vue';
@@ -150,7 +150,7 @@
   const mainId = computed(() => (unref(selectedRowKeys).length > 0 ? unref(selectedRowKeys)[0] : ''));
   //下发 mainId,子组件接收
   provide('mainId', mainId);
-  
+
   /**
    * 详情事件
    */
@@ -162,17 +162,24 @@
   /**
    * 重启事件
    */
-   async function handleReboot(record) {
+  async function handleReboot(record) {
     await rebootOne({id: record.id}, handleSuccess);
   }
-  
+
+  /**
+   * 重启Frp
+   */
+  async function handleFrpReboot(record) {
+    await rebootFrp({id: record.id}, handleSuccess);
+  }
+
   /**
    * 成功回调
    */
   function handleSuccess() {
     (selectedRowKeys.value = []) && reload();
   }
-  
+
   /**
    * 操作栏
    */
@@ -184,7 +191,7 @@
       },
     ];
   }
-  
+
   /**
    * 下拉操作栏
    */
@@ -199,14 +206,21 @@
         popConfirm: {
           title: '是否确认重启',
           confirm: handleReboot.bind(null, record),
-          placement: 'topLeft'
+          placement: 'topLeft',
         },
-        auth: 'cpe.device:cpe_device_info:reboot'
+        auth: 'cpe.device:cpe_device_info:reboot',
+      },
+      {
+        label: '重启Frp',
+        popConfirm: {
+          title: '是否确认重启Frp服务',
+          confirm: handleFrpReboot.bind(null, record),
+          placement: 'topLeft',
+        },
+        auth: 'cpe.device:cpe_device_info:frpreboot',
       },
     ];
   }
-
-  
 
   /* ----------------------以下为原生查询需要添加的-------------------------- */
   const toggleSearchStatus = ref<boolean>(false);
