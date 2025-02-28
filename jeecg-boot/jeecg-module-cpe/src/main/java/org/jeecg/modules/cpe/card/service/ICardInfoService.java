@@ -1,7 +1,9 @@
 package org.jeecg.modules.cpe.card.service;
 
+import org.jeecg.modules.cpe.card.entity.CardPackageRel;
 import org.jeecg.modules.cpe.card.entity.CardInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
@@ -9,7 +11,7 @@ import java.util.List;
 /**
  * @Description: 卡片信息表
  * @Author: jeecg-boot
- * @Date:   2025-01-02
+ * @Date:   2025-02-28
  * @Version: V1.0
  */
 public interface ICardInfoService extends IService<CardInfo> {
@@ -35,4 +37,5 @@ public interface ICardInfoService extends IService<CardInfo> {
 	 * @return List<CardInfo>
 	 */
 	public List<CardInfo> selectByCardNo(String cardNo);
+
 }

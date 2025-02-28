@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * @Description: 卡片套餐
  * @Author: jeecg-boot
- * @Date:   2025-01-02
+ * @Date:   2025-02-28
  * @Version: V1.0
  */
 public interface ICardPackageRelService extends IService<CardPackageRel> {

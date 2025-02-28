@@ -31,6 +31,11 @@ export const columns: BasicColumn[] = [
     dataIndex: 'named_dictText'
   },
   {
+    title: '实名人',
+    align:"center",
+    dataIndex: 'namedPerson'
+  },
+  {
     title: '本周期上传量',
     align:"center",
     dataIndex: 'upBytes',
@@ -90,8 +95,9 @@ export const superQuerySchema = {
   joinNo: {title: '接入号',order: 2,view: 'text', type: 'string',},
   netCorps: {title: '卡片运营商',order: 3,view: 'list', type: 'string',dictCode: 'cpe_network',},
   named: {title: '是否实名',order: 4,view: 'number', type: 'number',dictCode: 'card_isnamed',},
-  upBytes: {title: '本周期上传量',order: 5,view: 'number', type: 'number',},
-  downBytes: {title: '本周期下载量',order: 6,view: 'number', type: 'number',},
+  namedPerson: {title: '实名人',order: 5,view: 'text', type: 'string',},
+  upBytes: {title: '本周期上传量',order: 6,view: 'number', type: 'number',},
+  downBytes: {title: '本周期下载量',order: 7,view: 'number', type: 'number',},
 };
 
 /**

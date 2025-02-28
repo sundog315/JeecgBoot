@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 /**
  * @Description: 卡片信息表
  * @Author: jeecg-boot
- * @Date:   2025-01-02
+ * @Date:   2025-02-28
  * @Version: V1.0
  */
 public interface CardInfoMapper extends BaseMapper<CardInfo> {
@@ -20,4 +20,5 @@ public interface CardInfoMapper extends BaseMapper<CardInfo> {
 	 * @return List<CardInfo>
 	 */
 	public List<CardInfo> selectByCardNo(@Param("cardNo")String cardNo);
+
 }

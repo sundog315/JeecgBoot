@@ -16,7 +16,7 @@ public class JeecgBaseConfig {
      * 签名密钥串(字典等敏感接口)
      * @TODO 降低使用成本加的默认值,实际以 yml配置 为准
      */
-    private String signatureSecret = "dd05f1c54d63749eda95f9fa6d49v442a";
+    private String signatureSecret = "ff83e7b92a51864fcb73d9ec8b25k331c";
     /**
      * 需要加强校验的接口清单
      */

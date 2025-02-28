@@ -67,8 +67,8 @@ export default {
     signUpFormTitle: '注册',
     forgetFormTitle: '重置密码',
 
-    signInTitle: 'CPE Platform',
-    signInDesc: 'CPE集中管理平台',
+    signInTitle: 'Xuanshu Platform',
+    signInDesc: '玄枢集中管理平台',
     policy: '我同意隐私政策',
     scanSign: `扫码后，即可完成登录`,
     scanSuccess: `扫码成功，登录中`,

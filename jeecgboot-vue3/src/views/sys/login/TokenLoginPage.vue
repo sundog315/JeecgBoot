@@ -5,7 +5,7 @@
             <div class="app-loading-dots">
                 <span class="dot dot-spin"><i></i><i></i><i></i><i></i></span>
             </div>
-            <div class="app-loading-title">CPE管理平台</div>
+            <div class="app-loading-title">玄枢管理平台</div>
         </div>
     </div>
 </template>

@@ -18,9 +18,9 @@
           </a-col>
           <template v-if="toggleSearchStatus">
             <a-col :lg="6">
-              <a-form-item name="netCorps">
-                <template #label><span title="卡片运营商">卡片运营</span></template>
-                <j-select-multiple placeholder="请选择卡片运营商" v-model:value="queryParam.netCorps" dictCode="cpe_network" allow-clear />
+              <a-form-item name="namedPerson">
+                <template #label><span title="实名人">实名人</span></template>
+                <a-input placeholder="请选择实名人" v-model:value="queryParam.namedPerson" allow-clear />
               </a-form-item>
             </a-col>
           </template>

@@ -509,7 +509,7 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 						ObjectMapper objectMapper = new ObjectMapper();
 						@SuppressWarnings("unchecked")
 						Map<String, Object> ubusOutputMap = objectMapper.readValue(ubusOutput, Map.class);
-						
+
 						// 提取SIM卡槽位信息
 						sim_slot = Integer.parseInt(ubusOutputMap.get("LTE_SIMSLOT").toString());
 
@@ -517,7 +517,7 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 						imei = ubusOutputMap.containsKey("LTE_IMEI") ? ubusOutputMap.get("LTE_IMEI").toString() : "";
 						version = ubusOutputMap.containsKey("LTE_VER") ? ubusOutputMap.get("LTE_VER").toString() : "";
 						iccid = ubusOutputMap.containsKey("LTE_ICCID") ? ubusOutputMap.get("LTE_ICCID").toString() : "";
-						
+
 						// 关联SIM卡信息
 						if (cardInfoService.selectByCardNo(iccid).size() > 0)
 						{

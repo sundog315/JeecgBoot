@@ -29,6 +29,11 @@
 								<j-dict-select-tag v-model:value="formData.named" dictCode="card_isnamed" placeholder="请选择是否实名"  allow-clear />
 							</a-form-item>
 						</a-col>
+            <a-col :span="24">
+							<a-form-item label="实名人" v-bind="validateInfos.namedPerson" id="CardInfoForm-namedPerson" name="namedPerson">
+								<a-input v-model:value="formData.namedPerson" placeholder="请输入实名人"  allow-clear ></a-input>
+							</a-form-item>
+						</a-col>
 						<a-col :span="24">
 							<a-form-item label="本周期上传量" v-bind="validateInfos.upBytes" id="CardInfoForm-upBytes" name="upBytes">
 								<a-input-number v-model:value="formData.upBytes" placeholder="请输入本周期上传量" style="width: 100%" />
@@ -66,13 +71,14 @@
   const emit = defineEmits(['register', 'ok']);
   const formData = reactive<Record<string, any>>({
     id: '',
-        cardNo: '',   
-        shortNo: '',   
-        joinNo: '',   
-        netCorps: '',   
-        named: undefined,
-        upBytes: undefined,
-        downBytes: undefined,
+    cardNo: '',
+    shortNo: '',
+    joinNo: '',
+    netCorps: '',
+    named: undefined,
+    namedPerson: '',
+    upBytes: undefined,
+    downBytes: undefined,
   });
   const { createMessage } = useMessage();
   const labelCol = ref<any>({ xs: { span: 24 }, sm: { span: 5 } });

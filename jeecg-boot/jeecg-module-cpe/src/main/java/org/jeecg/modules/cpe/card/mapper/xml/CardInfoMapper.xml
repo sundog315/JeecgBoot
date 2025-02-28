@@ -2,8 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.cpe.card.mapper.CardInfoMapper">
 	<select id="selectByCardNo" parameterType="java.lang.String" resultType="org.jeecg.modules.cpe.card.entity.CardInfo">
-		SELECT * 
+		SELECT *
 		FROM  card_info
 		WHERE
-			 card_no = #{cardNo} 	</select>
+			card_no = #{cardNo} 	</select>
+
 </mapper>

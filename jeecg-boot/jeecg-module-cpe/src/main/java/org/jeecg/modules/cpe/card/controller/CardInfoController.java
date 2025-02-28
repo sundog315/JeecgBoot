@@ -2,6 +2,7 @@ package org.jeecg.modules.cpe.card.controller;
 
 import org.jeecg.common.system.query.QueryGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.jeecg.common.system.query.QueryRuleEnum;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 import java.util.Arrays;
+import java.util.HashMap;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.cpe.card.entity.CardPackageRel;
 import org.jeecg.modules.cpe.card.entity.CardInfo;
@@ -35,10 +37,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-/**
+ /**
  * @Description: 卡片信息表
  * @Author: jeecg-boot
- * @Date:   2025-01-02
+ * @Date:   2025-02-28
  * @Version: V1.0
  */
 @Api(tags="卡片信息表")
@@ -68,12 +70,14 @@ public class CardInfoController extends JeecgController<CardInfo, ICardInfoServi
 	@ApiOperation(value="卡片信息表-分页列表查询", notes="卡片信息表-分页列表查询")
 	@GetMapping(value = "/list")
 	public Result<IPage<CardInfo>> queryPageList(CardInfo cardInfo,
-									@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-									@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-									HttpServletRequest req) {
-		QueryWrapper<CardInfo> queryWrapper = QueryGenerator.initQueryWrapper(cardInfo, req.getParameterMap());
-		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		queryWrapper.likeRight("sys_org_code", sysUser.getOrgCode());
+								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+								   HttpServletRequest req) {
+        // 自定义查询规则
+        Map<String, QueryRuleEnum> customeRuleMap = new HashMap<>();
+        // 自定义多选的查询规则为：LIKE_WITH_OR
+        customeRuleMap.put("netCorps", QueryRuleEnum.LIKE_WITH_OR);
+        QueryWrapper<CardInfo> queryWrapper = QueryGenerator.initQueryWrapper(cardInfo, req.getParameterMap(),customeRuleMap);
 		Page<CardInfo> page = new Page<CardInfo>(pageNo, pageSize);
 		IPage<CardInfo> pageList = cardInfoService.page(page, queryWrapper);
 		return Result.OK(pageList);
@@ -86,7 +90,7 @@ public class CardInfoController extends JeecgController<CardInfo, ICardInfoServi
      */
     @AutoLog(value = "卡片信息表-添加")
     @ApiOperation(value="卡片信息表-添加", notes="卡片信息表-添加")
-    //@RequiresPermissions("cpe.card:card_info:add")
+    @RequiresPermissions("cpe.card:card_info:add")
     @PostMapping(value = "/add")
     public Result<String> add(@RequestBody CardInfo cardInfo) {
         cardInfoService.save(cardInfo);
@@ -100,7 +104,7 @@ public class CardInfoController extends JeecgController<CardInfo, ICardInfoServi
      */
     @AutoLog(value = "卡片信息表-编辑")
     @ApiOperation(value="卡片信息表-编辑", notes="卡片信息表-编辑")
-    //@RequiresPermissions("cpe.card:card_info:edit")
+    @RequiresPermissions("cpe.card:card_info:edit")
     @RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
     public Result<String> edit(@RequestBody CardInfo cardInfo) {
         cardInfoService.updateById(cardInfo);
@@ -114,7 +118,7 @@ public class CardInfoController extends JeecgController<CardInfo, ICardInfoServi
      */
     @AutoLog(value = "卡片信息表-通过id删除")
     @ApiOperation(value="卡片信息表-通过id删除", notes="卡片信息表-通过id删除")
-    //@RequiresPermissions("cpe.card:card_info:delete")
+    @RequiresPermissions("cpe.card:card_info:delete")
     @DeleteMapping(value = "/delete")
     public Result<String> delete(@RequestParam(name="id",required=true) String id) {
         cardInfoService.delMain(id);
@@ -223,7 +227,7 @@ public class CardInfoController extends JeecgController<CardInfo, ICardInfoServi
 	@ApiOperation(value="卡片套餐-批量删除", notes="卡片套餐-批量删除")
 	@DeleteMapping(value = "/deleteBatchCardPackageRel")
 	public Result<String> deleteBatchCardPackageRel(@RequestParam(name="ids",required=true) String ids) {
-		this.cardPackageRelService.removeByIds(Arrays.asList(ids.split(",")));
+	    this.cardPackageRelService.removeByIds(Arrays.asList(ids.split(",")));
 		return Result.OK("批量删除成功!");
 	}
 
@@ -233,31 +237,31 @@ public class CardInfoController extends JeecgController<CardInfo, ICardInfoServi
      */
     @RequestMapping(value = "/exportCardPackageRel")
     public ModelAndView exportCardPackageRel(HttpServletRequest request, CardPackageRel cardPackageRel) {
-		// Step.1 组装查询条件
-		QueryWrapper<CardPackageRel> queryWrapper = QueryGenerator.initQueryWrapper(cardPackageRel, request.getParameterMap());
-		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 // Step.1 组装查询条件
+		 QueryWrapper<CardPackageRel> queryWrapper = QueryGenerator.initQueryWrapper(cardPackageRel, request.getParameterMap());
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 
-		// Step.2 获取导出数据
-		List<CardPackageRel> pageList = cardPackageRelService.list(queryWrapper);
-		List<CardPackageRel> exportList = null;
+		 // Step.2 获取导出数据
+		 List<CardPackageRel> pageList = cardPackageRelService.list(queryWrapper);
+		 List<CardPackageRel> exportList = null;
 
-		// 过滤选中数据
-		String selections = request.getParameter("selections");
-		if (oConvertUtils.isNotEmpty(selections)) {
-			List<String> selectionList = Arrays.asList(selections.split(","));
-			exportList = pageList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
-		} else {
-			exportList = pageList;
-		}
+		 // 过滤选中数据
+		 String selections = request.getParameter("selections");
+		 if (oConvertUtils.isNotEmpty(selections)) {
+			 List<String> selectionList = Arrays.asList(selections.split(","));
+			 exportList = pageList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
+		 } else {
+			 exportList = pageList;
+		 }
 
-		// Step.3 AutoPoi 导出Excel
-		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-		//此处设置的filename无效,前端会重更新设置一下
-		mv.addObject(NormalExcelConstants.FILE_NAME, "卡片套餐");
-		mv.addObject(NormalExcelConstants.CLASS, CardPackageRel.class);
-		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("卡片套餐报表", "导出人:" + sysUser.getRealname(), "卡片套餐"));
-		mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
-		return mv;
+		 // Step.3 AutoPoi 导出Excel
+		 ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		 //此处设置的filename无效,前端会重更新设置一下
+		 mv.addObject(NormalExcelConstants.FILE_NAME, "卡片套餐");
+		 mv.addObject(NormalExcelConstants.CLASS, CardPackageRel.class);
+		 mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("卡片套餐报表", "导出人:" + sysUser.getRealname(), "卡片套餐"));
+		 mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+		 return mv;
     }
 
     /**
@@ -266,37 +270,41 @@ public class CardInfoController extends JeecgController<CardInfo, ICardInfoServi
      */
     @RequestMapping(value = "/importCardPackageRel/{mainId}")
     public Result<?> importCardPackageRel(HttpServletRequest request, HttpServletResponse response, @PathVariable("mainId") String mainId) {
-		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-		Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
-		for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
-       	// 获取上传文件对象
-			MultipartFile file = entity.getValue();
-			ImportParams params = new ImportParams();
-			params.setTitleRows(2);
-			params.setHeadRows(1);
-			params.setNeedSave(true);
-			try {
-				List<CardPackageRel> list = ExcelImportUtil.importExcel(file.getInputStream(), CardPackageRel.class, params);
-				for (CardPackageRel temp : list) {
+		 MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+		 Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+		 for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+       // 获取上传文件对象
+			 MultipartFile file = entity.getValue();
+			 ImportParams params = new ImportParams();
+			 params.setTitleRows(2);
+			 params.setHeadRows(1);
+			 params.setNeedSave(true);
+			 try {
+				 List<CardPackageRel> list = ExcelImportUtil.importExcel(file.getInputStream(), CardPackageRel.class, params);
+				 for (CardPackageRel temp : list) {
                     temp.setCardId(mainId);
-				}
-				long start = System.currentTimeMillis();
-				cardPackageRelService.saveBatch(list);
-				log.info("消耗时间" + (System.currentTimeMillis() - start) + "毫秒");
-				return Result.OK("文件导入成功！数据行数：" + list.size());
-			} catch (Exception e) {
-				log.error(e.getMessage(), e);
-				return Result.error("文件导入失败:" + e.getMessage());
-			} finally {
-				try {
-					file.getInputStream().close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return Result.error("文件导入失败！");
+				 }
+				 long start = System.currentTimeMillis();
+				 cardPackageRelService.saveBatch(list);
+				 log.info("消耗时间" + (System.currentTimeMillis() - start) + "毫秒");
+				 return Result.OK("文件导入成功！数据行数：" + list.size());
+			 } catch (Exception e) {
+				 log.error(e.getMessage(), e);
+				 return Result.error("文件导入失败:" + e.getMessage());
+			 } finally {
+				 try {
+					 file.getInputStream().close();
+				 } catch (IOException e) {
+					 e.printStackTrace();
+				 }
+			 }
+		 }
+		 return Result.error("文件导入失败！");
     }
 
     /*--------------------------------子表处理-卡片套餐-end----------------------------------------------*/
+
+
+
+
 }

@@ -1,6 +1,6 @@
 import md5 from 'md5';
 //签名密钥串(前后端要一致，正式发布请自行修改)
-const signatureSecret = 'dd05f1c54d63749eda95f9fa6d49v442a';
+const signatureSecret = 'ff83e7b92a51864fcb73d9ec8b25k331c';
 
 export default class signMd5Utils {
   /**
