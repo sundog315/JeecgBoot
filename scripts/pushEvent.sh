@@ -191,8 +191,12 @@ get_wireless_config() {
     local wlan1_macfilter=$(get_wifi_option "wlan1" "macfilter")
     local wlan1_hidden=$(get_wifi_option "wlan1" "hidden")
 
+    # 获取配置文件最后修改时间
+    local last_modified
+    last_modified=$(date -r /etc/config/wireless "+%Y-%m-%d %H:%M:%S")
+
     # 组合所有无线配置信息为JSON格式
-    echo "{\"2g_disabled\":\"$wlan0_disabled\",\"2g_channel\":\"$radio0_channel\",\"2g_ssid\":\"$wlan0_ssid\",\"2g_encryption\":\"$wlan0_encryption\",\"2g_key\":\"$wlan0_key\",\"2g_maxsta\":\"$wlan0_maxsta\",\"2g_power\":\"$radio0_power\",\"2g_macfilter\":\"$wlan0_macfilter\",\"2g_hidden\":\"$wlan0_hidden\",\"5g_disabled\":\"$wlan1_disabled\",\"5g_channel\":\"$radio1_channel\",\"5g_ssid\":\"$wlan1_ssid\",\"5g_encryption\":\"$wlan1_encryption\",\"5g_key\":\"$wlan1_key\",\"5g_maxsta\":\"$wlan1_maxsta\",\"5g_power\":\"$radio1_power\",\"5g_macfilter\":\"$wlan1_macfilter\",\"5g_hidden\":\"$wlan1_hidden\"}"
+    echo "{\"last_modified\":\"$last_modified\",\"2g_disabled\":\"$wlan0_disabled\",\"2g_channel\":\"$radio0_channel\",\"2g_ssid\":\"$wlan0_ssid\",\"2g_encryption\":\"$wlan0_encryption\",\"2g_key\":\"$wlan0_key\",\"2g_maxsta\":\"$wlan0_maxsta\",\"2g_power\":\"$radio0_power\",\"2g_macfilter\":\"$wlan0_macfilter\",\"2g_hidden\":\"$wlan0_hidden\",\"5g_disabled\":\"$wlan1_disabled\",\"5g_channel\":\"$radio1_channel\",\"5g_ssid\":\"$wlan1_ssid\",\"5g_encryption\":\"$wlan1_encryption\",\"5g_key\":\"$wlan1_key\",\"5g_maxsta\":\"$wlan1_maxsta\",\"5g_power\":\"$radio1_power\",\"5g_macfilter\":\"$wlan1_macfilter\",\"5g_hidden\":\"$wlan1_hidden\"}"
 }
 
 # HTTP请求函数

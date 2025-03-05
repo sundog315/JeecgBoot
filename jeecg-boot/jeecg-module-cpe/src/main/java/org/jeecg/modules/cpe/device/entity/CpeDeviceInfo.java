@@ -66,6 +66,10 @@ public class CpeDeviceInfo implements Serializable {
     @Dict(dicCode = "cpe_device_type")
     @ApiModelProperty(value = "设备类型")
     private java.lang.String deviceTypeNo;
+    /**模组型号*/
+	@Excel(name = "模组型号", width = 15)
+    @ApiModelProperty(value = "模组型号")
+    private java.lang.String fiveGModule;
 	/**关联卡片*/
     @Excel(name = "关联卡片", width = 15, dictTable = "card_info", dicText = "card_no", dicCode = "id")
     @Dict(dictTable = "card_info", dicText = "card_no", dicCode = "id")

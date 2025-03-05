@@ -81,6 +81,11 @@ export const columns: BasicColumn[] = [
     dataIndex: 'position',
   },
   {
+    title: '模组型号',
+    align: 'center',
+    dataIndex: 'fiveGModule',
+  },
+  {
     title: '5G模块版本',
     align: 'center',
     width: 200,
@@ -117,7 +122,7 @@ export const cpeDeviceStatusColumns: BasicColumn[] = [
   {
     title: '时间戳',
     align: 'center',
-    width: 160,
+    width: 170,
     dataIndex: 'ts',
   },
   {
@@ -226,7 +231,7 @@ export const cpeDeviceStatusColumns: BasicColumn[] = [
   {
     title: '上行流量',
     align: 'center',
-    width: 80,
+    width: 100,
     dataIndex: 'upBytes',
     customRender: ({ text }) => {
       return formatTraffic(text);
@@ -235,7 +240,7 @@ export const cpeDeviceStatusColumns: BasicColumn[] = [
   {
     title: '下行流量',
     align: 'center',
-    width: 80,
+    width: 100,
     dataIndex: 'downBytes',
     customRender: ({ text }) => {
       return formatTraffic(text);
@@ -244,7 +249,7 @@ export const cpeDeviceStatusColumns: BasicColumn[] = [
   {
     title: '连接时长',
     align: 'center',
-    width: 80,
+    width: 100,
     dataIndex: 'uptime',
     customRender: ({ text }) => {
       return formatDuration(Number(text));
@@ -468,6 +473,19 @@ export const cpeDeviceWirelessColumns: BasicColumn[] = [
     dataIndex: 'radio24Power',
   },
   {
+    title: '2.4G MAC过滤',
+    align: 'center',
+    dataIndex: 'radio24Macfilter',
+  },
+  {
+    title: '2.4G不广播',
+    align: 'center',
+    dataIndex: 'radio24Hidden',
+    customRender: ({ text }) => {
+      return h(Tag, { color: text === '0' ? 'success' : 'error' }, () => (text === '0' ? '广播' : '不广播'));
+    },
+  },
+  {
     title: '5G WiFi功能',
     align: 'center',
     dataIndex: 'radio5Disabled',
@@ -529,12 +547,26 @@ export const cpeDeviceWirelessColumns: BasicColumn[] = [
     align: 'center',
     dataIndex: 'radio5Power',
   },
+  {
+    title: '5G MAC过滤',
+    align: 'center',
+    dataIndex: 'radio5Macfilter',
+  },
+  {
+    title: '5G不广播',
+    align: 'center',
+    dataIndex: 'radio5Hidden',
+    customRender: ({ text }) => {
+      return h(Tag, { color: text === '0' ? 'success' : 'error' }, () => (text === '0' ? '广播' : '不广播'));
+    },
+  },
 ];
 //子表列表数据
 export const cpeOperLogColumns: BasicColumn[] = [
   {
     title: '创建时间',
     align: 'center',
+    width: 170,
     dataIndex: 'createTs',
   },
   {
@@ -555,6 +587,7 @@ export const cpeOperLogColumns: BasicColumn[] = [
   {
     title: '操作时间',
     align: 'center',
+    width: 170,
     dataIndex: 'operTs',
   },
   {

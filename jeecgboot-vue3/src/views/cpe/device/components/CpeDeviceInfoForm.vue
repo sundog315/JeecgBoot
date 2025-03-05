@@ -54,6 +54,11 @@
 								<a-input v-model:value="formData.position" placeholder="请输入安装位置"  allow-clear ></a-input>
 							</a-form-item>
 						</a-col>
+            <a-col :span="24">
+							<a-form-item label="模组型号" v-bind="validateInfos.position" id="CpeDeviceForm-fiveGModule" name="fiveGModule">
+								<a-input v-model:value="formData.fiveGModule" placeholder="请输入模组型号"  allow-clear ></a-input>
+							</a-form-item>
+						</a-col>
 						<a-col :span="24">
 							<a-form-item label="5G模块版本" v-bind="validateInfos.modemVersion" id="CpeDeviceInfoForm-modemVersion" name="modemVersion">
 								<a-input v-model:value="formData.modemVersion" placeholder="请输入5G模块版本"  allow-clear ></a-input>
@@ -115,6 +120,7 @@
         onlineBand: '',   
         customerName: '',   
         position: '',   
+        fiveGModule: '',   
         modemVersion: '',   
         imei: '',   
         iccid: '',   

@@ -41,6 +41,8 @@ public class WirelessConfigParser {
         private String key;         // 密码
         private String disabled;   // 禁用标志
         private Integer maxsta;     // 最大终端数
+        private String macfilter;   //MAC过滤
+        private String hidden;      //不广播
     }
 
     /**
@@ -49,10 +51,20 @@ public class WirelessConfigParser {
     @Data
     @Builder
     public static class WirelessConfig {
+        private FileDate fileDate;   // 文件修改时间
         private RadioConfig radio0;  // 2.4G无线设备配置
         private RadioConfig radio1;  // 5G无线设备配置
         private WifiConfig wlan0;    // 2.4G无线接口配置
         private WifiConfig wlan1;    // 5G无线接口配置
+    }
+
+    /**
+     * 完整无线配置类
+     */
+    @Data
+    @Builder
+    public static class FileDate {
+        private String modify_date;
     }
 
     /**
@@ -68,6 +80,10 @@ public class WirelessConfigParser {
         try {
             JsonNode root = objectMapper.readTree(jsonConfig);
 
+            FileDate fileDate = FileDate.builder()
+                .modify_date(getStringValue(root, "last_modified"))
+                .build();
+
             // 构建2.4G配置
             RadioConfig radio0 = RadioConfig.builder()
                     .channel(getStringValue(root, "2g_channel"))
@@ -80,6 +96,8 @@ public class WirelessConfigParser {
                     .key(getStringValue(root, "2g_key"))
                     .disabled(getStringValue(root, "2g_disabled"))
                     .maxsta(getIntValue(root, "2g_maxsta", 128))
+                    .macfilter(getStringValue(root, "2g_macfilter"))
+                    .hidden(getStringValue(root, "2g_hidden"))
                     .build();
 
             // 构建5G配置
@@ -94,9 +112,12 @@ public class WirelessConfigParser {
                     .key(getStringValue(root, "5g_key"))
                     .disabled(getStringValue(root, "5g_disabled"))
                     .maxsta(getIntValue(root, "5g_maxsta", 128))
+                    .macfilter(getStringValue(root, "5g_macfilter"))
+                    .hidden(getStringValue(root, "5g_hidden"))
                     .build();
 
             return WirelessConfig.builder()
+                    .fileDate(fileDate)
                     .radio0(radio0)
                     .radio1(radio1)
                     .wlan0(wlan0)

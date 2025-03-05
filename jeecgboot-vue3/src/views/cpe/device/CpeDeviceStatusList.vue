@@ -134,8 +134,8 @@
   function getTableAction(record) {
     return [
       {
-        label: '编辑',
-        onClick: handleEdit.bind(null, record),
+        label: '详情',
+        onClick: handleDetail.bind(null, record),
       },
     ]
   }

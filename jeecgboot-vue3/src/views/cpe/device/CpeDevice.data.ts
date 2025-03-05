@@ -2,7 +2,7 @@
  * @Author: Janelle.Liu sundog315@foxmail.com
  * @Date: 2025-01-03 19:01:07
  * @LastEditors: Janelle.Liu sundog315@foxmail.com
- * @LastEditTime: 2025-02-24 14:09:22
+ * @LastEditTime: 2025-03-04 12:56:01
  * @FilePath: /JeecgBoot/jeecgboot-vue3/src/views/cpe/device/CpeDevice.data.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -75,6 +75,11 @@ export const columns: BasicColumn[] = [
     title: '备注',
     align: "center",
     dataIndex: 'memo'
+  },
+  {
+    title: '模组型号',
+    align: "center",
+    dataIndex: 'fiveGModule'
   },
 ];
 

@@ -117,4 +117,21 @@ public class CpeDeviceWireless implements Serializable {
 	@Excel(name = "5G功率", width = 15)
     @ApiModelProperty(value = "5G功率")
     private java.lang.Integer radio5Power;
+
+    /**2.4GMAC过滤*/
+	@Excel(name = "2.4G MAC过滤", width = 15)
+    @ApiModelProperty(value = "2.4G MAC过滤")
+    private java.lang.String radio24Macfilter;
+	/**5GMAC过滤*/
+	@Excel(name = "5G MAC过滤", width = 15)
+    @ApiModelProperty(value = "5G MAC过滤")
+    private java.lang.String radio5Macfilter;
+    /**2.4G不广播*/
+	@Excel(name = "2.4G不广播", width = 15)
+    @ApiModelProperty(value = "2.4G不广播")
+    private java.lang.String radio24Hidden;
+	/**5G不广播*/
+	@Excel(name = "5G不广播", width = 15)
+    @ApiModelProperty(value = "5G不广播")
+    private java.lang.String radio5Hidden;
 }

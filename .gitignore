@@ -23,6 +23,7 @@ yarn-error.log
 ## Build
 /dist
 /build
+/bak
 
 ## IDE - VSCode
 .vscode/

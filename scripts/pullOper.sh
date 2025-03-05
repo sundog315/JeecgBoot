@@ -510,13 +510,17 @@ handle_wireless() {
     local g2_key=$(echo "$param" | cut -d',' -f5)
     local g2_maxsta=$(echo "$param" | cut -d',' -f6)
     local g2_power=$(echo "$param" | cut -d',' -f7)
-    local g5_disabled=$(echo "$param" | cut -d',' -f8)
-    local g5_channel=$(echo "$param" | cut -d',' -f9)
-    local g5_ssid=$(echo "$param" | cut -d',' -f10)
-    local g5_encryption=$(echo "$param" | cut -d',' -f11)
-    local g5_key=$(echo "$param" | cut -d',' -f12)
-    local g5_maxsta=$(echo "$param" | cut -d',' -f13)
-    local g5_power=$(echo "$param" | cut -d',' -f14)
+    local g2_macfilter=$(echo "$param" | cut -d',' -f8)
+    local g2_hidden=$(echo "$param" | cut -d',' -f9)
+    local g5_disabled=$(echo "$param" | cut -d',' -f10)
+    local g5_channel=$(echo "$param" | cut -d',' -f11)
+    local g5_ssid=$(echo "$param" | cut -d',' -f12)
+    local g5_encryption=$(echo "$param" | cut -d',' -f13)
+    local g5_key=$(echo "$param" | cut -d',' -f14)
+    local g5_maxsta=$(echo "$param" | cut -d',' -f15)
+    local g5_power=$(echo "$param" | cut -d',' -f16)
+    local g5_macfilter=$(echo "$param" | cut -d',' -f17)
+    local g5_hidden=$(echo "$param" | cut -d',' -f18)
 
     # 更新无线配置
     local temp_file=$(mktemp)
@@ -534,6 +538,8 @@ handle_wireless() {
         s/option encryption ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option encryption '$g2_encryption'/
         s/option key ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option key '$g2_key'/
         s/option maxsta ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option maxsta '$g2_maxsta'/
+        s/option macfilter ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option macfilter '$g2_macfilter'/
+        s/option hidden ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option hidden '$g2_hidden'/
     }" "$temp_file"
 
     # 更新5G配置
@@ -548,6 +554,8 @@ handle_wireless() {
         s/option encryption ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option encryption '$g5_encryption'/
         s/option key ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option key '$g5_key'/
         s/option maxsta ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option maxsta '$g5_maxsta'/
+        s/option macfilter ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option macfilter '$g2_macfilter'/
+        s/option hidden ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option hidden '$g2_hidden'/
     }" "$temp_file"
 
     # 验证并应用配置

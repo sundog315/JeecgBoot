@@ -1,8 +1,20 @@
+/*
+ * @Author: Janelle.Liu sundog315@foxmail.com
+ * @Date: 2025-01-03 19:59:12
+ * @LastEditors: Janelle.Liu sundog315@foxmail.com
+ * @LastEditTime: 2025-02-28 15:30:33
+ * @FilePath: /JeecgBoot/jeecg-boot/jeecg-module-cpe/src/main/java/org/jeecg/quartz/job/JobCleanExpiredData.java
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 package org.jeecg.quartz.job;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.text.SimpleDateFormat;
 
+import org.jeecg.common.api.dto.message.MessageDTO;
+import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.modules.cpe.device.entity.CpeDevice;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceNeighborService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceService;
@@ -22,6 +34,8 @@ public class JobCleanExpiredData implements Job {
 	private ICpeDeviceStatusService cpeDeviceStatusService;
 	@Autowired
 	private ICpeDeviceNeighborService cpeDeviceNeighborService;
+    @Autowired
+    private ISysBaseAPI sysBaseApi;
 
     public int doCleanData() throws Exception {
         //清理两天前的设备状态信息
@@ -47,6 +61,18 @@ public class JobCleanExpiredData implements Job {
                     cpeDeviceService.updateById(device);
                     //清楚邻居信息
                     cpeDeviceNeighborService.deleteByMainId(device.getId());
+
+                    MessageDTO md = new MessageDTO();
+                    md.setToAll(false);
+                    md.setTitle("设备离线提醒");
+                    md.setTemplateCode("offline_message");
+                    md.setToUser("admin");
+
+                    HashMap<String, String> param = new HashMap<>();
+                    param.put("device_sn", device.getDeviceSn());
+                    param.put("offline_date", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+
+                    sysBaseApi.sendTemplateMessage(md);
                 }
         }
 

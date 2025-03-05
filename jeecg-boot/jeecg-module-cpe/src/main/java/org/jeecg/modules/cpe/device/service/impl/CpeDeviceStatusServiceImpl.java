@@ -527,6 +527,7 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 
 						// 提取网络相关信息
 						module = ubusOutputMap.containsKey("LTE_MODULE") ? ubusOutputMap.get("LTE_MODULE").toString() : "";
+						cpeDevice.setFiveGModule(module);
 
 						lte_cell = ubusOutputMap.containsKey("LTE_CELL") ? ubusOutputMap.get("LTE_CELL").toString() : "";
 						lte_cainfo = ubusOutputMap.containsKey("LTE_CAINFO") ? ubusOutputMap.get("LTE_CAINFO").toString() : "";

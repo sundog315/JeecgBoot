@@ -24,6 +24,11 @@
 								<j-dict-select-tag v-model:value="formData.deviceTypeNo" dictCode="cpe_device_type" placeholder="请选择设备类型"  allow-clear />
 							</a-form-item>
 						</a-col>
+            <a-col :span="24">
+							<a-form-item label="模组型号" v-bind="validateInfos.position" id="CpeDeviceForm-fiveGModule" name="fiveGModule">
+								<a-input v-model:value="formData.fiveGModule" placeholder="请输入模组型号"  allow-clear ></a-input>
+							</a-form-item>
+						</a-col>
 						<a-col :span="24">
 							<a-form-item label="关联卡片" v-bind="validateInfos.cardNo" id="CpeDeviceForm-cardNo" name="cardNo">
 								<j-dict-select-tag v-model:value="formData.cardNo" dictCode="card_info,card_no,id" placeholder="请选择关联卡片"  allow-clear />
@@ -89,6 +94,7 @@
     deviceStatusNo: '',   
     deviceModuleNo: '',   
     deviceTypeNo: '',   
+    fiveGModule: '',   
     cardNo: '',   
     onlineCardNo: '',   
     onlineNetNo: '',   
