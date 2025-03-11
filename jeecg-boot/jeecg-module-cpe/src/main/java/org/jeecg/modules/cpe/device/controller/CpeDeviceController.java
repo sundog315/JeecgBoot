@@ -60,12 +60,14 @@ public class CpeDeviceController extends JeecgController<CpeDevice, ICpeDeviceSe
 									@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 									HttpServletRequest req) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         // 自定义查询规则
         Map<String, QueryRuleEnum> customeRuleMap = new HashMap<>();
         // 自定义多选的查询规则为：LIKE_WITH_OR
         customeRuleMap.put("deviceStatusNo", QueryRuleEnum.LIKE_WITH_OR);
         customeRuleMap.put("customerName", QueryRuleEnum.LIKE_WITH_OR);
         QueryWrapper<CpeDevice> queryWrapper = QueryGenerator.initQueryWrapper(cpeDevice, req.getParameterMap(),customeRuleMap);
+		queryWrapper.likeRight("sys_org_code", sysUser.getOrgCode());
 		Page<CpeDevice> page = new Page<CpeDevice>(pageNo, pageSize);
 		IPage<CpeDevice> pageList = cpeDeviceService.page(page, queryWrapper);
 		return Result.OK(pageList);

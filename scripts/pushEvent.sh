@@ -127,8 +127,19 @@ get_network_config() {
         dhcp_end="$end_num"
     fi
 
+    # Get formatted modification times of both files
+    dhcp_time=$(date -r /etc/config/dhcp "+%Y-%m-%d %H:%M:%S" 2>/dev/null || echo "1970-01-01 00:00:00")
+    network_time=$(date -r /etc/config/network "+%Y-%m-%d %H:%M:%S" 2>/dev/null || echo "1970-01-01 00:00:00")
+
+    # Compare the date strings to find the most recent one
+    if [ "$dhcp_time" \> "$network_time" ]; then
+        last_modified_str="$dhcp_time"
+    else
+        last_modified_str="$network_time"
+    fi
+
     # 组合所有网络配置信息为JSON格式
-    echo "{\"lan_ip\":\"$lan_ipaddr\",\"lan_netmask\":\"$lan_netmask\",\"dhcp_start\":\"$dhcp_start\",\"dhcp_end\":\"$dhcp_end\",\"dhcp_lease\":\"$dhcp_leasetime\",\"dhcp_range\":\"$dhcp_range\"}"
+    echo "{\"lan_ip\":\"$lan_ipaddr\",\"lan_netmask\":\"$lan_netmask\",\"dhcp_start\":\"$dhcp_start\",\"dhcp_end\":\"$dhcp_end\",\"dhcp_lease\":\"$dhcp_leasetime\",\"dhcp_range\":\"$dhcp_range\",\"last_modified\":\"$last_modified_str\"}"
 }
 
 # 获取速率限制配置

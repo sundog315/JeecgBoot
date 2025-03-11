@@ -1,0 +1,19 @@
+#!/bin/sh /etc/rc.common
+
+START=99  # 服务启动顺序，99 表示较晚启动
+
+start() {
+    echo "Starting network traffic control"
+    /etc/5g/tc
+}
+
+stop() {
+    echo "Stopping network traffic control"
+    tc qdisc del dev usb0 root
+    tc qdisc del dev br-lan root
+}
+
+restart() {
+    stop
+    start
+}

@@ -31,6 +31,11 @@ export const columns: BasicColumn[] = [
     dataIndex: 'named_dictText'
   },
   {
+    title: '所属客户',
+    align:"center",
+    dataIndex: 'sysOrgCode_dictText'
+  },
+  {
     title: '实名人',
     align:"center",
     dataIndex: 'namedPerson'

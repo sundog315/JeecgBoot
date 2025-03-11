@@ -70,14 +70,16 @@ public class CardInfoController extends JeecgController<CardInfo, ICardInfoServi
 	@ApiOperation(value="卡片信息表-分页列表查询", notes="卡片信息表-分页列表查询")
 	@GetMapping(value = "/list")
 	public Result<IPage<CardInfo>> queryPageList(CardInfo cardInfo,
-								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-								   HttpServletRequest req) {
+									@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+									@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+									HttpServletRequest req) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         // 自定义查询规则
         Map<String, QueryRuleEnum> customeRuleMap = new HashMap<>();
         // 自定义多选的查询规则为：LIKE_WITH_OR
         customeRuleMap.put("netCorps", QueryRuleEnum.LIKE_WITH_OR);
         QueryWrapper<CardInfo> queryWrapper = QueryGenerator.initQueryWrapper(cardInfo, req.getParameterMap(),customeRuleMap);
+		queryWrapper.likeRight("sys_org_code", sysUser.getOrgCode());
 		Page<CardInfo> page = new Page<CardInfo>(pageNo, pageSize);
 		IPage<CardInfo> pageList = cardInfoService.page(page, queryWrapper);
 		return Result.OK(pageList);

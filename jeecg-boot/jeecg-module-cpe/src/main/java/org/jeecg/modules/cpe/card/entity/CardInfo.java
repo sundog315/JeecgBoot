@@ -49,8 +49,10 @@ public class CardInfo implements Serializable {
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "更新日期")
     private java.util.Date updateTime;
-	/**所属部门*/
-    @ApiModelProperty(value = "所属部门")
+	/**所属客户*/
+	@Excel(name = "所属客户", width = 15, dictTable = "sys_depart", dicText = "depart_name", dicCode = "org_code")
+    @Dict(dictTable = "sys_depart", dicText = "depart_name", dicCode = "org_code")
+    @ApiModelProperty(value = "所属客户")
     private java.lang.String sysOrgCode;
 	/**卡号*/
     @Excel(name = "卡号", width = 15)

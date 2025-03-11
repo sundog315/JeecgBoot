@@ -34,6 +34,11 @@
 								<a-input v-model:value="formData.namedPerson" placeholder="请输入实名人"  allow-clear ></a-input>
 							</a-form-item>
 						</a-col>
+            <a-col :span="24">
+							<a-form-item label="所属客户" v-bind="validateInfos.sysOrgCode" id="CpeDeviceForm-sysOrgCode" name="sysOrgCode">
+								<j-dict-select-tag v-model:value="formData.sysOrgCode" dictCode="sys_depart,depart_name,org_code" placeholder="请选择所属客户"  allow-clear />
+							</a-form-item>
+						</a-col>
 						<a-col :span="24">
 							<a-form-item label="本周期上传量" v-bind="validateInfos.upBytes" id="CardInfoForm-upBytes" name="upBytes">
 								<a-input-number v-model:value="formData.upBytes" placeholder="请输入本周期上传量" style="width: 100%" />
@@ -77,8 +82,9 @@
     netCorps: '',
     named: undefined,
     namedPerson: '',
-    upBytes: undefined,
-    downBytes: undefined,
+    sysOrgCode: '',
+    upBytes: 0,
+    downBytes: 0,
   });
   const { createMessage } = useMessage();
   const labelCol = ref<any>({ xs: { span: 24 }, sm: { span: 5 } });

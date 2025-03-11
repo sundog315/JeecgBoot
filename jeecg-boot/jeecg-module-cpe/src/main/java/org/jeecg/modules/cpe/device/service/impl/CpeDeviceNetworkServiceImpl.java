@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -101,6 +102,7 @@ public class CpeDeviceNetworkServiceImpl extends ServiceImpl<CpeDeviceNetworkMap
 				String newDhcpStart = (String) networkConfigMap.get("dhcp_start");
 				String newDhcpEnd = (String) networkConfigMap.get("dhcp_end");
 				String newDhcpLease = (String) networkConfigMap.get("dhcp_lease");
+				String lastModified = (String) networkConfigMap.get("last_modified");
 
 				// 检查配置是否有变化
 				if (!deviceNetwork.getIpaddr().equals(newIpaddr) ||
@@ -110,29 +112,38 @@ public class CpeDeviceNetworkServiceImpl extends ServiceImpl<CpeDeviceNetworkMap
 					!deviceNetwork.getDhcpLeasetime().equals(newDhcpLease)) {
 					log.info("设备网络配置发生变化，旧配置：{}，新配置：{}", oldConfig, newIpaddr+","+newNetmask+","+newDhcpStart+","+newDhcpEnd+","+newDhcpLease);
 
-					// 创建操作日志
-					CpeOperLog operLog = new CpeOperLog();
-					operLog.setCpeId(cpeDevice.getId());
-					operLog.setOperType("network");
-					operLog.setOperParam(oldConfig);
-					operLog.setCreateBy(ADMIN_USER);
-					operLog.setCreateTime(new Date());
-					operLog.setCreateTs(new Date());
-					operLog.setSysOrgCode(SYS_ORG_CODE);
+					try {
+						// 将时间戳转换为格式化日期
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						Date fileDate = sdf.parse(lastModified);
+						if (fileDate.getTime() > deviceNetwork.getUpdateTime().getTime() + 240000) {
+							// 更新网络配置信息
+							deviceNetwork.setIpaddr((String) networkConfigMap.get("lan_ip"));
+							deviceNetwork.setNetmask((String) networkConfigMap.get("lan_netmask"));
+							deviceNetwork.setDhcpStart((String) networkConfigMap.get("dhcp_start"));
+							deviceNetwork.setDhcpEnd((String) networkConfigMap.get("dhcp_limit")); // 从dhcp_range中提取结束地址
+							deviceNetwork.setDhcpLeasetime((String) networkConfigMap.get("dhcp_lease"));
+							deviceNetwork.setUpdateTime(new Date());
+							deviceNetwork.setUpdateBy(ADMIN_USER);
+							// 保存或更新配置
+							this.saveOrUpdate(deviceNetwork);
+						}else{
+							// 创建操作日志
+							CpeOperLog operLog = new CpeOperLog();
+							operLog.setCpeId(cpeDevice.getId());
+							operLog.setOperType("network");
+							operLog.setOperParam(oldConfig);
+							operLog.setCreateBy(ADMIN_USER);
+							operLog.setCreateTime(new Date());
+							operLog.setCreateTs(new Date());
+							operLog.setSysOrgCode(SYS_ORG_CODE);
 
-					// 保存操作日志
-					cpeOperLogService.save(operLog);
-
-					// // 更新网络配置信息
-					// deviceNetwork.setIpaddr((String) networkConfigMap.get("lan_ip"));
-					// deviceNetwork.setNetmask((String) networkConfigMap.get("lan_netmask"));
-					// deviceNetwork.setDhcpStart((String) networkConfigMap.get("dhcp_start"));
-					// deviceNetwork.setDhcpEnd((String) networkConfigMap.get("dhcp_limit")); // 从dhcp_range中提取结束地址
-					// deviceNetwork.setDhcpLeasetime((String) networkConfigMap.get("dhcp_lease"));
-					// deviceNetwork.setUpdateTime(new Date());
-					// deviceNetwork.setUpdateBy(ADMIN_USER);
-					// // 保存或更新配置
-					// this.saveOrUpdate(deviceNetwork);
+							// 保存操作日志
+							cpeOperLogService.save(operLog);
+						}
+					} catch (Exception ex) {
+						log.info("网络配置文件修改日期转换失败，可能因版本不同导致，可以忽略");
+					}
 				}
 			} else {
 				deviceNetwork = new CpeDeviceNetwork();
