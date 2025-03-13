@@ -2,7 +2,7 @@
  * @Author: Janelle.Liu sundog315@foxmail.com
  * @Date: 2025-01-13 23:27:24
  * @LastEditors: Janelle.Liu sundog315@foxmail.com
- * @LastEditTime: 2025-01-20 13:59:36
+ * @LastEditTime: 2025-03-13 10:58:37
  * @FilePath: /JeecgBoot/jeecg-boot/jeecg-module-cpe/src/main/java/org/jeecg/modules/cpe/device/controller/CpeDeviceApi.java
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -66,7 +66,8 @@ public class CpeDeviceApi extends JeecgController<CpeDevice, ICpeDeviceService> 
 								@RequestParam(name="auto_reboot",required=false) String autoReboot,
 								@RequestParam(name="network",required=false) String network,
 								@RequestParam(name="speed_limit",required=false) String speedLimitParam,
-								@RequestParam(name="wireless",required=false) String wireless) {
+								@RequestParam(name="wireless",required=false) String wireless,
+								@RequestParam(name="version",required=false) String version) {
 
 		switch (deviceType) {
 			case "X25":
@@ -79,7 +80,7 @@ public class CpeDeviceApi extends JeecgController<CpeDevice, ICpeDeviceService> 
 
 			default:
 				try{
-					cpeDeviceStatusService.push(deviceSnParam, ubusOutputParam, ipAddrParam, lteStatus);
+					cpeDeviceStatusService.push(deviceSnParam, ubusOutputParam, ipAddrParam, lteStatus, version);
 					if ((frp != null) && (!frp.isEmpty()))
 						cpeDeviceFrpService.report(deviceSnParam, frp);
 					if ((autoReboot != null) && (!autoReboot.isEmpty()))

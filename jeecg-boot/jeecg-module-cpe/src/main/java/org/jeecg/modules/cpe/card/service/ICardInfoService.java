@@ -1,9 +1,7 @@
 package org.jeecg.modules.cpe.card.service;
 
-import org.jeecg.modules.cpe.card.entity.CardPackageRel;
 import org.jeecg.modules.cpe.card.entity.CardInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.springframework.beans.factory.annotation.Autowired;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
@@ -22,7 +20,7 @@ public interface ICardInfoService extends IService<CardInfo> {
 	 * @param id
 	 */
 	public void delMain (String id);
-	
+
 	/**
 	 * 批量删除一对多
 	 *

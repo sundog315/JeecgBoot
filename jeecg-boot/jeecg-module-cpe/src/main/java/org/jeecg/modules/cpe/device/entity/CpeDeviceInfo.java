@@ -106,6 +106,10 @@ public class CpeDeviceInfo implements Serializable {
     @Excel(name = "5G模块版本", width = 15)
     @ApiModelProperty(value = "5G模块版本")
     private java.lang.String modemVersion;
+    /**固件版本号*/
+	@Excel(name = "固件版本号", width = 15)
+    @ApiModelProperty(value = "固件版本号")
+    private java.lang.String openwrtVersion;
 	/**IMEI*/
     @Excel(name = "IMEI", width = 15)
     @ApiModelProperty(value = "IMEI")

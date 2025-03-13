@@ -41,7 +41,6 @@ import org.jeecg.modules.cpe.device.service.ICpeDeviceNetworkService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jeecg.common.aspect.annotation.AutoLog;
-import org.jeecg.common.aspect.annotation.PermissionData;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;

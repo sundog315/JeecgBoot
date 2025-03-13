@@ -44,7 +44,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @param message 使用构造器赋值参数
      */
     void sendBusTemplateAnnouncement(BusTemplateMessageDTO message);
-    
+
     /**
      * 5通过消息中心模板，生成推送内容
      * @param templateDTO 使用构造器赋值参数

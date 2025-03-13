@@ -46,7 +46,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 @Service
 public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMapper, CpeDeviceStatus> implements ICpeDeviceStatusService {
-	
+
 	@Autowired
 	private CpeDeviceStatusMapper cpeDeviceStatusMapper;
 	@Autowired
@@ -81,8 +81,9 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 	private String deviceSn = "";
 	private String dns1 = "";
 	private String dns2 = "";
+	private String openwrtVersion = "";
 
-    /** 
+    /**
      * 无线接入技术(RAT)类型映射
      * 将数字代码映射到对应的网络制式
      */
@@ -103,7 +104,7 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
         RAT_MAP = Collections.unmodifiableMap(map);
     }
 
-    /** 
+    /**
      * 信号质量相关映射
      * SINR: 信噪比
      * RSRP: 参考信号接收功率
@@ -190,12 +191,12 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 	private String bandwidth(String str) {
 		// 空值检查
 		if (str.isEmpty()) return "";
-		
+
 		// 判断网络类型（NR或LTE）
 		boolean isNrCell = lte_cell.indexOf("NR service cell") > 0;
 		// 选择对应的带宽映射表
 		Map<String, String> currentMap = isNrCell ? BANDWIDTH_MAP_NR : BANDWIDTH_MAP_LTE;
-		
+
 		// 返回格式化后的带宽值
 		return currentMap.getOrDefault(str, str + " MHz");
 	}
@@ -213,40 +214,40 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 
     /**
      * 信号强度转换：SINR（信号与干扰加噪声比）
-     * 
+     *
      * @param str 原始SINR值字符串
      * @return String 转换后的SINR值，格式为"xxxdB"
      */
 	private String ssSinr(String str)
 	{
 		if (str.isEmpty()) return "";
-		return SINR_MAP.getOrDefault(str, 
+		return SINR_MAP.getOrDefault(str,
 			String.valueOf((Integer.parseInt(str) * 0.5 - 23)) + "dB");
 	}
 
     /**
      * 信号强度转换：RSRP（参考信号接收功率）
-     * 
+     *
      * @param str 原始RSRP值字符串
      * @return String 转换后的RSRP值，格式为"xxxdBm"
      */
 	private String ssRsrp(String str)
 	{
 		if (str.isEmpty()) return "";
-		return RSRP_MAP.getOrDefault(str, 
+		return RSRP_MAP.getOrDefault(str,
 			String.valueOf((Integer.parseInt(str) - 156)) + "dBm");
 	}
 
     /**
      * 信号强度转换：RSRQ（参考信号接收质量）
-     * 
+     *
      * @param str 原始RSRQ值字符串
      * @return String 转换后的RSRQ值，格式为"xxxdB"
      */
 	private String ssRsrq(String str)
 	{
 		if (str.isEmpty()) return "";
-		return RSRQ_MAP.getOrDefault(str, 
+		return RSRQ_MAP.getOrDefault(str,
 			String.valueOf((Integer.parseInt(str) * 0.5 - 43)) + "dB");
 	}
 
@@ -416,6 +417,7 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 			cpeDeviceStatus.setUpdateTime(new Date());
 			cpeDeviceStatus.setDns1(dns1);
 			cpeDeviceStatus.setDns2(dns2);
+			cpeDeviceStatus.setOpenwrtVersion(openwrtVersion);
 
 			// 保存设备状态记录
 			save(cpeDeviceStatus);
@@ -648,6 +650,7 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 			cpeDeviceStatus.setUpdateTime(new Date());
 			cpeDeviceStatus.setDns1(dns1);
 			cpeDeviceStatus.setDns2(dns2);
+			cpeDeviceStatus.setOpenwrtVersion(openwrtVersion);
 
 			// 保存设备状态记录
 			save(cpeDeviceStatus);
@@ -717,10 +720,11 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
      * @throws Exception 处理异常时抛出
      */
 	@Transactional(rollbackFor = Exception.class)
-	public void push(String deviceSnParam, String ubusOutputParam, String ipAddrParam, String lteStatus) throws Exception
+	public void push(String deviceSnParam, String ubusOutputParam, String ipAddrParam, String lteStatus, String openwrtVer) throws Exception
 	{
 		// 标准化设备序列号格式（移除冒号并转换为大写）
 		deviceSn = deviceSnParam.replace(":", "").toUpperCase();
+		openwrtVersion = openwrtVer;
 
 		// 根据设备序列号查询设备信息
 		List<CpeDevice> cpeDeviceList = cpeDeviceService.selectByDeviceSn(deviceSn);
@@ -828,30 +832,30 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 		// 获取设备上报的流量数据
 		double reportedUpBytes = Double.parseDouble(ipaddr[2]);
 		double reportedDownBytes = Double.parseDouble(ipaddr[3]);
-		
+
 		// 查询对应的SIM卡信息
 		List<CardInfo> cards = cardInfoService.selectByCardNo(iccid);
 		if (cards.isEmpty()) return;
-		
+
 		CardInfo card = cards.get(0);
 
 		// 计算实际流量数据
 		TrafficData trafficData = calculateTrafficData(
 			cpeDevice.getId(),
-			reportedUpBytes, 
+			reportedUpBytes,
 			reportedDownBytes,
 			card.getUpBytes(),
 			card.getDownBytes(),
 			card.getBeginUpBytes(),
 			card.getBeginDownBytes()
 		);
-		
+
 		// 检查是否需要月度流量重置
 		if (isMonthlyReset(cpeDevice.getId())) {
 			// 执行月度流量重置
 			trafficData = handleMonthlyReset(trafficData);
 		}
-		
+
 		// 更新卡片流量数据
 		updateCardTraffic(card, trafficData);
 	}
@@ -871,7 +875,7 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 
     /**
      * 从Redis获取流量数据，处理空值情况
-     * 
+     *
      * @param id 设备ID
      * @param type 流量类型（"upBytes" 或 "downBytes"）
      * @return double 缓存的流量数据，如果不存在则返回0
@@ -895,7 +899,7 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 
 	/**
      * 将流量数据存入Redis
-     * 
+     *
      * @param id 设备ID
      * @param type 流量类型（"upBytes" 或 "downBytes"）
      * @return Boolean
@@ -912,7 +916,7 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 
     /**
      * 计算实际流量数据，处理设备重启和期初值的情况
-     * 
+     *
      * @param reportedUp 设备报告的上传字节数
      * @param reportedDown 设备报告的下载字节数
      * @param accuUp 数据库中累计的上传字节数
@@ -921,17 +925,17 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
      * @param beginDown 期初下载字节数
      * @return TrafficData 计算后的流量数据对象
      */
-	private TrafficData calculateTrafficData(String id,double reportedUp, double reportedDown, 
-										   double accuUp, double accuDown,
-										   double beginUp, double beginDown) {
+	private TrafficData calculateTrafficData(String id,double reportedUp, double reportedDown,
+											double accuUp, double accuDown,
+											double beginUp, double beginDown) {
 		// 获取Redis缓存的上次上报数据
 		double redisUpBytes = getRedisTraffic(id, "upBytes");
 		double redisDownBytes = getRedisTraffic(id, "downBytes");
-		
+
 		// 计算增量
 		double upIncrement;
 		double downIncrement;
-		
+
 		// 处理设备重启情况
 		if (reportedUp < redisUpBytes) {
 			// 设备重启，当前值小于上次值，说明是新的累计值
@@ -939,22 +943,22 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 		} else {
 			upIncrement = reportedUp - redisUpBytes;
 		}
-		
+
 		if (reportedDown < redisDownBytes) {
 			// 设备重启，当前值小于上次值，说明是新的累计值
 			downIncrement = reportedDown;
 		} else {
 			downIncrement = reportedDown - redisDownBytes;
 		}
-		
+
 		// 更新Redis中的最新值
 		setRedisTraffic(id, "upBytes", reportedUp);
 		setRedisTraffic(id, "downBytes", reportedDown);
-		
+
 		// 计算当月总流量（累计值 + 本次增量）
 		double totalUp = accuUp + upIncrement;
 		double totalDown = accuDown + downIncrement;
-		
+
 		// 如果有期初值，需要减去期初值得到当月实际使用量
 		if (beginUp > 0 && (totalUp - beginUp) > 0) {
 			totalUp = totalUp - beginUp;
@@ -964,39 +968,39 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 			totalDown = totalDown - beginDown;
 			beginDown = 0.0;
 		}
-		
+
 		// 保存本次增量，用于更新状态表
 		upBytes = upIncrement;
 		downBytes = downIncrement;
-		
+
 		return new TrafficData(totalUp, totalDown, beginUp, beginDown);
 	}
 
     /**
      * 检查是否需要月度重置
-     * 
+     *
      * @param deviceId 设备ID，用于查询最新记录
      * @return boolean 如果当前月份大于最新记录的月份，返回true
      */
 	private boolean isMonthlyReset(String deviceId) {
 		Date latestRecord = selectNewtestTsByMainId(deviceId);
 		if (latestRecord == null) return false;
-		
+
 		LocalDate currentDate = LocalDate.now();
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(latestRecord);
-		
+
 		int currentYear = currentDate.getYear();
 		int currentMonth = currentDate.getMonthValue();
 		int recordYear = calendar.get(Calendar.YEAR);
 		int recordMonth = calendar.get(Calendar.MONTH) + 1;
-		
+
 		return currentYear > recordYear || currentMonth > recordMonth;
 	}
 
     /**
      * 处理月度重置，将当前流量设为期初值，当前值清零
-     * 
+     *
      * @param data 当前的流量数据
      * @return TrafficData 重置后的流量数据
      */
@@ -1009,14 +1013,9 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 		);
 	}
 
-	private void resetBeginBytes(CardInfo card) {
-		card.setBeginUpBytes(0.0);
-		card.setBeginDownBytes(0.0);
-	}
-
     /**
      * 更新卡片数据，包括流量统计和IP地址信息
-     * 
+     *
      * @param card 需要更新的卡片信息对象
      * @param networkData 网络数据，包含IP地址和流量信息
      * @param trafficData 流量数据，包含当前和期初流量

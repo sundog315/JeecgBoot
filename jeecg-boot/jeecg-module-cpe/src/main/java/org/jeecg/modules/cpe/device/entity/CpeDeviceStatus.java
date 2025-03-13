@@ -178,5 +178,9 @@ public class CpeDeviceStatus implements Serializable {
 	/**5G模组型号*/
 	@Excel(name = "5G模组型号", width = 15)
     @ApiModelProperty(value = "5G模组型号")
-    private java.lang.String cpe_module;
+    private java.lang.String cpeModule;
+    /**固件版本号*/
+	@Excel(name = "固件版本号", width = 15)
+    @ApiModelProperty(value = "固件版本号")
+    private java.lang.String openwrtVersion;
 }

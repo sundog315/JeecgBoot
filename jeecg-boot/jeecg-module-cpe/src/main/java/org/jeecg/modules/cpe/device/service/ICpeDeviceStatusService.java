@@ -1,3 +1,11 @@
+/*
+ * @Author: Janelle.Liu sundog315@foxmail.com
+ * @Date: 2025-03-11 11:16:21
+ * @LastEditors: Janelle.Liu sundog315@foxmail.com
+ * @LastEditTime: 2025-03-13 11:00:29
+ * @FilePath: /JeecgBoot/jeecg-boot/jeecg-module-cpe/src/main/java/org/jeecg/modules/cpe/device/service/ICpeDeviceStatusService.java
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 package org.jeecg.modules.cpe.device.service;
 
 import org.jeecg.modules.cpe.device.entity.CpeDeviceStatus;
@@ -30,7 +38,7 @@ public interface ICpeDeviceStatusService extends IService<CpeDeviceStatus> {
 	 */
 	public void deleteByMainId(String mainId);
 	
-	public void push(String deviceSnParam, String ubusOutputParam, String ipAddrParam, String lteStatus) throws Exception;
+	public void push(String deviceSnParam, String ubusOutputParam, String ipAddrParam, String lteStatus, String version) throws Exception;
 
 	/**
 	 * 通过时间戳删除子表数据

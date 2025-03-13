@@ -1,8 +1,5 @@
 package org.jeecg.modules.cpe.scripts.mapper;
 
-import java.util.List;
-
-import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.cpe.scripts.entity.CpeScripts;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 

@@ -20,6 +20,10 @@ log_error() {
     echo "[ERROR] $(date '+%Y-%m-%d %H:%M:%S') - $1" >&2
 }
 
+get_version() {
+    cat /etc/openwrt_version
+}
+
 # 获取MAC地址
 get_mac_address() {
     local mac
@@ -226,6 +230,7 @@ make_http_request() {
         local network_config=$(get_network_config)
         local speed_limit_config=$(get_speed_limit)
         local wireless_config=$(get_wireless_config)
+        local version=$(get_version)
 
         # 发送HTTP请求
         local response
@@ -242,6 +247,7 @@ make_http_request() {
             --data-urlencode "network=${network_config}" \
             --data-urlencode "speed_limit=${speed_limit_config}" \
             --data-urlencode "wireless=${wireless_config}" \
+            --data-urlencode "version=${version}" \
             "$API_BASE_URL")
 
         if [ $? -eq 0 ]; then

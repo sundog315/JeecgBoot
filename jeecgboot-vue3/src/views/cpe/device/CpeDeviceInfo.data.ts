@@ -92,6 +92,12 @@ export const columns: BasicColumn[] = [
     dataIndex: 'modemVersion',
   },
   {
+    title: '固件版本',
+    align: 'center',
+    width: 80,
+    dataIndex: 'openwrtVersion',
+  },
+  {
     title: 'IMEI',
     align: 'center',
     width: 180,

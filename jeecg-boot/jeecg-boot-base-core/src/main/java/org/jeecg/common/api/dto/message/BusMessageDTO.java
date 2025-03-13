@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 /**
  * 带业务参数的消息
-* 
+*
 * @author: taoyan
 * @date: 2022/8/17
 */

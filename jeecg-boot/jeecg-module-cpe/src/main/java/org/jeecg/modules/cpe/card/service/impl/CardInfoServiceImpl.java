@@ -1,15 +1,6 @@
-/*
- * @Author: Janelle.Liu sundog315@foxmail.com
- * @Date: 2025-02-28 08:20:18
- * @LastEditors: Janelle.Liu sundog315@foxmail.com
- * @LastEditTime: 2025-02-28 08:26:05
- * @FilePath: /JeecgBoot/jeecg-boot/jeecg-module-cpe/src/main/java/org/jeecg/modules/cpe/card/service/impl/CardInfoServiceImpl.java
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
- */
 package org.jeecg.modules.cpe.card.service.impl;
 
 import org.jeecg.modules.cpe.card.entity.CardInfo;
-import org.jeecg.modules.cpe.card.entity.CardPackageRel;
 import org.jeecg.modules.cpe.card.mapper.CardPackageRelMapper;
 import org.jeecg.modules.cpe.card.mapper.CardInfoMapper;
 import org.jeecg.modules.cpe.card.service.ICardInfoService;
