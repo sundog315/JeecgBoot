@@ -11,6 +11,8 @@ import org.jeecg.modules.cpe.device.entity.CpeDevice;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceNeighborService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceStatusService;
+import org.jeecg.modules.system.entity.SysDepart;
+import org.jeecg.modules.system.service.ISysDepartService;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -28,6 +30,8 @@ public class JobCleanExpiredData implements Job {
 	private ICpeDeviceNeighborService cpeDeviceNeighborService;
     @Autowired
     private ISysBaseAPI sysBaseApi;
+    @Autowired
+    private ISysDepartService sysDepartService;
 
     public int doCleanData() throws Exception {
         //清理两天前的设备状态信息
@@ -56,9 +60,27 @@ public class JobCleanExpiredData implements Job {
 
                     HashMap<String, String> param = new HashMap<>();
                     param.put("device_sn", device.getDeviceSn());
+                    param.put("position", device.getPosition());
+
+                    // 将 orgCode 转换为部门名称
+                    String departName = "";
+                    try {
+                        SysDepart depart = sysDepartService.queryCompByOrgCode(device.getSysOrgCode());
+                        if (depart != null) {
+                            departName = depart.getDepartName();
+                        } else {
+                            departName = device.getSysOrgCode(); // 如果找不到部门，则使用原始的 orgCode
+                            log.warn("未找到对应的部门名称，使用原始orgCode: {}", device.getSysOrgCode());
+                        }
+                    } catch (Exception e) {
+                        departName = device.getSysOrgCode(); // 发生异常时使用原始的 orgCode
+                        log.error("获取部门名称时发生错误: {}", e.getMessage());
+                    }
+
+                    param.put("customer_name", departName);
                     param.put("offline_date", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 
-                    sysBaseApi.sendTemplateAnnouncement(new TemplateMessageDTO("admin", "admin", "设备离线提醒", param, "offline_message"));
+                    sysBaseApi.sendTemplateAnnouncement(new TemplateMessageDTO("admin", "admin", "设备离线提醒，客户" + departName + "位于" + device.getPosition() + "设备与平台断联", param, "offline_message"));
 
                     // List<SysUser> userList = sysUserService.queryUserByOrgCode(device.getSysOrgCode());
                     // for (SysUser user : userList) {
