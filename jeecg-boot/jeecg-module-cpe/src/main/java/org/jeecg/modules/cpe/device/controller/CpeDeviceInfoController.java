@@ -200,6 +200,34 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
         return Result.OK("操作成功!");
     }
 
+    /**
+     * 修改root用户密码操作
+     * @param id 设备ID
+     * @param password Base64编码的密码
+     * @return
+     */
+    @AutoLog(value = "设备信息表-修改root用户密码")
+    @ApiOperation(value="设备信息表-修改root用户密码", notes="设备信息表-修改root用户密码")
+    //@RequiresPermissions("cpe.device:cpe_device_info:updatePassword")
+    @PostMapping(value = "/updatePassword")
+    public Result<String> updatePassword(@RequestParam(name="id",required=true) String id,
+                                        @RequestParam(name="password",required=false) String password) {
+        // 验证参数不为空
+        if (password == null || password.trim().isEmpty()) {
+			password = "Admin@315";
+        }
+
+        CpeOperLog oper = new CpeOperLog();
+        oper.setCpeId(id);
+        oper.setOperType("update_password");
+		String encodedPassword = java.util.Base64.getEncoder().encodeToString(password.getBytes());
+        oper.setOperParam(encodedPassword); // 直接存储已经Base64编码的密码
+        oper.setCreateTs(new Date());
+
+        cpeOperLogService.save(oper);
+        return Result.OK("操作成功!");
+    }
+
     // /**
     //  * 批量删除
     //  * @param ids

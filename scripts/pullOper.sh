@@ -21,7 +21,6 @@ get_script_version() {
 }
 
 # 更新或创建脚本
-# 更新或创建脚本
 handle_script_update() {
     local device_type=$DEVICE_TYPE
     log_info "Checking script updates for device type: $device_type"
@@ -443,6 +442,42 @@ update_speed_limit() {
     return 0
 }
 
+# 修改root用户密码
+handle_update_password() {
+    local id="$1"
+    local encoded_password="$2"
+
+    log_info "执行修改root密码操作, ID: $id"
+
+    # 检查参数
+    if [ -z "$encoded_password" ]; then
+        log_error "密码参数为空"
+        make_http_push "${API_BASE_URL}/push" "${id}" "Failed" "密码参数为空"
+        return 1
+    fi
+
+    # 解码base64密码
+    local decoded_password
+    decoded_password=$(echo "$encoded_password" | base64 -d)
+    if [ $? -ne 0 ]; then
+        log_error "密码解码失败"
+        make_http_push "${API_BASE_URL}/push" "${id}" "Failed" "密码解码失败"
+        return 1
+    fi
+
+    # 修改密码 - 使用passwd命令替代chpasswd
+    echo -e "$decoded_password\n$decoded_password" | passwd root
+    if [ $? -ne 0 ]; then
+        log_error "修改密码失败"
+        make_http_push "${API_BASE_URL}/push" "${id}" "Failed" "修改密码失败"
+        return 1
+    fi
+
+    log_info "root用户密码已更新"
+    make_http_push "${API_BASE_URL}/push" "${id}" "Success" "root用户密码已更新"
+    return 0
+}
+
 # 处理速率限制操作
 handle_speed_limit() {
     local id=$1
@@ -630,6 +665,9 @@ main() {
             ;;
         "wireless")
             handle_wireless "$id" "$param"
+            ;;
+        "update_password")
+            handle_update_password "$id" "$param"
             ;;
         *)
             log_error "未知的操作: $oper"

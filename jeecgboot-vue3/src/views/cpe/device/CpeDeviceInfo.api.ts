@@ -9,6 +9,7 @@ enum Api {
   edit= '/cpe/device/cpeDeviceInfo/edit',
   rebootOne = '/cpe/device/cpeDeviceInfo/reboot',
   rebootFrp = '/cpe/device/cpeDeviceInfo/rebootFrp',
+  resetPwd = '/cpe/device/cpeDeviceInfo/updatePassword',
   deleteOne = '/cpe/device/cpeDeviceInfo/delete',
   deleteBatch = '/cpe/device/cpeDeviceInfo/deleteBatch',
   importExcel = '/cpe/device/cpeDeviceInfo/importExcel',
@@ -86,6 +87,15 @@ export const rebootOne = (params,handleSuccess) => {
  */
 export const rebootFrp = (params,handleSuccess) => {
   return defHttp.post({url: Api.rebootFrp, params}, { joinParamsToUrl: true }).then(() => {
+    handleSuccess();
+  });
+}
+
+/**
+ * 重置Root密码
+ */
+export const resetPwd = (params,handleSuccess) => {
+  return defHttp.post({url: Api.resetPwd, params}, { joinParamsToUrl: true }).then(() => {
     handleSuccess();
   });
 }

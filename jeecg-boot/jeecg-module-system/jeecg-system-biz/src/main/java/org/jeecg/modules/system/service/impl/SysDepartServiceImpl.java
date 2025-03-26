@@ -700,6 +700,12 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 		String compyOrgCode = orgCode.substring(0,length);
 		return this.baseMapper.queryCompByOrgCode(compyOrgCode);
 	}
+
+	@Override
+	public SysDepart queryDepartByOrgCode(String orgCode) {
+		return this.baseMapper.queryCompByOrgCode(orgCode);
+	}
+
 	/**
 	 * 根据id查询下级部门
 	 * @param pid

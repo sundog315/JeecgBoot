@@ -169,6 +169,12 @@ public interface ISysDepartService extends IService<SysDepart>{
      */
     SysDepart queryCompByOrgCode(String orgCode);
     /**
+     * 获取部门信息
+     * @param orgCode 部门编码
+     * @return
+     */
+    SysDepart queryDepartByOrgCode(String orgCode);
+    /**
      * 获取下级部门
      * @param pid
      * @return

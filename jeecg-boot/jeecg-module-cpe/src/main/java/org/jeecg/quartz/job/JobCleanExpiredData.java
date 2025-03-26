@@ -65,7 +65,7 @@ public class JobCleanExpiredData implements Job {
                     // 将 orgCode 转换为部门名称
                     String departName = "";
                     try {
-                        SysDepart depart = sysDepartService.queryCompByOrgCode(device.getSysOrgCode());
+                        SysDepart depart = sysDepartService.queryDepartByOrgCode(device.getSysOrgCode());
                         if (depart != null) {
                             departName = depart.getDepartName();
                         } else {

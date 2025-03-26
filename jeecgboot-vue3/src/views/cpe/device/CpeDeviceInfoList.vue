@@ -92,7 +92,7 @@
   import { useListPage } from '/@/hooks/system/useListPage'
   import CpeDeviceInfoModal from './components/CpeDeviceInfoModal.vue'
   import { columns, superQuerySchema } from './CpeDeviceInfo.data';
-  import { list, rebootFrp, rebootOne, deleteOne, batchDelete, getImportUrl,getExportUrl } from './CpeDeviceInfo.api';
+  import { list, rebootFrp, resetPwd, rebootOne, deleteOne, batchDelete, getImportUrl,getExportUrl } from './CpeDeviceInfo.api';
   import { downloadFile } from '/@/utils/common/renderUtils';
   import JDictSelectTag from '/@/components/Form/src/jeecg/components/JDictSelectTag.vue';
   import JSelectMultiple from '/@/components/Form/src/jeecg/components/JSelectMultiple.vue';
@@ -174,6 +174,13 @@
   }
 
   /**
+   * 重置root密码
+   */
+  async function handleResetPwd(record) {
+    await resetPwd({id: record.id}, handleSuccess);
+  }
+
+  /**
    * 成功回调
    */
   function handleSuccess() {
@@ -218,6 +225,15 @@
           placement: 'topLeft',
         },
         auth: 'cpe.device:cpe_device_info:frpreboot',
+      },
+      {
+        label: '重置密码',
+        popConfirm: {
+          title: '是否确认重置root用户密码',
+          confirm: handleResetPwd.bind(null, record),
+          placement: 'topLeft',
+        },
+        auth: 'cpe.device:cpe_device_info:resetpwd',
       },
     ];
   }
