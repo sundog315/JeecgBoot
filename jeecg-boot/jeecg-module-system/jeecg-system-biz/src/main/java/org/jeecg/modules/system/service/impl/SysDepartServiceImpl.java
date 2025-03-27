@@ -703,7 +703,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 
 	@Override
 	public SysDepart queryDepartByOrgCode(String orgCode) {
-		return this.baseMapper.queryCompByOrgCode(orgCode);
+		return departMapper.queryDeptByOrgCode(orgCode);
 	}
 
 	/**

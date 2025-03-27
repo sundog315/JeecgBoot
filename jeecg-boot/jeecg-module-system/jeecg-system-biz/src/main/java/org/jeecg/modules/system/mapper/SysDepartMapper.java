@@ -105,6 +105,12 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
 	 * @return
 	 */
 	SysDepart queryCompByOrgCode(@Param("orgCode")String orgCode);
+		/**
+	 * 根据OrgCod查询部门信息
+	 * @param orgCode
+	 * @return
+	 */
+	SysDepart queryDeptByOrgCode(@Param("orgCode")String orgCode);
 	/**
 	 * 根据id下级部门
 	 * @param parentId
