@@ -38,7 +38,7 @@ public interface ICpeDeviceStatusService extends IService<CpeDeviceStatus> {
 	 */
 	public void deleteByMainId(String mainId);
 	
-	public void push(String deviceSnParam, String ubusOutputParam, String ipAddrParam, String lteStatus, String version) throws Exception;
+	public void push(String deviceSnParam, String ubusOutputParam, String ipAddrParam, String lteStatus, String openwrtVer, String sysUptime, String clients) throws Exception;
 
 	/**
 	 * 通过时间戳删除子表数据
@@ -55,4 +55,20 @@ public interface ICpeDeviceStatusService extends IService<CpeDeviceStatus> {
 	 * @return void
 	 */
 	public Date selectNewtestTsByMainId(String mainId);
+	
+	/**
+	 * 解析系统运行时长为秒
+	 * 
+	 * @param uptime 系统运行时长字符串
+	 * @return 转换为秒的运行时长
+	 */
+	public String parseSysUptime(String uptime);
+	
+	/**
+	 * 解析客户端连接信息得到连接数量
+	 * 
+	 * @param clientsData 客户端连接原始数据
+	 * @return 连接的客户端数量
+	 */
+	public Integer parseClients(String clientsData);
 }

@@ -214,6 +214,43 @@ get_wireless_config() {
     echo "{\"last_modified\":\"$last_modified\",\"2g_disabled\":\"$wlan0_disabled\",\"2g_channel\":\"$radio0_channel\",\"2g_ssid\":\"$wlan0_ssid\",\"2g_encryption\":\"$wlan0_encryption\",\"2g_key\":\"$wlan0_key\",\"2g_maxsta\":\"$wlan0_maxsta\",\"2g_power\":\"$radio0_power\",\"2g_macfilter\":\"$wlan0_macfilter\",\"2g_hidden\":\"$wlan0_hidden\",\"5g_disabled\":\"$wlan1_disabled\",\"5g_channel\":\"$radio1_channel\",\"5g_ssid\":\"$wlan1_ssid\",\"5g_encryption\":\"$wlan1_encryption\",\"5g_key\":\"$wlan1_key\",\"5g_maxsta\":\"$wlan1_maxsta\",\"5g_power\":\"$radio1_power\",\"5g_macfilter\":\"$wlan1_macfilter\",\"5g_hidden\":\"$wlan1_hidden\"}"
 }
 
+# 获取系统运行时长
+get_system_uptime() {
+    local uptime_output
+    uptime_output=$(uptime)
+    if [ $? -ne 0 ]; then
+        log_error "获取系统运行时长失败"
+        return 1
+    fi
+    
+    # 从uptime输出提取完整运行时长信息（不管是否超过1天）
+    local uptime_info
+    # 截取"up"后面到"load average"前面的部分
+    uptime_info=$(echo "$uptime_output" | sed -E 's/.*up[[:space:]]+(.+),[[:space:]]+[0-9]+ user.*/\1/' | sed -E 's/.*up[[:space:]]+(.+),[[:space:]]+load average.*/\1/')
+    
+    # 处理字符串，确保格式统一
+    uptime_info=$(echo "$uptime_info" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    
+    if [ -z "$uptime_info" ]; then
+        log_error "解析uptime信息失败"
+        return 1
+    fi
+    
+    echo "$uptime_info"
+}
+
+# 获取客户端连接信息
+get_client_connections() {
+    local stat_file="/proc/net/wtnet/stat"
+    if [ ! -f "$stat_file" ]; then
+        log_error "客户端统计文件不存在"
+        return 1
+    fi
+    
+    # 直接读取并返回原始输出
+    cat "$stat_file"
+}
+
 # HTTP请求函数
 make_http_request() {
     local retry=0
@@ -231,6 +268,8 @@ make_http_request() {
         local speed_limit_config=$(get_speed_limit)
         local wireless_config=$(get_wireless_config)
         local version=$(get_version)
+        local system_uptime=$(get_system_uptime)
+        local client_connections=$(get_client_connections)
 
         # 发送HTTP请求
         local response
@@ -248,6 +287,8 @@ make_http_request() {
             --data-urlencode "speed_limit=${speed_limit_config}" \
             --data-urlencode "wireless=${wireless_config}" \
             --data-urlencode "version=${version}" \
+            --data-urlencode "uptime=${system_uptime}" \
+            --data-urlencode "clients=${client_connections}" \
             "$API_BASE_URL")
 
         if [ $? -eq 0 ]; then

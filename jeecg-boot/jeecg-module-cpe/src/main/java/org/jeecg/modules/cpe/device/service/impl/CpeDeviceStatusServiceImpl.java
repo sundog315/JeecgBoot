@@ -82,6 +82,8 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 	private String dns1 = "";
 	private String dns2 = "";
 	private String openwrtVersion = "";
+	private String sysUptime = "";
+	private Integer clientCount = 0;
 
     /**
      * 无线接入技术(RAT)类型映射
@@ -418,6 +420,8 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 			cpeDeviceStatus.setDns1(dns1);
 			cpeDeviceStatus.setDns2(dns2);
 			cpeDeviceStatus.setOpenwrtVersion(openwrtVersion);
+			cpeDeviceStatus.setSysUptime(sysUptime);
+			cpeDeviceStatus.setClientCount(clientCount);
 
 			// 保存设备状态记录
 			save(cpeDeviceStatus);
@@ -651,6 +655,8 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 			cpeDeviceStatus.setDns1(dns1);
 			cpeDeviceStatus.setDns2(dns2);
 			cpeDeviceStatus.setOpenwrtVersion(openwrtVersion);
+			cpeDeviceStatus.setSysUptime(sysUptime);
+			cpeDeviceStatus.setClientCount(clientCount);
 
 			// 保存设备状态记录
 			save(cpeDeviceStatus);
@@ -717,14 +723,19 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
      * @param ubusOutputParam ubus输出数据
      * @param ipAddrParam IP地址参数
      * @param lteStatus LTE状态信息
+     * @param openwrtVer OpenWrt版本
+     * @param sysUptime 系统运行时长
+     * @param clientCount 客户端连接信息
      * @throws Exception 处理异常时抛出
      */
 	@Transactional(rollbackFor = Exception.class)
-	public void push(String deviceSnParam, String ubusOutputParam, String ipAddrParam, String lteStatus, String openwrtVer) throws Exception
+	public void push(String deviceSnParam, String ubusOutputParam, String ipAddrParam, String lteStatus, String openwrtVer, String sysUptime, String clients) throws Exception
 	{
 		// 标准化设备序列号格式（移除冒号并转换为大写）
 		deviceSn = deviceSnParam.replace(":", "").toUpperCase();
 		openwrtVersion = openwrtVer;
+		this.sysUptime = parseSysUptime(sysUptime);
+		this.clientCount = parseClients(clients);
 
 		// 根据设备序列号查询设备信息
 		List<CpeDevice> cpeDeviceList = cpeDeviceService.selectByDeviceSn(deviceSn);
@@ -803,6 +814,81 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 			Thread.currentThread().interrupt();
 			log.error("Interrupted while processing device: {}", e);
 			throw new Exception("处理设备数据被中断");
+		}
+	}
+
+	/**
+	 * 解析系统运行时长
+	 * 
+	 * @param uptime 系统运行时长字符串
+	 * @return 格式化后的运行时长
+	 */
+	public String parseSysUptime(String uptime) {
+		if (uptime == null || uptime.isEmpty()) {
+			return "0";
+		}
+		
+		try {
+			long totalSeconds = 0;
+			String trimmedUptime = uptime.trim();
+			
+			// 检查是否包含"day"，处理"1 day, 8:41"这种格式
+			if (trimmedUptime.contains("day")) {
+				String[] parts = trimmedUptime.split(",");
+				// 提取天数
+				String dayPart = parts[0].trim();
+				int days = Integer.parseInt(dayPart.split(" ")[0]);
+				totalSeconds += days * 24 * 60 * 60; // 天数转换为秒
+				
+				// 处理时分部分
+				if (parts.length > 1) {
+					String timePart = parts[1].trim();
+					String[] timeComponents = timePart.split(":");
+					if (timeComponents.length >= 2) {
+						int hours = Integer.parseInt(timeComponents[0]);
+						int minutes = Integer.parseInt(timeComponents[1]);
+						totalSeconds += hours * 60 * 60; // 小时转换为秒
+						totalSeconds += minutes * 60;    // 分钟转换为秒
+					}
+				}
+			} else {
+				// 处理"3:03"这种格式
+				String[] timeComponents = trimmedUptime.split(":");
+				if (timeComponents.length >= 2) {
+					int hours = Integer.parseInt(timeComponents[0]);
+					int minutes = Integer.parseInt(timeComponents[1]);
+					totalSeconds += hours * 60 * 60; // 小时转换为秒
+					totalSeconds += minutes * 60;    // 分钟转换为秒
+				}
+			}
+			
+			return String.valueOf(totalSeconds);
+		} catch (Exception e) {
+			log.error("解析系统运行时长失败: " + uptime, e);
+			return "0";
+		}
+	}
+	
+	/**
+	 * 解析客户端连接信息
+	 * 
+	 * @param clientsData 客户端连接原始数据
+	 * @return 连接的客户端数量
+	 */
+	public Integer parseClients(String clientsData) {
+		if (clientsData == null || clientsData.isEmpty()) {
+			return 0;
+		}
+		
+		try {
+			// 按行分割客户端数据
+			String[] clients = clientsData.split("\n");
+			
+			// 返回客户端数量
+			return clients.length;
+		} catch (Exception e) {
+			log.error("解析客户端连接信息失败", e);
+			return 0;
 		}
 	}
 

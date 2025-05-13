@@ -202,4 +202,12 @@ public class CpeDeviceInfo implements Serializable {
     @Excel(name = "时间戳", width = 15)
     @ApiModelProperty(value = "时间戳")
     private java.lang.String ts;
+	/**系统启动时长*/
+    @Excel(name = "系统启动时长", width = 15)
+    @ApiModelProperty(value = "系统启动时长")
+    private java.lang.String sysUptime;
+	/**客户端数量*/
+    @Excel(name = "客户端数量", width = 15)
+    @ApiModelProperty(value = "客户端数量")
+    private java.lang.Integer clientCount;
 }

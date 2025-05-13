@@ -183,4 +183,12 @@ public class CpeDeviceStatus implements Serializable {
 	@Excel(name = "固件版本号", width = 15)
     @ApiModelProperty(value = "固件版本号")
     private java.lang.String openwrtVersion;
+    /**系统启动时长*/
+	@Excel(name = "系统启动时长", width = 15)
+    @ApiModelProperty(value = "系统启动时长")
+    private java.lang.String sysUptime;
+	/**客户端数量*/
+	@Excel(name = "客户端数量", width = 15)
+    @ApiModelProperty(value = "客户端数量")
+    private java.lang.Integer clientCount;
 }

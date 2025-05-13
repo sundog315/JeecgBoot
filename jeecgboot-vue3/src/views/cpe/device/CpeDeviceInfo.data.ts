@@ -261,6 +261,21 @@ export const cpeDeviceStatusColumns: BasicColumn[] = [
       return formatDuration(Number(text));
     },
   },
+  {
+    title: '系统运行时长',
+    align: 'center',
+    width: 100,
+    dataIndex: 'sysUptime',
+    customRender: ({ text }) => {
+      return formatDuration(Number(text));
+    },
+  },
+  {
+    title: '客户端连接数',
+    align: 'center',
+    width: 100,
+    dataIndex: 'clientCount',
+  },
 ];
 //子表列表数据
 export const cpeDeviceNeighborColumns: BasicColumn[] = [
