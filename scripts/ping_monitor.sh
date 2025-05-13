@@ -20,6 +20,31 @@ LOCK_FILE="$LOG_DIR/ping_monitor.lock"
 # 初始间隔时间（分钟）
 INITIAL_INTERVAL=2
 MAX_INTERVAL=20
+SILENT_PERIOD=10  # 系统启动后的静默期（分钟）
+
+# 检查系统启动时间
+check_uptime_silent_period() {
+    # 获取uptime输出并提取分钟数
+    local uptime_str=$(uptime)
+    local uptime_min
+
+    # 解析uptime字符串，提取分钟数
+    if echo "$uptime_str" | grep -q "min"; then
+        # 如果包含"min"，说明运行时间小于1小时
+        uptime_min=$(echo "$uptime_str" | sed 's/.*up \([0-9]*\) min.*/\1/')
+    else
+        # 如果运行时间超过1小时，则已经超过静默期，直接返回
+        return 0
+    fi
+
+    # 检查是否处于静默期
+    if [ -n "$uptime_min" ] && [ "$uptime_min" -lt "$SILENT_PERIOD" ]; then
+        log_info "系统启动时间（${uptime_min}分钟）小于静默期（${SILENT_PERIOD}分钟），暂不执行检查"
+        return 1
+    fi
+
+    return 0
+}
 
 # 确保日志目录存在
 ensure_log_dir() {
@@ -96,7 +121,7 @@ update_status() {
     local last_restart=$1
     local interval=$2
     local network_status=$3
-    
+
     echo "$last_restart $interval $network_status" > "$STATUS_FILE"
     log_info "更新状态：上次重启时间=$(date -d @$last_restart '+%Y-%m-%d %H:%M:%S' 2>/dev/null || echo 'never')，当前等待间隔=$interval分钟，网络状态=$network_status"
 }
@@ -167,6 +192,9 @@ calculate_next_interval() {
 
 # 主流程
 perform_check() {
+    # 检查是否在静默期
+    check_uptime_silent_period || exit 0
+
     # 初始化或读取状态
     init_or_read_status
 
