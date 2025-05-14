@@ -9,7 +9,7 @@
 ### 
 
 # 配置项
-ROOT_PATH="/Users/sd/Documents/JeecgBoot"
+ROOT_PATH="/Users/sd/Documents/SourceCode/JeecgBoot"
 REMOTE_HOST="192.168.88.10"
 REMOTE_USER="root"
 JAR_VERSION="3.7.2"
