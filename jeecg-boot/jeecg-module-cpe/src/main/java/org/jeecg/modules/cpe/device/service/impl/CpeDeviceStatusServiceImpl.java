@@ -734,8 +734,14 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 		// 标准化设备序列号格式（移除冒号并转换为大写）
 		deviceSn = deviceSnParam.replace(":", "").toUpperCase();
 		openwrtVersion = openwrtVer;
-		this.sysUptime = parseSysUptime(sysUptime);
-		this.clientCount = parseClients(clients);
+		if (sysUptime != null && sysUptime.length() > 0)
+		{
+			sysUptime = parseSysUptime(sysUptime);
+		}else sysUptime = "0";
+		if (clients != null && clients.length() > 0)
+		{
+			clientCount = parseClients(clients);
+		}else clientCount = 0;
 
 		// 根据设备序列号查询设备信息
 		List<CpeDevice> cpeDeviceList = cpeDeviceService.selectByDeviceSn(deviceSn);
