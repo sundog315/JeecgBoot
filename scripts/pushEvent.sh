@@ -223,10 +223,15 @@ get_system_uptime() {
         return 1
     fi
     
-    # 从uptime输出提取完整运行时长信息（不管是否超过1天）
+    # 从uptime输出提取完整运行时长信息（支持所有格式）
     local uptime_info
-    # 截取"up"后面到"load average"前面的部分
-    uptime_info=$(echo "$uptime_output" | sed -E 's/.*up[[:space:]]+(.+),[[:space:]]+[0-9]+ user.*/\1/' | sed -E 's/.*up[[:space:]]+(.+),[[:space:]]+load average.*/\1/')
+    # 截取"up"后面到","或"user"前面的部分
+    uptime_info=$(echo "$uptime_output" | sed -E 's/.*up[[:space:]]+([^,]+).*/\1/')
+    
+    # 如果包含"load average"，需要进一步处理
+    if echo "$uptime_info" | grep -q "load average"; then
+        uptime_info=$(echo "$uptime_info" | sed -E 's/(.*)[[:space:]]+load average.*/\1/')
+    fi
     
     # 处理字符串，确保格式统一
     uptime_info=$(echo "$uptime_info" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')

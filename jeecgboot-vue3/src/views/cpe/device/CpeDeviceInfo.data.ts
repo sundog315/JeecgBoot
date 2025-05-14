@@ -262,7 +262,7 @@ export const cpeDeviceStatusColumns: BasicColumn[] = [
     },
   },
   {
-    title: '系统运行时长',
+    title: '运行时长',
     align: 'center',
     width: 100,
     dataIndex: 'sysUptime',
@@ -271,7 +271,7 @@ export const cpeDeviceStatusColumns: BasicColumn[] = [
     },
   },
   {
-    title: '客户端连接数',
+    title: '客户端数',
     align: 'center',
     width: 100,
     dataIndex: 'clientCount',

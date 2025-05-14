@@ -851,8 +851,15 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 						totalSeconds += minutes * 60;    // 分钟转换为秒
 					}
 				}
-			} else {
-				// 处理"3:03"这种格式
+			} 
+			// 检查是否包含"min"，处理"7 min"这种格式
+			else if (trimmedUptime.contains("min")) {
+				String minutesPart = trimmedUptime.split("min")[0].trim();
+				int minutes = Integer.parseInt(minutesPart);
+				totalSeconds = minutes * 60; // 分钟转换为秒
+			}
+			// 处理"3:03"这种格式
+			else {
 				String[] timeComponents = trimmedUptime.split(":");
 				if (timeComponents.length >= 2) {
 					int hours = Integer.parseInt(timeComponents[0]);

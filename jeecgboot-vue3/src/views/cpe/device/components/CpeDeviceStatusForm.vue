@@ -114,6 +114,16 @@
 								<a-input v-model:value="formData.uptime" placeholder="请输入连接时长"  allow-clear ></a-input>
 							</a-form-item>
 						</a-col>
+            <a-col :span="24">
+							<a-form-item label="系统启动时长" v-bind="validateInfos.sysUptime" id="CpeDeviceStatus-sysUptime" name="sysUptime">
+								<a-input v-model:value="formData.sysUptime" placeholder="请输入系统启动时长"  allow-clear ></a-input>
+							</a-form-item>
+						</a-col>
+            <a-col :span="24">
+							<a-form-item label="客户端连接数" v-bind="validateInfos.clientCount" id="CpeDeviceStatus-clientCount" name="clientCount">
+								<a-input v-model:value="formData.clientCount" placeholder="请输入客户端连接数"  allow-clear ></a-input>
+							</a-form-item>
+						</a-col>
           </a-row>
         </a-form>
       </template>
@@ -159,6 +169,8 @@
         upBytes: '',   
         downBytes: '',   
         uptime: '',   
+        sysUptime: '',   
+        clientCount: '',   
   });
   const { createMessage } = useMessage();
   const labelCol = ref<any>({ xs: { span: 24 }, sm: { span: 5 } });
