@@ -583,6 +583,58 @@ export const cpeDeviceWirelessColumns: BasicColumn[] = [
   },
 ];
 //子表列表数据
+export const cpeDeviceClientColumns: BasicColumn[] = [
+  {
+    title: '客户端IP',
+    align:"center",
+    dataIndex: 'clientIp'
+  },
+  {
+    title: '客户端MAC',
+    align:"center",
+    dataIndex: 'clientMac'
+  },
+  {
+    title: '上线时间',
+    align:"center",
+    width: 170,
+    dataIndex: 'attachTs'
+  },
+  {
+    title: '刷新时间',
+    align:"center",
+    width: 170,
+    dataIndex: 'refreshTs'
+  },
+  {
+    title: '连接时长',
+    align:"center",
+    width: 100,
+    dataIndex: 'conntedDuration',
+    customRender: ({ text }) => {
+      return formatDuration(Number(text));
+    },
+  },
+  {
+    title: '上行流量',
+    align: 'center',
+    width: 100,
+    dataIndex: 'upBytes',
+    customRender: ({ text }) => {
+      return formatTraffic(text);
+    },
+  },
+  {
+    title: '下行流量',
+    align: 'center',
+    width: 100,
+    dataIndex: 'downBytes',
+    customRender: ({ text }) => {
+      return formatTraffic(text);
+    },
+  },
+];
+//子表列表数据
 export const cpeOperLogColumns: BasicColumn[] = [
   {
     title: '创建时间',

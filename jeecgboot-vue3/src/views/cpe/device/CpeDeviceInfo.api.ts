@@ -49,6 +49,11 @@ enum Api {
   cpeDeviceWirelessEdit= '/cpe/device/cpeDeviceInfo/editCpeDeviceWireless',
   cpeDeviceWirelessDelete = '/cpe/device/cpeDeviceInfo/deleteCpeDeviceWireless',
   cpeDeviceWirelessDeleteBatch = '/cpe/device/cpeDeviceInfo/deleteBatchCpeDeviceWireless',
+  cpeDeviceClientList = '/cpe/device/cpeDeviceInfo/listCpeDeviceClientByMainId',
+  cpeDeviceClientSave= '/cpe/device/cpeDeviceInfo/addCpeDeviceClient',
+  cpeDeviceClientEdit= '/cpe/device/cpeDeviceInfo/editCpeDeviceClient',
+  cpeDeviceClientDelete = '/cpe/device/cpeDeviceInfo/deleteCpeDeviceClient',
+  cpeDeviceClientDeleteBatch = '/cpe/device/cpeDeviceInfo/deleteBatchCpeDeviceClient',
   cpeOperLogList = '/cpe/device/cpeDeviceInfo/listCpeOperLogByMainId',
   cpeOperLogSave= '/cpe/device/cpeDeviceInfo/addCpeOperLog',
   cpeOperLogEdit= '/cpe/device/cpeDeviceInfo/editCpeOperLog',
@@ -543,6 +548,64 @@ export const cpeDeviceWirelessImportUrl = '/cpe/device/cpeDeviceInfo/importCpeDe
  * 导出
  */
 export const cpeDeviceWirelessExportXlsUrl = '/cpe/device/cpeDeviceInfo/exportCpeDeviceWireless'
+
+/**
+ * 列表接口
+ * @param params
+ */
+export const cpeDeviceClientList = (params) => {
+  if(params['cpeId']){
+    return defHttp.get({ url: Api.cpeDeviceClientList, params });
+  }
+  return Promise.resolve({});
+}
+
+/**
+ * 删除单个
+ */
+export const cpeDeviceClientDelete = (params,handleSuccess) => {
+  return defHttp.delete({ url: Api.cpeDeviceClientDelete, params }, { joinParamsToUrl: true }).then(() => {
+    handleSuccess();
+  });
+}
+
+/**
+ * 批量删除
+ * @param params
+ */
+export const cpeDeviceClientDeleteBatch = (params, handleSuccess) => {
+  createConfirm({
+    iconType: 'warning',
+    title: '确认删除',
+    content: '是否删除选中数据',
+    okText: '确认',
+    cancelText: '取消',
+    onOk: () => {
+      return defHttp.delete({ url: Api.cpeDeviceClientDeleteBatch, data: params }, { joinParamsToUrl: true }).then(() => {
+        handleSuccess();
+      });
+    }
+  });
+}
+
+/**
+ * 保存或者更新
+ * @param params
+ */
+export const  cpeDeviceClientSaveOrUpdate = (params, isUpdate) => {
+  let url = isUpdate ? Api.cpeDeviceClientEdit : Api.cpeDeviceClientSave;
+  return defHttp.post({ url: url, params },{ isTransformResponse: false });
+}
+
+/**
+ * 导入
+ */
+export const cpeDeviceClientImportUrl = '/cpe/device/cpeDeviceInfo/importCpeDeviceClient'
+
+/**
+ * 导出
+ */
+export const cpeDeviceClientExportXlsUrl = '/cpe/device/cpeDeviceInfo/exportCpeDeviceClient'
 
 /**
  * 列表接口

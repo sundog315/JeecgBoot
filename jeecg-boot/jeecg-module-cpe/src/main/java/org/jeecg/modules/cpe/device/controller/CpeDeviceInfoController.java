@@ -26,18 +26,19 @@ import org.jeecg.modules.cpe.device.entity.CpeDeviceFrp;
 import org.jeecg.modules.cpe.device.entity.CpeOperLog;
 import org.jeecg.modules.cpe.device.entity.CpeDeviceAutoreboot;
 import org.jeecg.modules.cpe.device.entity.CpeDeviceInfo;
+import org.jeecg.modules.cpe.device.entity.CpeSpeedLimit;
+import org.jeecg.modules.cpe.device.entity.CpeDeviceNetwork;
+import org.jeecg.modules.cpe.device.entity.CpeDeviceClient;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceInfoService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceStatusService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceWirelessService;
 import org.jeecg.modules.cpe.device.service.ICpeOperLogService;
 import org.jeecg.modules.cpe.device.service.ICpeSpeedLimitService;
-import org.jeecg.modules.cpe.device.entity.CpeSpeedLimit;
-import org.jeecg.modules.cpe.device.entity.CpeDeviceNetwork;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceAutorebootService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceFrpService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceNeighborService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceNetworkService;
-
+import org.jeecg.modules.cpe.device.service.ICpeDeviceClientService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jeecg.common.aspect.annotation.AutoLog;
@@ -85,6 +86,9 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
 
 	@Autowired
 	private ICpeDeviceWirelessService cpeDeviceWirelessService;
+
+	@Autowired
+	private ICpeDeviceClientService cpeDeviceClientService;
 
 	@Autowired
 	private ICpeOperLogService cpeOperLogService;
@@ -1292,6 +1296,149 @@ public class CpeDeviceInfoController extends JeecgController<CpeDeviceInfo, ICpe
     // }
 
     /*--------------------------------子表处理-设备无线配置-end----------------------------------------------*/
+
+    /*--------------------------------子表处理-连接终端-begin----------------------------------------------*/
+	/**
+	 * 通过主表ID查询
+	 * @return
+	 */
+	//@AutoLog(value = "连接终端-通过主表ID查询")
+	@ApiOperation(value="连接终端-通过主表ID查询", notes="连接终端-通过主表ID查询")
+	@GetMapping(value = "/listCpeDeviceClientByMainId")
+    public Result<IPage<CpeDeviceClient>> listCpeDeviceClientByMainId(CpeDeviceClient cpeDeviceClient,
+                                                    @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                                    HttpServletRequest req) {
+        QueryWrapper<CpeDeviceClient> queryWrapper = QueryGenerator.initQueryWrapper(cpeDeviceClient, req.getParameterMap());
+        Page<CpeDeviceClient> page = new Page<CpeDeviceClient>(pageNo, pageSize);
+        IPage<CpeDeviceClient> pageList = cpeDeviceClientService.page(page, queryWrapper);
+        return Result.OK(pageList);
+    }
+
+	/**
+	 * 添加
+	 * @param cpeDeviceClient
+	 * @return
+	 */
+	@AutoLog(value = "连接终端-添加")
+	@ApiOperation(value="连接终端-添加", notes="连接终端-添加")
+	@PostMapping(value = "/addCpeDeviceClient")
+	public Result<String> addCpeDeviceClient(@RequestBody CpeDeviceClient cpeDeviceClient) {
+		cpeDeviceClientService.save(cpeDeviceClient);
+		return Result.OK("添加成功！");
+	}
+
+    // /**
+	//  * 编辑
+	//  * @param cpeDeviceClient
+	//  * @return
+	//  */
+	// @AutoLog(value = "连接终端-编辑")
+	// @ApiOperation(value="连接终端-编辑", notes="连接终端-编辑")
+	// @RequestMapping(value = "/editCpeDeviceClient", method = {RequestMethod.PUT,RequestMethod.POST})
+	// public Result<String> editCpeDeviceClient(@RequestBody CpeDeviceClient cpeDeviceClient) {
+	// 	cpeDeviceClientService.updateById(cpeDeviceClient);
+	// 	return Result.OK("编辑成功!");
+	// }
+
+	// /**
+	//  * 通过id删除
+	//  * @param id
+	//  * @return
+	//  */
+	// @AutoLog(value = "连接终端-通过id删除")
+	// @ApiOperation(value="连接终端-通过id删除", notes="连接终端-通过id删除")
+	// @DeleteMapping(value = "/deleteCpeDeviceClient")
+	// public Result<String> deleteCpeDeviceClient(@RequestParam(name="id",required=true) String id) {
+	// 	cpeDeviceClientService.removeById(id);
+	// 	return Result.OK("删除成功!");
+	// }
+
+	// /**
+	//  * 批量删除
+	//  * @param ids
+	//  * @return
+	//  */
+	// @AutoLog(value = "连接终端-批量删除")
+	// @ApiOperation(value="连接终端-批量删除", notes="连接终端-批量删除")
+	// @DeleteMapping(value = "/deleteBatchCpeDeviceClient")
+	// public Result<String> deleteBatchCpeDeviceClient(@RequestParam(name="ids",required=true) String ids) {
+	//     this.cpeDeviceClientService.removeByIds(Arrays.asList(ids.split(",")));
+	// 	return Result.OK("批量删除成功!");
+	// }
+
+    // /**
+    //  * 导出
+    //  * @return
+    //  */
+    // @RequestMapping(value = "/exportCpeDeviceClient")
+    // public ModelAndView exportCpeDeviceClient(HttpServletRequest request, CpeDeviceClient cpeDeviceClient) {
+	// 	 // Step.1 组装查询条件
+	// 	 QueryWrapper<CpeDeviceClient> queryWrapper = QueryGenerator.initQueryWrapper(cpeDeviceClient, request.getParameterMap());
+	// 	 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+
+	// 	 // Step.2 获取导出数据
+	// 	 List<CpeDeviceClient> pageList = cpeDeviceClientService.list(queryWrapper);
+	// 	 List<CpeDeviceClient> exportList = null;
+
+	// 	 // 过滤选中数据
+	// 	 String selections = request.getParameter("selections");
+	// 	 if (oConvertUtils.isNotEmpty(selections)) {
+	// 		 List<String> selectionList = Arrays.asList(selections.split(","));
+	// 		 exportList = pageList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
+	// 	 } else {
+	// 		 exportList = pageList;
+	// 	 }
+
+	// 	 // Step.3 AutoPoi 导出Excel
+	// 	 ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+	// 	 //此处设置的filename无效,前端会重更新设置一下
+	// 	 mv.addObject(NormalExcelConstants.FILE_NAME, "连接终端");
+	// 	 mv.addObject(NormalExcelConstants.CLASS, CpeDeviceClient.class);
+	// 	 mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("连接终端报表", "导出人:" + sysUser.getRealname(), "连接终端"));
+	// 	 mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+	// 	 return mv;
+    // }
+
+    // /**
+    //  * 导入
+    //  * @return
+    //  */
+    // @RequestMapping(value = "/importCpeDeviceClient/{mainId}")
+    // public Result<?> importCpeDeviceClient(HttpServletRequest request, HttpServletResponse response, @PathVariable("mainId") String mainId) {
+	// 	 MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+	// 	 Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+	// 	 for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+    //    // 获取上传文件对象
+	// 		 MultipartFile file = entity.getValue();
+	// 		 ImportParams params = new ImportParams();
+	// 		 params.setTitleRows(2);
+	// 		 params.setHeadRows(1);
+	// 		 params.setNeedSave(true);
+	// 		 try {
+	// 			 List<CpeDeviceClient> list = ExcelImportUtil.importExcel(file.getInputStream(), CpeDeviceClient.class, params);
+	// 			 for (CpeDeviceClient temp : list) {
+    //                 temp.setCpeId(mainId);
+	// 			 }
+	// 			 long start = System.currentTimeMillis();
+	// 			 cpeDeviceClientService.saveBatch(list);
+	// 			 log.info("消耗时间" + (System.currentTimeMillis() - start) + "毫秒");
+	// 			 return Result.OK("文件导入成功！数据行数：" + list.size());
+	// 		 } catch (Exception e) {
+	// 			 log.error(e.getMessage(), e);
+	// 			 return Result.error("文件导入失败:" + e.getMessage());
+	// 		 } finally {
+	// 			 try {
+	// 				 file.getInputStream().close();
+	// 			 } catch (IOException e) {
+	// 				 e.printStackTrace();
+	// 			 }
+	// 		 }
+	// 	 }
+	// 	 return Result.error("文件导入失败！");
+    //}
+
+    /*--------------------------------子表处理-连接终端-end----------------------------------------------*/
 
 	/*--------------------------------子表处理-操作记录表-begin----------------------------------------------*/
 	/**

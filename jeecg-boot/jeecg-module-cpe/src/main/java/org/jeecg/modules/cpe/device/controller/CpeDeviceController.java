@@ -12,7 +12,6 @@ import org.jeecg.common.system.query.QueryRuleEnum;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.cpe.device.entity.CpeDevice;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceService;
-import org.jeecg.modules.cpe.device.service.ICpeDeviceStatusService;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -41,9 +40,6 @@ import org.apache.shiro.SecurityUtils;
 public class CpeDeviceController extends JeecgController<CpeDevice, ICpeDeviceService> {
 	@Autowired
 	private ICpeDeviceService cpeDeviceService;
-	
-	@Autowired
-	private ICpeDeviceStatusService cpeDeviceStatusService;
 
 	/**
 	 * 分页列表查询
@@ -175,32 +171,4 @@ public class CpeDeviceController extends JeecgController<CpeDevice, ICpeDeviceSe
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
         return super.importExcel(request, response, CpeDevice.class);
     }
-
-	/**
-	 * 测试uptime解析功能
-	 *
-	 * @param uptime
-	 * @return
-	 */
-	@ApiOperation(value="测试uptime解析功能", notes="测试uptime解析功能")
-	@GetMapping(value = "/testUptime")
-	public Result<Map<String, Object>> testUptime(@RequestParam(name="uptime") String uptime) {
-		Map<String, Object> result = new HashMap<>();
-		
-		// 测试以下格式：
-		// "1 day, 8:41"
-		// "3:03"
-		// "7 min"
-		result.put("original", uptime);
-		try {
-			String seconds = cpeDeviceStatusService.parseSysUptime(uptime);
-			result.put("seconds", seconds);
-			result.put("success", true);
-		} catch (Exception e) {
-			result.put("error", e.getMessage());
-			result.put("success", false);
-		}
-		
-		return Result.OK(result);
-	}
 }
