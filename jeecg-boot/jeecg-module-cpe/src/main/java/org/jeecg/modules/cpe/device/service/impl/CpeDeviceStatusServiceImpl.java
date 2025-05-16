@@ -721,7 +721,7 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 		}
 	}
 
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public List<CpeDeviceClient> parseClientsDetail(String clientsData, String cpeId) {
 		List<CpeDeviceClient> clientList = new ArrayList<>();
 		if (clientsData == null || clientsData.isEmpty()) return clientList;
@@ -894,10 +894,14 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 						int minutes = Integer.parseInt(timeComponents[1]);
 						totalSeconds += hours * 60 * 60; // 小时转换为秒
 						totalSeconds += minutes * 60;    // 分钟转换为秒
+					} else if (timePart.contains("min")) {
+						String minutesPart = timePart.split("min")[0].trim();
+						int minutes = Integer.parseInt(minutesPart);
+						totalSeconds = minutes * 60; // 分钟转换为秒
 					}
 				}
 			} 
-			// 检查是否包含"min"，处理"7 min"这种格式
+			// 检查是否仅包含"min"，处理"7 min"这种格式
 			else if (trimmedUptime.contains("min")) {
 				String minutesPart = trimmedUptime.split("min")[0].trim();
 				int minutes = Integer.parseInt(minutesPart);
