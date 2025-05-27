@@ -26,18 +26,41 @@ show_usage() {
     echo "使用方法: $0 [选项]"
     echo "选项:"
     echo "  -r, --restart    仅重启服务，不重新编译和部署"
+    echo "  -f, --frontend   仅部署前端"
+    echo "  -b, --backend    仅部署后端"
     echo "  -h, --help       显示此帮助信息"
     echo "示例:"
     echo "  $0               完整部署（编译、部署和启动）"
     echo "  $0 -r            仅重启服务"
+    echo "  $0 -f            仅部署前端"
+    echo "  $0 -b            仅部署后端"
 }
 
 # 解析命令行参数
 RESTART_ONLY=false
+DEPLOY_MODE="all"
 for arg in "$@"; do
     case $arg in
         -r|--restart)
             RESTART_ONLY=true
+            shift
+            ;;
+        -f|--frontend)
+            if [ "$DEPLOY_MODE" != "all" ]; then
+                echo "错误: -f/--frontend 与 -b/--backend 不能同时使用"
+                show_usage
+                exit 1
+            fi
+            DEPLOY_MODE="frontend"
+            shift
+            ;;
+        -b|--backend)
+            if [ "$DEPLOY_MODE" != "all" ]; then
+                echo "错误: -f/--frontend 与 -b/--backend 不能同时使用"
+                show_usage
+                exit 1
+            fi
+            DEPLOY_MODE="backend"
             shift
             ;;
         -h|--help)
@@ -51,6 +74,8 @@ for arg in "$@"; do
             exit 1
             ;;
     esac
+    # 不要 shift "$@"，只 shift 当前参数
+    set -- "$@"
 done
 
 # 日志函数
@@ -113,7 +138,17 @@ if [ "$RESTART_ONLY" = true ]; then
     exit 0
 fi
 
-log "运行模式: 完整部署"
+case "$DEPLOY_MODE" in
+    all)
+        log "运行模式: 完整部署"
+        ;;
+    frontend)
+        log "运行模式: 仅部署前端"
+        ;;
+    backend)
+        log "运行模式: 仅部署后端"
+        ;;
+esac
 
 # 检查必要条件
 if [ ! -d "$ROOT_PATH" ]; then
@@ -121,80 +156,91 @@ if [ ! -d "$ROOT_PATH" ]; then
     exit 1
 fi
 
-# 切换Java环境
-source ~/java8.sh
-log "Switched to Java 8 environment"
-
-# 后端构建
-log "Building backend..."
-cd "$ROOT_PATH/jeecg-boot" || exit 1
-mvn clean compile package -DskipTests
-
-# 前端构建
-log "Building frontend..."
-cd "$ROOT_PATH/jeecgboot-vue3" || exit 1
-pnpm run build
-
-# 部署后端
-log "Deploying backend..."
-check_ssh_connection
-
-# 停止现有服务
-log "Stopping existing service..."
-if ssh ${SSH_OPTS} $REMOTE_USER@$REMOTE_HOST "pgrep -f '$JAR_NAME'" > /dev/null 2>&1; then
-    ssh ${SSH_OPTS} $REMOTE_USER@$REMOTE_HOST "pkill -f '$JAR_NAME'" || true
-    log "Waiting for service to stop..."
-    sleep 5
+# 切换Java环境（仅后端或整体部署时）
+if [ "$DEPLOY_MODE" = "all" ] || [ "$DEPLOY_MODE" = "backend" ]; then
+    source ~/java8.sh
+    log "Switched to Java 8 environment"
 fi
 
-# 上传新版本
-log "Uploading new version..."
-scp ${SSH_OPTS} "$ROOT_PATH/jeecg-boot/jeecg-module-system/jeecg-system-start/target/$JAR_NAME" "$REMOTE_USER@$REMOTE_HOST:~/"
-
-# 启动服务
-log "Starting service..."
-# 使用 ssh -f 在后台运行命令，并使用 () 创建子shell
-ssh ${SSH_OPTS} -f $REMOTE_USER@$REMOTE_HOST "( cd ~ && \
-    java \
-    -Xms256m \
-    -Xmx1024m \
-    -XX:+HeapDumpOnOutOfMemoryError \
-    -Duser.timezone=GMT+08 \
-    -jar $JAR_NAME \
-    > app.log 2>&1 & \
-    echo \$! > app.pid )"
-
-# 短暂等待确保进程已启动
-sleep 2
-
-# 检查进程是否成功启动
-log "Verifying process started..."
-if ! ssh ${SSH_OPTS} $REMOTE_USER@$REMOTE_HOST "ps -p \$(cat app.pid) > /dev/null 2>&1"; then
-    log "ERROR: Failed to start process"
-    ssh ${SSH_OPTS} $REMOTE_USER@$REMOTE_HOST "tail -n 50 app.log"
-    exit 1
+# 后端构建（仅后端或整体部署时）
+if [ "$DEPLOY_MODE" = "all" ] || [ "$DEPLOY_MODE" = "backend" ]; then
+    log "Building backend..."
+    cd "$ROOT_PATH/jeecg-boot" || exit 1
+    mvn clean compile package -DskipTests
 fi
 
-# 部署前端
-log "Deploying frontend..."
-ssh -n $REMOTE_USER@$REMOTE_HOST "rm -rf $DEPLOY_PATH/*"
-scp -rp "$ROOT_PATH/jeecgboot-vue3/dist/"* "$REMOTE_USER@$REMOTE_HOST:$DEPLOY_PATH/"
-
-# 检查部署状态
-log "Checking deployment status..."
-sleep 5
-if ssh -n $REMOTE_USER@$REMOTE_HOST "pgrep -f '$JAR_NAME' > /dev/null"; then
-    log "Backend service is running"
-else
-    log "ERROR: Backend service failed to start"
-    exit 1
+# 前端构建（仅前端或整体部署时）
+if [ "$DEPLOY_MODE" = "all" ] || [ "$DEPLOY_MODE" = "frontend" ]; then
+    log "Building frontend..."
+    cd "$ROOT_PATH/jeecgboot-vue3" || exit 1
+    pnpm run build
 fi
 
-if ssh -n $REMOTE_USER@$REMOTE_HOST "[ -f $DEPLOY_PATH/index.html ]"; then
-    log "Frontend deployed successfully"
-else
-    log "ERROR: Frontend deployment failed"
-    exit 1
+# 部署后端（仅后端或整体部署时）
+if [ "$DEPLOY_MODE" = "all" ] || [ "$DEPLOY_MODE" = "backend" ]; then
+    log "Deploying backend..."
+    check_ssh_connection
+
+    # 停止现有服务
+    log "Stopping existing service..."
+    if ssh ${SSH_OPTS} $REMOTE_USER@$REMOTE_HOST "pgrep -f '$JAR_NAME'" > /dev/null 2>&1; then
+        ssh ${SSH_OPTS} $REMOTE_USER@$REMOTE_HOST "pkill -f '$JAR_NAME'" || true
+        log "Waiting for service to stop..."
+        sleep 5
+    fi
+
+    # 上传新版本
+    log "Uploading new version..."
+    scp ${SSH_OPTS} "$ROOT_PATH/jeecg-boot/jeecg-module-system/jeecg-system-start/target/$JAR_NAME" "$REMOTE_USER@$REMOTE_HOST:~/"
+
+    # 启动服务
+    log "Starting service..."
+    ssh ${SSH_OPTS} -f $REMOTE_USER@$REMOTE_HOST "( cd ~ && \
+        java \
+        -Xms256m \
+        -Xmx1024m \
+        -XX:+HeapDumpOnOutOfMemoryError \
+        -Duser.timezone=GMT+08 \
+        -jar $JAR_NAME \
+        > app.log 2>&1 & \
+        echo \$! > app.pid )"
+
+    sleep 2
+
+    log "Verifying process started..."
+    if ! ssh ${SSH_OPTS} $REMOTE_USER@$REMOTE_HOST "ps -p \$(cat app.pid) > /dev/null 2>&1"; then
+        log "ERROR: Failed to start process"
+        ssh ${SSH_OPTS} $REMOTE_USER@$REMOTE_HOST "tail -n 50 app.log"
+        exit 1
+    fi
+fi
+
+# 部署前端（仅前端或整体部署时）
+if [ "$DEPLOY_MODE" = "all" ] || [ "$DEPLOY_MODE" = "frontend" ]; then
+    log "Deploying frontend..."
+    ssh -n $REMOTE_USER@$REMOTE_HOST "rm -rf $DEPLOY_PATH/*"
+    scp -rp "$ROOT_PATH/jeecgboot-vue3/dist/"* "$REMOTE_USER@$REMOTE_HOST:$DEPLOY_PATH/"
+
+    log "Checking frontend deployment status..."
+    sleep 2
+    if ssh -n $REMOTE_USER@$REMOTE_HOST "[ -f $DEPLOY_PATH/index.html ]"; then
+        log "Frontend deployed successfully"
+    else
+        log "ERROR: Frontend deployment failed"
+        exit 1
+    fi
+fi
+
+# 检查部署状态（仅整体或后端部署时）
+if [ "$DEPLOY_MODE" = "all" ] || [ "$DEPLOY_MODE" = "backend" ]; then
+    log "Checking backend deployment status..."
+    sleep 3
+    if ssh -n $REMOTE_USER@$REMOTE_HOST "pgrep -f '$JAR_NAME' > /dev/null"; then
+        log "Backend service is running"
+    else
+        log "ERROR: Backend service failed to start"
+        exit 1
+    fi
 fi
 
 log "Deployment completed successfully"

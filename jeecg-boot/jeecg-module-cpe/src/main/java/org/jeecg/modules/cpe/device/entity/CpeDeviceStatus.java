@@ -191,4 +191,8 @@ public class CpeDeviceStatus implements Serializable {
 	@Excel(name = "客户端数量", width = 15)
     @ApiModelProperty(value = "客户端数量")
     private java.lang.Integer clientCount;
+    /**子载波间隔*/
+	@Excel(name = "子载波间隔", width = 15)
+    @ApiModelProperty(value = "子载波间隔")
+    private java.lang.Integer scs;
 }
