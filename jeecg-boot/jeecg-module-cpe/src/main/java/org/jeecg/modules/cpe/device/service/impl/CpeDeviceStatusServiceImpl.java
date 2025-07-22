@@ -75,8 +75,11 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 		public String version = "";
 		public String iccid = "";
 		public String module = "";
+		public String lte_5g = "";
+		public String lte_4g = "";
 		public String lte_cell = "";
 		public String lte_cainfo = "";
+		public String lte_freq = "";
 		public String lte_cops = "";
 		public String uptime = "";
 		public String ipv4 = "";
@@ -483,7 +486,7 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 				}
 				cpeDeviceNeighborService.saveBatch(cpeDeviceNeighborList);
 			}
-		}else if (data.module.startsWith("RM")) {
+		} else if (data.module.startsWith("RM")) {
 			// 解析第4行的NR信息（0-based index）
 			String nr_info = data.lte_cell.split("\\r\\n")[1];
 			String[] items = nr_info.split(",");
@@ -632,6 +635,281 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 			cpeDeviceStatus.setCops(cops);
 			cpeDeviceStatus.setOnlineBand(band);
 			cpeDeviceStatus.setCaBand(caBand);
+			cpeDeviceStatus.setCellId(cellid);
+			cpeDeviceStatus.setCpeId(cpeDevice.getId());
+			cpeDeviceStatus.setDeviceSn(data.deviceSn);
+			cpeDeviceStatus.setIccid(data.iccid);
+			cpeDeviceStatus.setImei(data.imei);
+			cpeDeviceStatus.setLinkStatus(isServiceCell);
+			cpeDeviceStatus.setMcc(mcc);
+			cpeDeviceStatus.setMnc(mnc);
+			cpeDeviceStatus.setModemVersion(data.version);
+			cpeDeviceStatus.setPcid(physicalcellId);
+			cpeDeviceStatus.setRsrp(rsrp);
+			cpeDeviceStatus.setRsrq(rsrq);
+			cpeDeviceStatus.setSimSlot(data.sim_slot);
+			cpeDeviceStatus.setSinr(sinr);
+			cpeDeviceStatus.setStatus(isServiceCell);
+			cpeDeviceStatus.setTac(tac);
+			cpeDeviceStatus.setBandwidth(bandwidth);
+			cpeDeviceStatus.setArfcn(narfcn);
+			cpeDeviceStatus.setRxlev(rxlev);
+			cpeDeviceStatus.setRat(rat);
+			cpeDeviceStatus.setSysOrgCode(SYS_ORG_CODE);
+			cpeDeviceStatus.setTs(new Date());
+			cpeDeviceStatus.setCreateBy(ADMIN_USER);
+			cpeDeviceStatus.setCreateTime(new Date());
+			cpeDeviceStatus.setUpdateBy(ADMIN_USER);
+			cpeDeviceStatus.setUpdateTime(new Date());
+			cpeDeviceStatus.setDns1(data.dns1);
+			cpeDeviceStatus.setDns2(data.dns2);
+			cpeDeviceStatus.setOpenwrtVersion(data.openwrtVersion);
+			cpeDeviceStatus.setSysUptime(data.sysUptime);
+			cpeDeviceStatus.setClientCount(data.clientCount);
+
+			// 保存设备状态记录
+			save(cpeDeviceStatus);
+
+			// // 处理邻区信息
+			// String[] ne_info;
+			// if (lte_cell.indexOf("NR neighbor cell:") > 0)
+			// 	ne_info = lte_cell.substring(lte_cell.indexOf("NR neighbor cell:") + 2, lte_cell.length()).split("\\r\\n");
+			// else
+			// 	ne_info = lte_cell.substring(lte_cell.indexOf("LTE neighbor cell:") + 2, lte_cell.length()).split("\\r\\n");
+			// cpeDeviceNeighborService.deleteByMainId(cpeDevice.getId());
+			// if (ne_info.length > 1)
+			// {
+			// 	Collection<CpeDeviceNeighbor> cpeDeviceNeighborList = new ArrayList<>();
+			// 	for (int i = 1; i < ne_info.length - 2; i++)
+			// 	{
+			// 		String[] ne_items = ne_info[i].split(",");
+			// 		String ne_isServiceCell = ne_items[0];
+			// 		String ne_rat = rat(ne_items[1]);
+			// 		String ne_mcc = ne_items[2];
+			// 		String ne_mnc = ne_items[3];
+			// 		String ne_tac = ne_items[4];
+			// 		String ne_cellid = ne_items[5];
+			// 		String ne_narfcn = ne_items[6];
+			// 		String ne_physicalcellId = ne_items[7];
+			// 		String ne_sinr = ssSinr(ne_items[8]);
+			// 		String ne_rxlev = ne_items[9];
+			// 		String ne_rsrp = ssRsrp(ne_items[10]);
+			// 		String ne_rsrq = ssRsrq(ne_items[11]);
+
+			// 		CpeDeviceNeighbor cpeDeviceNeighbor = new CpeDeviceNeighbor();
+			// 		cpeDeviceNeighbor.setCpeId(cpeDevice.getId());
+			// 		cpeDeviceNeighbor.setArfcn(ne_narfcn);
+			// 		cpeDeviceNeighbor.setCellid(ne_cellid);
+			// 		cpeDeviceNeighbor.setMcc(ne_mcc);
+			// 		cpeDeviceNeighbor.setMnc(ne_mnc);
+			// 		cpeDeviceNeighbor.setPhysicalcellid(ne_physicalcellId);
+			// 		cpeDeviceNeighbor.setRat(ne_rat);
+			// 		cpeDeviceNeighbor.setRsrp(ne_rsrp);
+			// 		cpeDeviceNeighbor.setRsrq(ne_rsrq);
+			// 		cpeDeviceNeighbor.setRxlev(ne_rxlev);
+			// 		if (lte_cell.indexOf("NR service cell") >0)
+			// 			cpeDeviceNeighbor.setSinr(ne_sinr);
+			// 		cpeDeviceNeighbor.setStatus(ne_isServiceCell);
+			// 		cpeDeviceNeighbor.setTac(ne_tac);
+			// 		cpeDeviceNeighbor.setCreateBy("admin");
+			// 		cpeDeviceNeighbor.setCreateTime(new Date());
+			// 		cpeDeviceNeighbor.setUpdateBy(ADMIN_USER);
+			// 		cpeDeviceNeighbor.setUpdateTime(new Date());
+			// 		cpeDeviceNeighbor.setSysOrgCode(ADMIN_USER);
+
+			// 		cpeDeviceNeighborList.add(cpeDeviceNeighbor);
+			// 	}
+			// 	cpeDeviceNeighborService.saveBatch(cpeDeviceNeighborList);
+			// }
+		} else if (data.module.startsWith("MT")) {
+			// 解析第4行的NR信息（0-based index）
+			String nr_info = data.lte_cell.split("\\r\\n")[1].split(":")[1].trim();
+			String[] items = nr_info.split(",");
+
+			String freq = data.lte_freq.split("\\r\\n")[1].split(":")[1].trim();
+			String[] freq_items = freq.split(",");
+
+			// 修改为使用普通for循环来更新数组元素
+			for (int i = 0; i < items.length; i++) {
+				items[i] = items[i].replace("\"", "");
+			}
+
+			// 解析基本服务小区信息
+			String isServiceCell = "";	// 服务小区标识
+			if (data.lte_5g.equals("1")) {
+				newCpeDevice.setDeviceStatusNo("1");
+			} else if (data.lte_4g.equals("1")) {
+				newCpeDevice.setDeviceStatusNo("1");
+			} else
+				newCpeDevice.setDeviceStatusNo("0");
+
+			String mcc = "";		// 移动国家代码
+			String mnc = "";		// 移动网络代码
+			String cellid = "";	// 小区ID
+			String physicalcellId = "";	// 物理小区ID
+			String band = "";		// 频段
+
+			String bandwidth = "";
+			String tac = "";		// 跟踪区代码
+			String narfcn ="";	// 绝对射频信道号
+			String rsrp = "";	// 参考信号接收功率
+			String rsrq = "";	// 参考信号接收质量
+			String sinr = "";	// 信噪比
+			String rxlev = "";			// 接收电平
+			// 解析并转换网络参数
+			String rat =items[0];	// 无线接入技术类型
+			if (rat.equals("NR")) {
+				mcc = items[1];		// 移动国家代码
+				mnc = items[2];		// 移动网络代码
+				cellid = items[4];	// 小区ID
+				physicalcellId = items[6];	// 物理小区ID
+				band = freq_items[2];		// 频段
+
+				newCpeDevice.setOnlineBand(band);
+
+				try {
+					bandwidth = (String.valueOf(Integer.parseInt(freq_items[5])/1000) + "Mhz");
+				} catch (Exception e) {
+					bandwidth = "";
+				}
+
+				tac = items[7];		// 跟踪区代码
+				narfcn = items[3];	// 绝对射频信道号
+				rsrp = items[8];	// 参考信号接收功率
+				rsrq = items[9];	// 参考信号接收质量
+				sinr = items[10];	// 信噪比
+				//rxlev = items[16];			// 接收电平
+			} else if (rat.equals("LTE")) {
+				mcc = items[1];		// 移动国家代码
+				mnc = items[2];		// 移动网络代码
+				cellid = items[4];	// 小区ID
+				physicalcellId = items[5];	// 物理小区ID
+				band = freq_items[2];		// 频段
+
+				newCpeDevice.setOnlineBand(band);
+
+				try {
+					bandwidth = (String.valueOf(Integer.parseInt(freq_items[5])/1000) + "Mhz");
+				} catch (Exception e) {
+					bandwidth = "";
+				}
+				tac = items[6];		// 跟踪区代码
+				narfcn = items[3];	// 绝对射频信道号
+				rsrp = items[7];	// 参考信号接收功率
+				rsrq = items[8];	// 参考信号接收质量
+				sinr = items[9];	// 信噪比
+				//rxlev = items[16];			// 接收电平
+			} else if (rat.equals("WCDMA")) {
+				mcc = items[1];		// 移动国家代码
+				mnc = items[2];		// 移动网络代码
+				cellid = items[5];	// 小区ID
+				band = freq_items[2];		// 频段
+
+				newCpeDevice.setOnlineBand(band);
+
+				try {
+					bandwidth = (String.valueOf(Integer.parseInt(freq_items[5])/1000) + "Mhz");
+				} catch (Exception e) {
+					bandwidth = "";
+				}
+				rsrp = items[7];	// 参考信号接收功率
+			}
+			// 解析运营商信息
+			String cops = "";
+			if (data.lte_cops != null && data.lte_cops.length() > 0)
+			{
+				try {
+					// 从COPS响应中提取运营商信息
+					String[] cops_items = data.lte_cops.split("\\r\\n");
+					cops = cops_items[1].split(",")[2].replace("\\\"", "");
+
+					// 根据运营商名称设置网络代码
+					if (cops.indexOf("UNICOM") > 0)
+						newCpeDevice.setOnlineNetNo("unicom");
+					if (cops.indexOf("TELECOM") > 0)
+						newCpeDevice.setOnlineNetNo("telecom");
+					if (cops.indexOf("MOBILE") > 0)
+						newCpeDevice.setOnlineNetNo("mobile");
+					if (cops.indexOf("BROADNET") > 0)
+						newCpeDevice.setOnlineNetNo("board");
+				}catch (Exception ex) {
+					// 运营商信息解析失败，继续处理其他数据
+				}
+			}
+
+			// 更新设备基本信息
+			cpeDeviceService.updateById(newCpeDevice);
+
+			// 解析载波聚合信息
+			// String caBand = "";
+			// if (data.lte_cainfo != null && data.lte_cainfo.length() > 0)
+			// {
+			// 	if (data.lte_cainfo.split("\\r\\n").length > 2)
+			// 	{
+			// 		try {
+			// 			// 提取主载波(PCC)信息
+			// 			String[] cainfo_items = data.lte_cainfo.split("\\r\\n")[2].split(",")[0].split(":");
+			// 			if (cainfo_items[0].equals("PCC"))
+			// 			{
+			// 				caBand = cainfo_items[1];
+			// 			}
+			// 		}catch (Exception ex) {
+			// 			// 载波聚合信息解析失败，继续处理其他数据
+			// 		}
+			// 	}
+			// }
+
+			// 处理IP地址和流量信息
+			if (ipAddrParam != null && ipAddrParam.length() > 0)
+			{
+				String[] ipaddr = ipAddrParam.split(",");
+				data.ipv4 = ipaddr[0];		// IPv4地址
+				data.ipv6 = ipaddr[1];		// IPv6地址
+				data.upBytes = Double.parseDouble(ipaddr[2]);
+				data.downBytes = Double.parseDouble(ipaddr[3]);
+
+				// 处理流量统计数据
+				processTrafficData(ipaddr, data.iccid, cpeDevice, data);
+			}
+
+			// 处理LTE状态信息
+			if (lteStatus != null && !lteStatus.isEmpty()) {
+				try {
+					ObjectMapper objectMapper = new ObjectMapper();
+					@SuppressWarnings("unchecked")
+					Map<String, Object> lteStatusMap = objectMapper.readValue(lteStatus, Map.class);
+
+					// 提取运行时间和DNS服务器信息
+					data.uptime = lteStatusMap.containsKey("uptime") ? lteStatusMap.get("uptime").toString() : data.uptime;
+					if (lteStatusMap.containsKey("dns-server")) {
+						@SuppressWarnings("unchecked")
+						ArrayList<String> dnsList = (ArrayList<String>) (lteStatusMap.get("dns-server"));
+
+						// 设置DNS服务器地址
+						if (!dnsList.isEmpty())
+						{
+							data.dns1 = dnsList.get(0).toString();
+
+							if (dnsList.size() > 1)
+								data.dns2 = dnsList.get(1).toString();
+						}
+					}
+				} catch (IOException e) {
+					log.error("Error parsing lteStatus JSON", e);
+					throw new Exception("JSON解析错误！");
+				}
+			}
+
+			// 创建设备状态记录对象
+			CpeDeviceStatus cpeDeviceStatus = new CpeDeviceStatus();
+			cpeDeviceStatus.setIpv4(data.ipv4);
+			cpeDeviceStatus.setIpv6(data.ipv6);
+			cpeDeviceStatus.setUptime(data.uptime);
+			cpeDeviceStatus.setUpBytes(data.upBytes);
+			cpeDeviceStatus.setDownBytes(data.downBytes);
+			cpeDeviceStatus.setCops(cops);
+			cpeDeviceStatus.setOnlineBand(band);
+			//cpeDeviceStatus.setCaBand(caBand);
 			cpeDeviceStatus.setCellId(cellid);
 			cpeDeviceStatus.setCpeId(cpeDevice.getId());
 			cpeDeviceStatus.setDeviceSn(data.deviceSn);
