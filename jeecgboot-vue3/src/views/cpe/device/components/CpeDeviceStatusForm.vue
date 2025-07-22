@@ -124,6 +124,11 @@
 								<a-input v-model:value="formData.clientCount" placeholder="请输入客户端连接数"  allow-clear ></a-input>
 							</a-form-item>
 						</a-col>
+            <a-col :span="24">
+							<a-form-item label="子载波间隔" v-bind="validateInfos.scs" id="CpeDeviceStatus-scs" name="scs">
+								<a-input v-model:value="formData.scs" placeholder="请输入子载波间隔"  allow-clear ></a-input>
+							</a-form-item>
+						</a-col>
           </a-row>
         </a-form>
       </template>
@@ -171,6 +176,7 @@
         uptime: '',   
         sysUptime: '',   
         clientCount: '',   
+        scs: '',   
   });
   const { createMessage } = useMessage();
   const labelCol = ref<any>({ xs: { span: 24 }, sm: { span: 5 } });

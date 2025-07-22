@@ -523,6 +523,7 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 			String rsrq = items[13];	// 参考信号接收质量
 			String sinr = items[14];	// 信噪比
 			String rxlev = items[16];			// 接收电平
+			Integer scs = Integer.parseInt(items[17]);
 
 			if (rat.equals("LTE")) {
 				tac = items[12];		// 跟踪区代码
@@ -666,6 +667,7 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 			cpeDeviceStatus.setOpenwrtVersion(data.openwrtVersion);
 			cpeDeviceStatus.setSysUptime(data.sysUptime);
 			cpeDeviceStatus.setClientCount(data.clientCount);
+			cpeDeviceStatus.setScs(scs);
 
 			// 保存设备状态记录
 			save(cpeDeviceStatus);
@@ -1142,7 +1144,7 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 
 	/**
 	 * 解析系统运行时长
-	 * 
+	 *
 	 * @param uptime 系统运行时长字符串
 	 * @return 格式化后的运行时长
 	 */
@@ -1150,11 +1152,11 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 		if (uptime == null || uptime.isEmpty()) {
 			return "0";
 		}
-		
+
 		try {
 			long totalSeconds = 0;
 			String trimmedUptime = uptime.trim();
-			
+
 			// 检查是否包含"day"，处理"1 day, 8:41"这种格式
 			if (trimmedUptime.contains("day")) {
 				String[] parts = trimmedUptime.split(",");
@@ -1162,7 +1164,7 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 				String dayPart = parts[0].trim();
 				int days = Integer.parseInt(dayPart.split(" ")[0]);
 				totalSeconds += days * 24 * 60 * 60; // 天数转换为秒
-				
+
 				// 处理时分部分
 				if (parts.length > 1) {
 					String timePart = parts[1].trim();
@@ -1175,10 +1177,10 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 					} else if (timePart.contains("min")) {
 						String minutesPart = timePart.split("min")[0].trim();
 						int minutes = Integer.parseInt(minutesPart);
-						totalSeconds = minutes * 60; // 分钟转换为秒
+						totalSeconds += minutes * 60; // 分钟转换为秒
 					}
 				}
-			} 
+			}
 			// 检查是否仅包含"min"，处理"7 min"这种格式
 			else if (trimmedUptime.contains("min")) {
 				String minutesPart = trimmedUptime.split("min")[0].trim();
@@ -1195,7 +1197,7 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 					totalSeconds += minutes * 60;    // 分钟转换为秒
 				}
 			}
-			
+
 			return String.valueOf(totalSeconds);
 		} catch (Exception e) {
 			log.error("解析系统运行时长失败: " + uptime, e);

@@ -276,6 +276,22 @@ export const cpeDeviceStatusColumns: BasicColumn[] = [
     width: 100,
     dataIndex: 'clientCount',
   },
+  {
+    title: 'SCS',
+    align: 'center',
+    width: 100,
+    dataIndex: 'scs',
+    customRender: ({ text }) => {
+      switch (text) {
+        case 0: return '15KHz';
+        case 1: return '30KHz';
+        case 2: return '60KHz';
+        case 3: return '120KHz';
+        case 4: return '240KHz';
+        default: return text ?? '';
+      }
+    },
+  },
 ];
 //子表列表数据
 export const cpeDeviceNeighborColumns: BasicColumn[] = [
