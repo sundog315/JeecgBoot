@@ -1088,6 +1088,8 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 
 						// 提取SIM卡槽位信息
 						data.sim_slot = Integer.parseInt(ubusOutputMap.get("LTE_SIMSLOT").toString());
+						data.lte_4g = ubusOutputMap.containsKey("LTE_4G") ? ubusOutputMap.get("LTE_4G").toString() : "";
+						data.lte_5g = ubusOutputMap.containsKey("LTE_5G") ? ubusOutputMap.get("LTE_5G").toString() : "";
 
 						// 提取设备基本信息
 						data.imei = ubusOutputMap.containsKey("LTE_IMEI") ? ubusOutputMap.get("LTE_IMEI").toString() : "";
@@ -1106,6 +1108,7 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 						cpeDevice.setFiveGModule(data.module);
 
 						data.lte_cell = ubusOutputMap.containsKey("LTE_CELL") ? ubusOutputMap.get("LTE_CELL").toString() : "";
+						data.lte_freq = ubusOutputMap.containsKey("LTE_FREQ") ? ubusOutputMap.get("LTE_FREQ").toString() : "";
 						data.lte_cainfo = ubusOutputMap.containsKey("LTE_CAINFO") ? ubusOutputMap.get("LTE_CAINFO").toString() : "";
 						data.lte_cops = ubusOutputMap.containsKey("LTE_COPS") ? ubusOutputMap.get("LTE_COPS").toString() : "";
 
