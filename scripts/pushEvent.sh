@@ -265,7 +265,15 @@ make_http_request() {
         # 准备所有数据
         local mac=$(get_mac_address)
         local ubus_call=$(get_ubus_call)
-        local network_info=$(get_network_info "usb0")
+        
+        # 检查ubus_call中是否包含MT5700M，如果包含则使用eth1接口而不是usb0
+        local network_interface="usb0"
+        if echo "$ubus_call" | grep -q "MT5700M"; then
+            network_interface="eth1"
+            log_info "检测到MT5700M设备，使用eth1接口"
+        fi
+        
+        local network_info=$(get_network_info "$network_interface")
         local lte_status=$(get_lte_status)
         local frp_config=$(get_frp_config)
         local auto_reboot_config=$(get_auto_reboot_config)

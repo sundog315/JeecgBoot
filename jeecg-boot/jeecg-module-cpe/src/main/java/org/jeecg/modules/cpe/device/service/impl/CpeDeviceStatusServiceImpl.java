@@ -1116,10 +1116,10 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 						if (data.lte_cell != null && data.lte_cell.length() > 0)
 						{
 							// 根据网络类型处理信号信息
-							if ((data.lte_cell.indexOf("NR service cell") > 0)
-								|| (data.lte_cell.indexOf("LTE service cell") > 0)
-								|| (data.lte_cell.indexOf("LTE-NR EN-DC service cell") > 0)
-								|| (data.lte_cell.indexOf("servingcell") > 0))
+							if ((data.lte_cell.indexOf("servingcell") > 0)
+								|| (data.lte_cell.indexOf("NR") > 0)
+								|| (data.lte_cell.indexOf("LTE") > 0)
+								|| (data.lte_cell.indexOf("WCDMA") > 0))
 							{
 								service_nr(cpeDevice, cpeDevice, ipAddrParam, lteStatus, data);
 							}
