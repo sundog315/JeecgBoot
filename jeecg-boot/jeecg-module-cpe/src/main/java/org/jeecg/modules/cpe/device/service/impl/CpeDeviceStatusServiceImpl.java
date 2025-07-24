@@ -763,7 +763,7 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 			if (rat.equals("NR")) {
 				mcc = items[1];		// 移动国家代码
 				mnc = items[2];		// 移动网络代码
-				cellid = items[4];	// 小区ID
+				cellid = items[3];	// 小区ID
 				physicalcellId = items[6];	// 物理小区ID
 				band = freq_items[2];		// 频段
 
@@ -784,7 +784,7 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 			} else if (rat.equals("LTE")) {
 				mcc = items[1];		// 移动国家代码
 				mnc = items[2];		// 移动网络代码
-				cellid = items[4];	// 小区ID
+				cellid = items[3];	// 小区ID
 				physicalcellId = items[5];	// 物理小区ID
 				band = freq_items[2];		// 频段
 
