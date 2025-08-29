@@ -69,7 +69,8 @@ public class CpeDeviceApi extends JeecgController<CpeDevice, ICpeDeviceService> 
 								@RequestParam(name="wireless",required=false) String wireless,
 								@RequestParam(name="version",required=false) String version,
 								@RequestParam(name="uptime",required=false) String uptime,
-								@RequestParam(name="clients",required=false) String clients) {
+								@RequestParam(name="clients",required=false) String clients,
+								@RequestParam(name="cpu_temp",required=false) String cpuTemp) {
 
 		switch (deviceType) {
 			case "X25":
@@ -82,7 +83,7 @@ public class CpeDeviceApi extends JeecgController<CpeDevice, ICpeDeviceService> 
 
 			default:
 				try{
-					cpeDeviceStatusService.push(deviceSnParam, ubusOutputParam, ipAddrParam, lteStatus, version, uptime, clients);
+					cpeDeviceStatusService.push(deviceSnParam, ubusOutputParam, ipAddrParam, lteStatus, version, uptime, clients, cpuTemp);
 					if ((frp != null) && (!frp.isEmpty()))
 						cpeDeviceFrpService.report(deviceSnParam, frp);
 					if ((autoReboot != null) && (!autoReboot.isEmpty()))

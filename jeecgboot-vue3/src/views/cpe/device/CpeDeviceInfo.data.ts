@@ -94,7 +94,7 @@ export const columns: BasicColumn[] = [
   {
     title: '固件版本',
     align: 'center',
-    width: 80,
+    width: 180,
     dataIndex: 'openwrtVersion',
   },
   {
@@ -291,6 +291,12 @@ export const cpeDeviceStatusColumns: BasicColumn[] = [
         default: return text ?? '';
       }
     },
+  },
+  {
+    title: 'CPU温度',
+    align: 'center',
+    width: 80,
+    dataIndex: 'cpuTemp',
   },
 ];
 //子表列表数据
@@ -519,7 +525,7 @@ export const cpeDeviceWirelessColumns: BasicColumn[] = [
     align: 'center',
     dataIndex: 'radio24Hidden',
     customRender: ({ text }) => {
-      return h(Tag, { color: text === '0' ? 'success' : 'error' }, () => (text === '0' ? '广播' : '不广播'));
+      return h(Tag, { color: (text === '0' || !text) ? 'success' : 'error' }, () => ((text === '0' || !text) ? '广播' : '不广播'));
     },
   },
   {
@@ -594,7 +600,7 @@ export const cpeDeviceWirelessColumns: BasicColumn[] = [
     align: 'center',
     dataIndex: 'radio5Hidden',
     customRender: ({ text }) => {
-      return h(Tag, { color: text === '0' ? 'success' : 'error' }, () => (text === '0' ? '广播' : '不广播'));
+      return h(Tag, { color: (text === '0' || !text) ? 'success' : 'error' }, () => ((text === '0' || !text) ? '广播' : '不广播'));
     },
   },
 ];

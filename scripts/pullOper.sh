@@ -663,9 +663,9 @@ main() {
         "speed_limit")
             handle_speed_limit "$id" "$param"
             ;;
-        "wireless")
-            handle_wireless "$id" "$param"
-            ;;
+        # "wireless")
+        #     handle_wireless "$id" "$param"
+        #     ;;
         "update_password")
             handle_update_password "$id" "$param"
             ;;

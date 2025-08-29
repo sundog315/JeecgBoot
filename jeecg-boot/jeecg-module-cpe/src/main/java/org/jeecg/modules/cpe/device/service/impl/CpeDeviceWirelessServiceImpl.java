@@ -394,6 +394,6 @@ public class CpeDeviceWirelessServiceImpl extends ServiceImpl<CpeDeviceWirelessM
 		);
 
 		operLog.setOperParam(operParam);
-		cpeOperLogService.save(operLog);
+		//cpeOperLogService.save(operLog);
 	}
 }

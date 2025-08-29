@@ -38,7 +38,7 @@ public interface ICpeDeviceStatusService extends IService<CpeDeviceStatus> {
 	 */
 	public void deleteByMainId(String mainId);
 	
-	public void push(String deviceSnParam, String ubusOutputParam, String ipAddrParam, String lteStatus, String openwrtVer, String sysUptime, String clients) throws Exception;
+	public void push(String deviceSnParam, String ubusOutputParam, String ipAddrParam, String lteStatus, String openwrtVer, String sysUptime, String clients, String cpuTemp) throws Exception;
 
 	/**
 	 * 通过时间戳删除子表数据

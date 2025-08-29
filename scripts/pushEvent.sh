@@ -4,7 +4,7 @@ VERSION="1.0.0"
 # 配置参数
 SERVER_URL='sundog315.eicp.net:9527'
 API_BASE_URL="http://${SERVER_URL}/jeecg-boot/cpe/device/api/push"
-DEVICE_TYPE=$(uci get lede.system.name)
+DEVICE_TYPE=$(cat /tmp/sysinfo/board_name)
 MAX_RETRIES=3
 RETRY_DELAY=5
 TIMEOUT=10
@@ -21,7 +21,7 @@ log_error() {
 }
 
 get_version() {
-    cat /etc/openwrt_version
+    cat /etc/openwrt_build
 }
 
 # 获取MAC地址
@@ -41,6 +41,17 @@ get_ubus_call() {
     result=$(ubus call lteat get)
     if [ $? -ne 0 ]; then
         log_error "获取UBUS信息失败"
+        return 1
+    fi
+    echo "$result"
+}
+
+# 获取UCPU温度
+get_cpu_temp() {
+    local result
+    result=$(echo $(($(cat /sys/class/thermal/thermal_zone0/temp)/1000)))
+    if [ $? -ne 0 ]; then
+        log_error "获取CPU温度失败"
         return 1
     fi
     echo "$result"
@@ -166,6 +177,22 @@ get_speed_limit() {
 
 # 获取无线配置信息
 get_wireless_config() {
+    # 检查section是否存在
+    is_wifi_section_exist() {
+        local section="$1"
+        awk -v section="$section" '$0 ~ "config[[:space:]]+wifi-iface[[:space:]]+"section {found=1} END{exit !found}' /etc/config/wireless
+    }
+
+    # 判断wlan0/wlan1是否存在，不存在则用default_radio0/1
+    local wlan0_section="wlan0"
+    local wlan1_section="wlan1"
+    if ! is_wifi_section_exist "wlan0"; then
+        wlan0_section="default_radio0"
+    fi
+    if ! is_wifi_section_exist "wlan1"; then
+        wlan1_section="default_radio1"
+    fi
+
     # 通用awk函数，支持带引号和不带引号的格式
     get_wifi_option() {
         local section="$1"
@@ -185,26 +212,46 @@ get_wireless_config() {
     }
 
     # 2.4G配置
-    local wlan0_disabled=$(get_wifi_option "wlan0" "disabled")
+    local wlan0_disabled
+    if [ "$wlan0_section" = "wlan0" ]; then
+        wlan0_disabled=$(get_wifi_option "$wlan0_section" "disabled")
+    else
+        wlan0_disabled=$(get_wifi_option "radio0" "disabled")
+    fi
     local radio0_channel=$(get_wifi_option "radio0" "channel")
-    local wlan0_ssid=$(get_wifi_option "wlan0" "ssid")
-    local wlan0_encryption=$(get_wifi_option "wlan0" "encryption")
-    local wlan0_key=$(get_wifi_option "wlan0" "key")
-    local wlan0_maxsta=$(get_wifi_option "wlan0" "maxsta")
-    local radio0_power=$(get_wifi_option "radio0" "power")
-    local wlan0_macfilter=$(get_wifi_option "wlan0" "macfilter")
-    local wlan0_hidden=$(get_wifi_option "wlan0" "hidden")
+    local wlan0_ssid=$(get_wifi_option "$wlan0_section" "ssid")
+    local wlan0_encryption=$(get_wifi_option "$wlan0_section" "encryption")
+    local wlan0_key=$(get_wifi_option "$wlan0_section" "key")
+    local wlan0_maxsta=$(get_wifi_option "$wlan0_section" "maxsta")
+    local radio0_power
+    if [ "$wlan0_section" = "wlan0" ]; then
+        radio0_power=$(get_wifi_option "radio0" "power")
+    else
+        radio0_power=$(get_wifi_option "radio0" "txpower")
+    fi
+    local wlan0_macfilter=$(get_wifi_option "$wlan0_section" "macfilter")
+    local wlan0_hidden=$(get_wifi_option "$wlan0_section" "hidden")
 
     # 5G配置
-    local wlan1_disabled=$(get_wifi_option "wlan1" "disabled")
+    local wlan1_disabled
+    if [ "$wlan1_section" = "wlan1" ]; then
+        wlan1_disabled=$(get_wifi_option "$wlan1_section" "disabled")
+    else
+        wlan1_disabled=$(get_wifi_option "radio1" "disabled")
+    fi
     local radio1_channel=$(get_wifi_option "radio1" "channel")
-    local wlan1_ssid=$(get_wifi_option "wlan1" "ssid")
-    local wlan1_encryption=$(get_wifi_option "wlan1" "encryption")
-    local wlan1_key=$(get_wifi_option "wlan1" "key")
-    local wlan1_maxsta=$(get_wifi_option "wlan1" "maxsta")
-    local radio1_power=$(get_wifi_option "radio1" "power")
-    local wlan1_macfilter=$(get_wifi_option "wlan1" "macfilter")
-    local wlan1_hidden=$(get_wifi_option "wlan1" "hidden")
+    local wlan1_ssid=$(get_wifi_option "$wlan1_section" "ssid")
+    local wlan1_encryption=$(get_wifi_option "$wlan1_section" "encryption")
+    local wlan1_key=$(get_wifi_option "$wlan1_section" "key")
+    local wlan1_maxsta=$(get_wifi_option "$wlan1_section" "maxsta")
+    local radio1_power
+    if [ "$wlan1_section" = "wlan1" ]; then
+        radio1_power=$(get_wifi_option "radio1" "power")
+    else
+        radio1_power=$(get_wifi_option "radio1" "txpower")
+    fi
+    local wlan1_macfilter=$(get_wifi_option "$wlan1_section" "macfilter")
+    local wlan1_hidden=$(get_wifi_option "$wlan1_section" "hidden")
 
     # 获取配置文件最后修改时间
     local last_modified
@@ -223,19 +270,20 @@ get_system_uptime() {
         return 1
     fi
     
-    # 从uptime输出提取完整运行时长信息（支持所有格式）
+    # 从uptime输出提取运行时长，兼容BusyBox/ash
+    # 1) 截取" up "之后的部分
     local uptime_info
-    # 截取"up"后面到","或"user"前面的部分
-    uptime_info=$(echo "$uptime_output" | sed -E 's/.*up[[:space:]]+([^,]+).*/\1/')
-    
-    # 如果包含"load average"，需要进一步处理
-    if echo "$uptime_info" | grep -q "load average"; then
-        uptime_info=$(echo "$uptime_info" | sed -E 's/(.*)[[:space:]]+load average.*/\1/')
-    fi
-    
-    # 处理字符串，确保格式统一
-    uptime_info=$(echo "$uptime_info" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-    
+    uptime_info=${uptime_output#* up }
+
+    # 2) 去掉" load average"及其后内容（如果存在）
+    uptime_info=${uptime_info%% load average*}
+
+    # 3) 去掉" user"/" users"及其后内容（如果存在）
+    uptime_info=${uptime_info%% user*}
+
+    # 4) 规范化空格与逗号，去除首尾逗号与空白
+    uptime_info=$(echo "$uptime_info" | sed 's/^[[:space:],]*//;s/[[:space:],]*$//' | sed 's/, \{1,\}/, /g')
+
     if [ -z "$uptime_info" ]; then
         log_error "解析uptime信息失败"
         return 1
@@ -247,13 +295,54 @@ get_system_uptime() {
 # 获取客户端连接信息
 get_client_connections() {
     local stat_file="/proc/net/wtnet/stat"
-    if [ ! -f "$stat_file" ]; then
-        log_error "客户端统计文件不存在"
+    if [ -f "$stat_file" ]; then
+        cat "$stat_file"
+        return 0
+    fi
+
+    local tmpfile="/tmp/wifi_clients.txt"
+    > $tmpfile
+    for iface in $(iwinfo 2>/dev/null | grep -oE '^[^ ]+' | grep -E 'ap0$|wlan[0-9]$'); do
+        iwinfo $iface assoclist 2>/dev/null | \
+        awk '
+            /^[0-9A-Fa-f:]{17}/ {
+                mac=tolower($1);
+                rx=0; tx=0;
+                while(getline>0 && $0!~/^[0-9A-Fa-f:]{17}/){
+                    if($1=="RX:") rx=$2;
+                    if($1=="TX:") tx=$2;
+                }
+                print mac "|" rx "|" tx
+            }
+        ' >> $tmpfile
+    done
+
+    local arp_cmd=""
+    if command -v arp >/dev/null 2>&1; then
+        arp_cmd="arp -a"
+    elif command -v ip >/dev/null 2>&1; then
+        arp_cmd="ip neigh"
+    else
+        echo "No arp or ip command found" >&2
+        rm -f $tmpfile
         return 1
     fi
-    
-    # 直接读取并返回原始输出
-    cat "$stat_file"
+
+    $arp_cmd | {
+        if [ "$arp_cmd" = "arp -a" ]; then
+            awk '/br-lan/ && $1 ~ /^[0-9]+(\.[0-9]+){3}$/ {print $1, tolower($4)}'
+        else
+            awk '/br-lan/ && $1 ~ /^[0-9]+(\.[0-9]+){3}$/ {print $1, tolower($5)}'
+        fi
+    } | while read ip mac; do
+        line=$(grep "^$mac|" $tmpfile)
+        if [ -n "$line" ]; then
+            rx=$(echo $line | awk -F'|' '{print $2}')
+            tx=$(echo $line | awk -F'|' '{print $3}')
+            echo "$ip $mac 0 0 0 0 0 0 0"
+        fi
+    done
+    rm -f $tmpfile
 }
 
 # HTTP请求函数
@@ -283,12 +372,12 @@ make_http_request() {
         local version=$(get_version)
         local system_uptime=$(get_system_uptime)
         local client_connections=$(get_client_connections)
+        local cpu_temp=$(get_cpu_temp)
 
         # 发送HTTP请求
         local response
         response=$(curl --connect-timeout $TIMEOUT -s -X POST \
             -H "Content-Type: application/x-www-form-urlencoded" \
-            --compressed \
             --data-urlencode "type=${DEVICE_TYPE}" \
             --data-urlencode "mac=${mac}" \
             --data-urlencode "ubus_call=${ubus_call}" \
@@ -302,6 +391,7 @@ make_http_request() {
             --data-urlencode "version=${version}" \
             --data-urlencode "uptime=${system_uptime}" \
             --data-urlencode "clients=${client_connections}" \
+            --data-urlencode "cpu_temp=${cpu_temp}" \
             "$API_BASE_URL")
 
         if [ $? -eq 0 ]; then

@@ -195,4 +195,8 @@ public class CpeDeviceStatus implements Serializable {
 	@Excel(name = "子载波间隔", width = 15)
     @ApiModelProperty(value = "子载波间隔")
     private java.lang.Integer scs;
+    /**CPU温度*/
+	@Excel(name = "CPU温度", width = 15)
+    @ApiModelProperty(value = "CPU温度")
+    private java.lang.Integer cpuTemp;
 }

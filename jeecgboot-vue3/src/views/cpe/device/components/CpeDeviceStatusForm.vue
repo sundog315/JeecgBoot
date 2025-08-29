@@ -129,6 +129,11 @@
 								<a-input v-model:value="formData.scs" placeholder="请输入子载波间隔"  allow-clear ></a-input>
 							</a-form-item>
 						</a-col>
+            <a-col :span="24">
+							<a-form-item label="CPU温度" v-bind="validateInfos.cpuTemp" id="CpeDeviceStatus-cpuTemp" name="cpuTemp">
+								<a-input v-model:value="formData.cpuTemp" placeholder="请输入CPU温度"  allow-clear ></a-input>
+							</a-form-item>
+						</a-col>
           </a-row>
         </a-form>
       </template>
@@ -176,7 +181,8 @@
         uptime: '',   
         sysUptime: '',   
         clientCount: '',   
-        scs: '',   
+        scs: '',
+        cpuTemp: '',
   });
   const { createMessage } = useMessage();
   const labelCol = ref<any>({ xs: { span: 24 }, sm: { span: 5 } });

@@ -92,6 +92,7 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 		public String openwrtVersion = "";
 		public String sysUptime = "";
 		public Integer clientCount = 0;
+		public Integer cpuTemp = 0;
 	}
 
     /**
@@ -431,6 +432,7 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 			cpeDeviceStatus.setOpenwrtVersion(data.openwrtVersion);
 			cpeDeviceStatus.setSysUptime(data.sysUptime);
 			cpeDeviceStatus.setClientCount(data.clientCount);
+			cpeDeviceStatus.setCpuTemp(data.cpuTemp);
 
 			// 保存设备状态记录
 			save(cpeDeviceStatus);
@@ -668,6 +670,7 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 			cpeDeviceStatus.setSysUptime(data.sysUptime);
 			cpeDeviceStatus.setClientCount(data.clientCount);
 			cpeDeviceStatus.setScs(scs);
+			cpeDeviceStatus.setCpuTemp(data.cpuTemp);
 
 			// 保存设备状态记录
 			save(cpeDeviceStatus);
@@ -943,6 +946,7 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 			cpeDeviceStatus.setOpenwrtVersion(data.openwrtVersion);
 			cpeDeviceStatus.setSysUptime(data.sysUptime);
 			cpeDeviceStatus.setClientCount(data.clientCount);
+			cpeDeviceStatus.setCpuTemp(data.cpuTemp);
 
 			// 保存设备状态记录
 			save(cpeDeviceStatus);
@@ -1045,7 +1049,7 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
      * @throws Exception 处理异常时抛出
      */
 	@Transactional(rollbackFor = Exception.class)
-	public void push(String deviceSnParam, String ubusOutputParam, String ipAddrParam, String lteStatus, String openwrtVer, String sysUptime, String clients) throws Exception
+	public void push(String deviceSnParam, String ubusOutputParam, String ipAddrParam, String lteStatus, String openwrtVer, String sysUptime, String clients, String cpuTemp) throws Exception
 	{
 		CpeBaseData data = new CpeBaseData();
 		// 标准化设备序列号格式（移除冒号并转换为大写）
@@ -1078,6 +1082,19 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 						List<CpeDeviceClient> clientList = parseClientsDetail(clients, cpeDevice.getId());
 						data.clientCount = clientList.size();
 					}else data.clientCount = 0;
+					if (cpuTemp != null && cpuTemp.length() > 0)
+					{
+						try
+						{
+							data.cpuTemp = Integer.parseInt(cpuTemp);
+						}
+						catch (NumberFormatException e)
+						{
+							data.cpuTemp = 0;
+						}
+					}else data.cpuTemp = 0;
+
+					log.warn("CPU温度: " + data.cpuTemp.toString());
 
 					if (ubusOutputParam != null) {
 						String ubusOutput = ubusOutputParam;
@@ -1095,7 +1112,6 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 						data.imei = ubusOutputMap.containsKey("LTE_IMEI") ? ubusOutputMap.get("LTE_IMEI").toString() : "";
 						data.version = ubusOutputMap.containsKey("LTE_VER") ? ubusOutputMap.get("LTE_VER").toString() : "";
 						data.iccid = ubusOutputMap.containsKey("LTE_ICCID") ? ubusOutputMap.get("LTE_ICCID").toString() : "";
-
 						// 关联SIM卡信息
 						if (cardInfoService.selectByCardNo(data.iccid).size() > 0)
 						{
@@ -1171,6 +1187,7 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 				// 处理时分部分
 				if (parts.length > 1) {
 					String timePart = parts[1].trim();
+					if (parts.length > 2) timePart = parts[parts.length - 1].trim();
 					String[] timeComponents = timePart.split(":");
 					if (timeComponents.length >= 2) {
 						int hours = Integer.parseInt(timeComponents[0]);
