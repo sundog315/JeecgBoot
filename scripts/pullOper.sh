@@ -155,6 +155,7 @@ make_http_push() {
 
     while [ $retry -lt $MAX_RETRIES ]; do
         response=$(curl -s -X POST \
+            --compressed \
             -H "Content-Type: application/x-www-form-urlencoded" \
             --data-urlencode "type=${DEVICE_TYPE}" \
             --data-urlencode "operid=${operid}" \
@@ -557,53 +558,75 @@ handle_wireless() {
     local g5_macfilter=$(echo "$param" | cut -d',' -f17)
     local g5_hidden=$(echo "$param" | cut -d',' -f18)
 
-    # 更新无线配置
-    local temp_file=$(mktemp)
-    cp /etc/config/wireless "$temp_file"
+    # 使用uci方式更新无线配置（参考pushEvent.sh get_wireless_config）
+    is_wifi_section_exist() {
+        local section="$1"
+        uci show wireless | grep -q "^wireless.${section}="
+    }
+    # 选择实际的iface section名
+    local wlan0_section="wlan0"
+    local wlan1_section="wlan1"
+    if ! is_wifi_section_exist "wlan0"; then
+        wlan0_section="default_radio0"
+    fi
+    if ! is_wifi_section_exist "wlan1"; then
+        wlan1_section="default_radio1"
+    fi
 
-    # 更新2.4G配置
-    sed -i "/config wifi-device 'radio0'/,/config wifi-iface/ {
-        s/option channel ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option channel '$g2_channel'/
-        s/option power ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option power '$g2_power'/
-    }" "$temp_file"
+    # 通过section名获取@wifi-iface索引
+    get_section_index() {
+        local section_name="$1"
+        awk -v s="$section_name" "BEGIN{idx=-1} /config[[:space:]]+wifi-iface/ {idx++} \$0 ~ \"config[[:space:]]+wifi-iface[[:space:]]+['\\\"]\" s \"['\\\"]\" {print idx; exit}" /etc/config/wireless
+    }
+    local wlan0_idx=$(get_section_index "$wlan0_section")
+    local wlan1_idx=$(get_section_index "$wlan1_section")
 
-    sed -i "/config wifi-iface 'wlan0'/,/config wifi-iface/ {
-        s/option disabled ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option disabled '$g2_disabled'/
-        s/option ssid ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option ssid '$g2_ssid'/
-        s/option encryption ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option encryption '$g2_encryption'/
-        s/option key ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option key '$g2_key'/
-        s/option maxsta ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option maxsta '$g2_maxsta'/
-        s/option macfilter ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option macfilter '$g2_macfilter'/
-        s/option hidden ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option hidden '$g2_hidden'/
-    }" "$temp_file"
+    # 容错：若索引获取失败则回退0/1
+    [ -z "$wlan0_idx" ] && wlan0_idx=0
+    [ -z "$wlan1_idx" ] && wlan1_idx=1
 
-    # 更新5G配置
-    sed -i "/config wifi-device 'radio1'/,/config wifi-iface/ {
-        s/option channel ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option channel '$g5_channel'/
-        s/option power ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option power '$g5_power'/
-    }" "$temp_file"
+    # 写入2.4G无线设备与接口配置
+    [ -n "$g2_channel" ] && uci set wireless.@wifi-device[0].channel="$g2_channel"
+    [ -n "$g2_power" ] && {
+        # power/txpower两种字段兼容：优先设置已有字段
+        if uci -q get wireless.radio0.power >/dev/null 2>&1; then
+            uci set wireless.radio0.power="$g2_power"
+        else
+            uci set wireless.radio0.txpower="$g2_power"
+        fi
+    }
+    uci set wireless.@wifi-iface[$wlan0_idx].disabled="${g2_disabled}"
+    uci set wireless.@wifi-iface[$wlan0_idx].ssid="${g2_ssid}"
+    uci set wireless.@wifi-iface[$wlan0_idx].encryption="${g2_encryption}"
+    uci set wireless.@wifi-iface[$wlan0_idx].key="${g2_key}"
+    uci set wireless.@wifi-iface[$wlan0_idx].maxsta="${g2_maxsta}"
+    uci set wireless.@wifi-iface[$wlan0_idx].macfilter="${g2_macfilter}"
+    uci set wireless.@wifi-iface[$wlan0_idx].hidden="${g2_hidden}"
 
-    sed -i "/config wifi-iface 'wlan1'/,/config wifi-iface/ {
-        s/option disabled ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option disabled '$g5_disabled'/
-        s/option ssid ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option ssid '$g5_ssid'/
-        s/option encryption ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option encryption '$g5_encryption'/
-        s/option key ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option key '$g5_key'/
-        s/option maxsta ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option maxsta '$g5_maxsta'/
-        s/option macfilter ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option macfilter '$g2_macfilter'/
-        s/option hidden ['\"]\\{0,1\\}[^'\"]*['\"]\\{0,1\\}/option hidden '$g2_hidden'/
-    }" "$temp_file"
+    # 写入5G无线设备与接口配置
+    [ -n "$g5_channel" ] && uci set wireless.@wifi-device[1].channel="$g5_channel"
+    [ -n "$g5_power" ] && {
+        if uci -q get wireless.radio1.power >/dev/null 2>&1; then
+            uci set wireless.radio1.power="$g5_power"
+        else
+            uci set wireless.radio1.txpower="$g5_power"
+        fi
+    }
+    uci set wireless.@wifi-iface[$wlan1_idx].disabled="${g5_disabled}"
+    uci set wireless.@wifi-iface[$wlan1_idx].ssid="${g5_ssid}"
+    uci set wireless.@wifi-iface[$wlan1_idx].encryption="${g5_encryption}"
+    uci set wireless.@wifi-iface[$wlan1_idx].key="${g5_key}"
+    uci set wireless.@wifi-iface[$wlan1_idx].maxsta="${g5_maxsta}"
+    uci set wireless.@wifi-iface[$wlan1_idx].macfilter="${g5_macfilter}"
+    uci set wireless.@wifi-iface[$wlan1_idx].hidden="${g5_hidden}"
 
-    # 验证并应用配置
-    if [ $? -eq 0 ]; then
-        mv "$temp_file" /etc/config/wireless
+    # 提交并应用
+    if uci commit wireless; then
         /etc/init.d/network restart
-
-        # 获取更新后的配置信息
         local wireless_info=$(cat /etc/config/wireless)
         make_http_push "${API_BASE_URL}/push" "${id}" "Updated" "${wireless_info}"
     else
         log_error "更新无线配置失败"
-        rm "$temp_file"
         make_http_push "${API_BASE_URL}/push" "${id}" "Failed" "更新无线配置失败"
         return 1
     fi

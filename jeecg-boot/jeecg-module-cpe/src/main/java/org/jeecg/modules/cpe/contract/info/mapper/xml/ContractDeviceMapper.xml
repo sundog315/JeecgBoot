@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.cpe.contract.info.mapper.ContractDeviceMapper">
+
+	<delete id="deleteByMainId" parameterType="java.lang.String">
+		DELETE 
+		FROM  contract_device 
+		WHERE
+			 contract_id = #{mainId} 
+	</delete>
+	
+	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.cpe.contract.info.entity.ContractDevice">
+		SELECT card_package_rel.end_time, contract_device.id, contract_device.cpe_id, cpe_device.device_sn, cpe_device.device_status_no, cpe_device.device_module_no,
+			   cpe_device.device_type_no, cpe_device.card_no, cpe_device.online_card_no, cpe_device.online_net_no,
+			   cpe_device.position, cpe_device.memo, cpe_device.online_band, cpe_device.five_g_module, cpe_device.sys_org_code
+		FROM  contract_device
+		LEFT OUTER JOIN cpe_device ON contract_device.cpe_id = cpe_device.id
+		LEFT OUTER JOIN card_info ON cpe_device.card_no =  card_info.id
+		LEFT OUTER JOIN card_package_rel ON card_info.id = card_package_rel.card_id
+		WHERE
+			 contract_id = #{mainId} 
+	</select>
+</mapper>

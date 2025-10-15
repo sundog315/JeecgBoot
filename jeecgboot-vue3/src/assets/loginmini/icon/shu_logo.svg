@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+  <style>
+    .shu {
+      fill: #dc143c;
+      stroke: #8b0000;
+      stroke-width: 1.5;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+    }
+  </style>
+  <g>
+    <!-- 枢字的主体结构 -->
+    
+    <!-- 木字旁 -->
+    <!-- 横 -->
+    <rect class="shu" x="50" y="80" width="60" height="12"/>
+    
+    <!-- 竖 -->
+    <rect class="shu" x="75" y="92" width="12" height="120"/>
+    
+    <!-- 左撇 -->
+    <path class="shu" d="M50,200 L80,160 L88,168 L58,208 Z"/>
+    
+    <!-- 右捺 -->
+    <path class="shu" d="M87,168 L117,208 L109,216 L79,176 Z"/>
+    
+    <!-- 右侧部分 -->
+    <!-- 上部横线 -->
+    <rect class="shu" x="130" y="60" width="120" height="12"/>
+    
+    <!-- 左竖线 -->
+    <rect class="shu" x="150" y="72" width="12" height="80"/>
+    
+    <!-- 右竖线 -->
+    <rect class="shu" x="218" y="72" width="12" height="80"/>
+    
+    <!-- 中间横线 -->
+    <rect class="shu" x="130" y="110" width="120" height="12"/>
+    
+    <!-- 下部横线 -->
+    <rect class="shu" x="130" y="140" width="120" height="12"/>
+    
+    <!-- 中间竖线 -->
+    <rect class="shu" x="185" y="152" width="12" height="80"/>
+    
+    <!-- 底部横线 -->
+    <rect class="shu" x="150" y="220" width="82" height="12"/>
+    
+    <!-- 装饰性笔画 -->
+    <rect class="shu" x="162" y="180" width="60" height="8"/>
+  </g>
+</svg>

@@ -177,10 +177,10 @@ get_speed_limit() {
 
 # 获取无线配置信息
 get_wireless_config() {
-    # 检查section是否存在
+    # 判断section是否存在
     is_wifi_section_exist() {
         local section="$1"
-        awk -v section="$section" '$0 ~ "config[[:space:]]+wifi-iface[[:space:]]+"section {found=1} END{exit !found}' /etc/config/wireless
+        uci show wireless | grep -q "^wireless.${section}="
     }
 
     # 判断wlan0/wlan1是否存在，不存在则用default_radio0/1
@@ -193,65 +193,41 @@ get_wireless_config() {
         wlan1_section="default_radio1"
     fi
 
-    # 通用awk函数，支持带引号和不带引号的格式
-    get_wifi_option() {
-        local section="$1"
-        local option="$2"
-        awk -v section="$section" -v option="$option" '
-            $0 ~ "config.*"section{p=1;next}
-            p&&$0~/^config/{p=0}
-            p&&$0~"option.*"option{
-                # 移除开头的option和字段名
-                sub(/^[[:space:]]*option[[:space:]]+[^[:space:]]+[[:space:]]+/, "")
-                # 移除可能存在的引号
-                gsub(/'\''/, "")
-                print
-                exit
-            }
-        ' /etc/config/wireless
+    # uci get带默认值的函数
+    uci_get_or_default() {
+        local key="$1"
+        local val
+        val=$(uci get "$key" 2>/dev/null)
+        if [ -z "$val" ]; then
+            echo "0"
+        else
+            echo "$val"
+        fi
     }
 
     # 2.4G配置
-    local wlan0_disabled
-    if [ "$wlan0_section" = "wlan0" ]; then
-        wlan0_disabled=$(get_wifi_option "$wlan0_section" "disabled")
-    else
-        wlan0_disabled=$(get_wifi_option "radio0" "disabled")
-    fi
-    local radio0_channel=$(get_wifi_option "radio0" "channel")
-    local wlan0_ssid=$(get_wifi_option "$wlan0_section" "ssid")
-    local wlan0_encryption=$(get_wifi_option "$wlan0_section" "encryption")
-    local wlan0_key=$(get_wifi_option "$wlan0_section" "key")
-    local wlan0_maxsta=$(get_wifi_option "$wlan0_section" "maxsta")
-    local radio0_power
-    if [ "$wlan0_section" = "wlan0" ]; then
-        radio0_power=$(get_wifi_option "radio0" "power")
-    else
-        radio0_power=$(get_wifi_option "radio0" "txpower")
-    fi
-    local wlan0_macfilter=$(get_wifi_option "$wlan0_section" "macfilter")
-    local wlan0_hidden=$(get_wifi_option "$wlan0_section" "hidden")
+    local radio0_channel=$(uci_get_or_default "wireless.radio0.channel")
+    local radio0_power=$(uci_get_or_default "wireless.radio0.power")
+    [ "$radio0_power" = 0 ] && radio0_power=$(uci_get_or_default "wireless.radio0.txpower")
+    local wlan0_disabled=$(uci_get_or_default "wireless.${wlan0_section}.disabled")
+    local wlan0_ssid=$(uci_get_or_default "wireless.${wlan0_section}.ssid")
+    local wlan0_encryption=$(uci_get_or_default "wireless.${wlan0_section}.encryption")
+    local wlan0_key=$(uci_get_or_default "wireless.${wlan0_section}.key")
+    local wlan0_maxsta=$(uci_get_or_default "wireless.${wlan0_section}.maxsta")
+    local wlan0_macfilter=$(uci_get_or_default "wireless.${wlan0_section}.macfilter")
+    local wlan0_hidden=$(uci_get_or_default "wireless.${wlan0_section}.hidden")
 
     # 5G配置
-    local wlan1_disabled
-    if [ "$wlan1_section" = "wlan1" ]; then
-        wlan1_disabled=$(get_wifi_option "$wlan1_section" "disabled")
-    else
-        wlan1_disabled=$(get_wifi_option "radio1" "disabled")
-    fi
-    local radio1_channel=$(get_wifi_option "radio1" "channel")
-    local wlan1_ssid=$(get_wifi_option "$wlan1_section" "ssid")
-    local wlan1_encryption=$(get_wifi_option "$wlan1_section" "encryption")
-    local wlan1_key=$(get_wifi_option "$wlan1_section" "key")
-    local wlan1_maxsta=$(get_wifi_option "$wlan1_section" "maxsta")
-    local radio1_power
-    if [ "$wlan1_section" = "wlan1" ]; then
-        radio1_power=$(get_wifi_option "radio1" "power")
-    else
-        radio1_power=$(get_wifi_option "radio1" "txpower")
-    fi
-    local wlan1_macfilter=$(get_wifi_option "$wlan1_section" "macfilter")
-    local wlan1_hidden=$(get_wifi_option "$wlan1_section" "hidden")
+    local radio1_channel=$(uci_get_or_default "wireless.radio1.channel")
+    local radio1_power=$(uci_get_or_default "wireless.radio1.power")
+    [ "$radio1_power" = 0 ] && radio1_power=$(uci_get_or_default "wireless.radio1.txpower")
+    local wlan1_disabled=$(uci_get_or_default "wireless.${wlan1_section}.disabled")
+    local wlan1_ssid=$(uci_get_or_default "wireless.${wlan1_section}.ssid")
+    local wlan1_encryption=$(uci_get_or_default "wireless.${wlan1_section}.encryption")
+    local wlan1_key=$(uci_get_or_default "wireless.${wlan1_section}.key")
+    local wlan1_maxsta=$(uci_get_or_default "wireless.${wlan1_section}.maxsta")
+    local wlan1_macfilter=$(uci_get_or_default "wireless.${wlan1_section}.macfilter")
+    local wlan1_hidden=$(uci_get_or_default "wireless.${wlan1_section}.hidden")
 
     # 获取配置文件最后修改时间
     local last_modified
@@ -378,6 +354,7 @@ make_http_request() {
         local response
         response=$(curl --connect-timeout $TIMEOUT -s -X POST \
             -H "Content-Type: application/x-www-form-urlencoded" \
+            --compressed \
             --data-urlencode "type=${DEVICE_TYPE}" \
             --data-urlencode "mac=${mac}" \
             --data-urlencode "ubus_call=${ubus_call}" \
