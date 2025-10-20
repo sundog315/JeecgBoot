@@ -7,7 +7,7 @@
           <a-col :lg="6">
             <a-form-item name="deviceSn">
               <template #label><span title="设备标识">设备标识</span></template>
-              <a-input v-model:value="queryParam.deviceSn" class="query-group-cust"></a-input>
+              <a-input v-model:value="queryParam.deviceSn" class="query-group-cust" />
             </a-form-item>
           </a-col>
           <a-col :lg="6">
@@ -20,7 +20,12 @@
             <a-col :lg="6">
               <a-form-item name="sysOrgCode">
                 <template #label><span title="所属客户">所属客户</span></template>
-                <j-dict-select-tag placeholder="请输入所属客户" v-model:value="queryParam.sysOrgCode" dictCode="sys_depart,depart_name,org_code" allow-clear ></j-dict-select-tag>
+                <j-dict-select-tag
+                  placeholder="请输入所属客户"
+                  v-model:value="queryParam.sysOrgCode"
+                  dictCode="sys_depart,depart_name,org_code"
+                  allow-clear
+                />
               </a-form-item>
             </a-col>
           </template>
@@ -39,51 +44,49 @@
         </a-row>
       </a-form>
     </div>
-  <div class="content">
-    <!--引用表格-->
-    <BasicTable @register="registerTable" :rowSelection="rowSelection">
-      <!--插槽:table标题-->
-      <template #tableTitle>
-      </template>
-      <!--操作栏-->
-      <template #action="{ record }">
-        <TableAction :actions="getTableAction(record)" :dropDownActions="getDropDownAction(record)" />
-      </template>
-      <!--字段回显插槽-->
-      <template v-slot:bodyCell="{ column, record, index, text }">
-      </template>
-    </BasicTable>
-    <!--子表表格tab-->
-    <a-tabs defaultActiveKey="1" style="margin: 10px">
-      <a-tab-pane tab="设备状态表" key="1" >
-        <CpeDeviceStatusList />
-      </a-tab-pane>
-      <a-tab-pane tab="设备邻区信息" key="2" forceRender>
-        <CpeDeviceNeighborList />
-      </a-tab-pane>
-      <a-tab-pane tab="设备远程控制" key="3" forceRender>
-        <CpeDeviceFrpList />
-      </a-tab-pane>
-      <a-tab-pane tab="自动重启" key="4" forceRender>
-        <CpeDeviceAutorebootList />
-      </a-tab-pane>
-      <a-tab-pane tab="设备内网配置" key="5" forceRender>
-        <CpeDeviceNetworkList />
-      </a-tab-pane>
-      <a-tab-pane tab="设备速率" key="6" forceRender>
-        <CpeSpeedLimitList />
-      </a-tab-pane>
-      <a-tab-pane tab="设备无线配置" key="7" forceRender>
-        <CpeDeviceWirelessList />
-      </a-tab-pane>
-      <a-tab-pane tab="连接终端" key="8" forceRender>
-        <CpeDeviceClientList />
-      </a-tab-pane>
-      <a-tab-pane tab="操作记录表" key="9" forceRender>
-        <CpeOperLogList />
-      </a-tab-pane>
-     </a-tabs>
-  </div>
+    <div class="content">
+      <!--引用表格-->
+      <BasicTable @register="registerTable" :rowSelection="rowSelection">
+        <!--插槽:table标题-->
+        <template #tableTitle> </template>
+        <!--操作栏-->
+        <template #action="{ record }">
+          <TableAction :actions="getTableAction(record)" :dropDownActions="getDropDownAction(record)" />
+        </template>
+        <!--字段回显插槽-->
+        <template #bodyCell="{ column, record, index, text }"> </template>
+      </BasicTable>
+      <!--子表表格tab-->
+      <a-tabs defaultActiveKey="1" style="margin: 10px">
+        <a-tab-pane tab="设备状态表" key="1">
+          <CpeDeviceStatusList />
+        </a-tab-pane>
+        <a-tab-pane tab="设备邻区信息" key="2" forceRender>
+          <CpeDeviceNeighborList />
+        </a-tab-pane>
+        <a-tab-pane tab="设备远程控制" key="3" forceRender>
+          <CpeDeviceFrpList />
+        </a-tab-pane>
+        <a-tab-pane tab="自动重启" key="4" forceRender>
+          <CpeDeviceAutorebootList />
+        </a-tab-pane>
+        <a-tab-pane tab="设备内网配置" key="5" forceRender>
+          <CpeDeviceNetworkList />
+        </a-tab-pane>
+        <a-tab-pane tab="设备速率" key="6" forceRender>
+          <CpeSpeedLimitList />
+        </a-tab-pane>
+        <a-tab-pane tab="设备无线配置" key="7" forceRender>
+          <CpeDeviceWirelessList />
+        </a-tab-pane>
+        <a-tab-pane tab="连接终端" key="8" forceRender>
+          <CpeDeviceClientList />
+        </a-tab-pane>
+        <a-tab-pane tab="操作记录表" key="9" forceRender>
+          <CpeOperLogList />
+        </a-tab-pane>
+      </a-tabs>
+    </div>
     <!-- 表单区域 -->
     <CpeDeviceInfoModal ref="registerModal" @success="handleSuccess" />
   </div>
@@ -91,43 +94,42 @@
 
 <script lang="ts" name="cpe.device-cpeDeviceInfo" setup>
   import { ref, reactive, computed, unref, provide } from 'vue';
-  import { BasicTable, useTable, TableAction } from '/@/components/Table';
-  import { useListPage } from '/@/hooks/system/useListPage'
-  import CpeDeviceInfoModal from './components/CpeDeviceInfoModal.vue'
-  import { columns, superQuerySchema } from './CpeDeviceInfo.data';
-  import { list, rebootFrp, resetPwd, rebootOne, deleteOne, batchDelete, getImportUrl,getExportUrl } from './CpeDeviceInfo.api';
-  import { downloadFile } from '/@/utils/common/renderUtils';
+  import { BasicTable, TableAction } from '/@/components/Table';
+  import { useListPage } from '/@/hooks/system/useListPage';
+  import CpeDeviceInfoModal from './components/CpeDeviceInfoModal.vue';
+  import { columns } from './CpeDeviceInfo.data';
+  import { list, rebootFrp, resetPwd, rebootOne, getImportUrl, getExportUrl } from './CpeDeviceInfo.api';
   import JDictSelectTag from '/@/components/Form/src/jeecg/components/JDictSelectTag.vue';
   import JSelectMultiple from '/@/components/Form/src/jeecg/components/JSelectMultiple.vue';
-  import CpeDeviceStatusList from './CpeDeviceStatusList.vue'
-  import CpeDeviceNeighborList from './CpeDeviceNeighborList.vue'
-  import CpeDeviceFrpList from './CpeDeviceFrpList.vue'
-  import CpeDeviceAutorebootList from './CpeDeviceAutorebootList.vue'
-  import CpeDeviceNetworkList from './CpeDeviceNetworkList.vue'
-  import CpeSpeedLimitList from './CpeSpeedLimitList.vue'
-  import CpeDeviceWirelessList from './CpeDeviceWirelessList.vue'
-  import CpeDeviceClientList from './CpeDeviceClientList.vue'
-  import CpeOperLogList from './CpeOperLogList.vue'
+  import CpeDeviceStatusList from './CpeDeviceStatusList.vue';
+  import CpeDeviceNeighborList from './CpeDeviceNeighborList.vue';
+  import CpeDeviceFrpList from './CpeDeviceFrpList.vue';
+  import CpeDeviceAutorebootList from './CpeDeviceAutorebootList.vue';
+  import CpeDeviceNetworkList from './CpeDeviceNetworkList.vue';
+  import CpeSpeedLimitList from './CpeSpeedLimitList.vue';
+  import CpeDeviceWirelessList from './CpeDeviceWirelessList.vue';
+  import CpeDeviceClientList from './CpeDeviceClientList.vue';
+  import CpeOperLogList from './CpeOperLogList.vue';
   import { useUserStore } from '/@/store/modules/user';
-  import { cloneDeep } from "lodash-es";
+  import { cloneDeep } from 'lodash-es';
   const formRef = ref();
   const queryParam = reactive<any>({});
   const checkedKeys = ref<Array<string | number>>([]);
   const registerModal = ref();
   const userStore = useUserStore();
-   //注册table数据
-  const { prefixCls,tableContext,onExportXls,onImportXls } = useListPage({
-    tableProps:{
+  //注册table数据
+  const { tableContext } = useListPage({
+    tableProps: {
       title: '设备信息表',
       api: list,
       columns,
-      canResize:false,
+      canResize: false,
       useSearchForm: false,
       clickToRowSelect: true,
-      rowSelection: {type: 'radio'},
+      rowSelection: { type: 'radio' },
       actionColumn: {
         width: 120,
-        fixed:'right'
+        fixed: 'right',
       },
       beforeFetch: async (params) => {
         let rangerQuery = await setRangeQuery();
@@ -140,7 +142,7 @@
       },
     },
     exportConfig: {
-      name:"设备信息表",
+      name: '设备信息表',
       url: getExportUrl,
       params: queryParam,
     },
@@ -148,9 +150,9 @@
       url: getImportUrl,
       success: handleSuccess,
     },
-  })
+  });
 
-  const [registerTable, { reload },{ rowSelection, selectedRowKeys }] = tableContext
+  const [registerTable, { reload }, { rowSelection, selectedRowKeys }] = tableContext;
   const mainId = computed(() => (unref(selectedRowKeys).length > 0 ? unref(selectedRowKeys)[0] : ''));
   //下发 mainId,子组件接收
   provide('mainId', mainId);
@@ -167,21 +169,21 @@
    * 重启事件
    */
   async function handleReboot(record) {
-    await rebootOne({id: record.id}, handleSuccess);
+    await rebootOne({ id: record.id }, handleSuccess);
   }
 
   /**
    * 重启Frp
    */
   async function handleFrpReboot(record) {
-    await rebootFrp({id: record.id}, handleSuccess);
+    await rebootFrp({ id: record.id }, handleSuccess);
   }
 
   /**
    * 重置root密码
    */
   async function handleResetPwd(record) {
-    await resetPwd({id: record.id}, handleSuccess);
+    await resetPwd({ id: record.id }, handleSuccess);
   }
 
   /**
@@ -206,7 +208,7 @@
   /**
    * 下拉操作栏
    */
-  function getDropDownAction(record){
+  function getDropDownAction(record) {
     return [
       {
         label: '详情',
@@ -245,16 +247,16 @@
   /* ----------------------以下为原生查询需要添加的-------------------------- */
   const toggleSearchStatus = ref<boolean>(false);
   const labelCol = reactive({
-    xs:24,
-    sm:4,
-    xl:6,
-    xxl:4
+    xs: 24,
+    sm: 4,
+    xl: 6,
+    xxl: 4,
   });
   const wrapperCol = reactive({
     xs: 24,
     sm: 20,
   });
-  
+
   /**
    * 重置
    */
@@ -264,29 +266,27 @@
     //刷新数据
     reload();
   }
-  
 
-  
-  let rangeField = ''
-  
+  let rangeField = '';
+
   /**
    * 设置范围查询条件
    */
-  async function setRangeQuery(){
+  async function setRangeQuery() {
     let queryParamClone = cloneDeep(queryParam);
     if (rangeField) {
       let fieldsValue = rangeField.split(',');
-      fieldsValue.forEach(item => {
+      fieldsValue.forEach((item) => {
         if (queryParamClone[item]) {
           let range = queryParamClone[item];
-          queryParamClone[item+'_begin'] = range[0];
-          queryParamClone[item+'_end'] = range[1];
+          queryParamClone[item + '_begin'] = range[0];
+          queryParamClone[item + '_end'] = range[1];
           delete queryParamClone[item];
         } else {
-          queryParamClone[item+'_begin'] = '';
-          queryParamClone[item+'_end'] = '';
+          queryParamClone[item + '_begin'] = '';
+          queryParamClone[item + '_end'] = '';
         }
-      })
+      });
     }
     return queryParamClone;
   }
@@ -299,27 +299,28 @@
       margin-bottom: 24px;
       white-space: nowrap;
     }
-    .query-group-cust{
+    .query-group-cust {
       min-width: 100px !important;
     }
-    .query-group-split-cust{
+    .query-group-split-cust {
       width: 30px;
       display: inline-block;
-      text-align: center
+      text-align: center;
     }
-    .ant-form-item:not(.ant-form-item-with-help){
+    .ant-form-item:not(.ant-form-item-with-help) {
       margin-bottom: 16px;
       height: 32px;
     }
-    :deep(.ant-picker),:deep(.ant-input-number){
+    :deep(.ant-picker),
+    :deep(.ant-input-number) {
       width: 100%;
     }
   }
   .erpNativeList {
+    height: 100%;
+    .content {
+      background-color: #fff;
       height: 100%;
-      .content {
-        background-color: #fff;
-        height: 100%;
-      }
+    }
   }
 </style>

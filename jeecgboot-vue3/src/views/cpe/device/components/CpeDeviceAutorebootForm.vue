@@ -4,16 +4,16 @@
       <template #detail>
         <a-form class="antd-modal-form" v-bind="formItemLayout" ref="formRef" name="CpeDeviceAutorebootForm">
           <a-row>
-						<a-col :span="24">
-							<a-form-item label="重启定义" v-bind="validateInfos.schedule" id="CpeDeviceAutoreboot-schedule" name="schedule">
-								<a-input v-model:value="formData.schedule" placeholder="请输入重启定义"  allow-clear ></a-input>
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="重启命令" v-bind="validateInfos.cmd" id="CpeDeviceAutoreboot-cmd" name="cmd">
-								<a-input v-model:value="formData.cmd" placeholder="请输入重启命令" disabled allow-clear ></a-input>
-							</a-form-item>
-						</a-col>
+            <a-col :span="24">
+              <a-form-item label="重启定义" v-bind="validateInfos.schedule" id="CpeDeviceAutoreboot-schedule" name="schedule">
+                <a-input v-model:value="formData.schedule" placeholder="请输入重启定义" allow-clear />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="重启命令" v-bind="validateInfos.cmd" id="CpeDeviceAutoreboot-cmd" name="cmd">
+                <a-input v-model:value="formData.cmd" placeholder="请输入重启命令" disabled allow-clear />
+              </a-form-item>
+            </a-col>
           </a-row>
         </a-form>
       </template>
@@ -46,8 +46,8 @@
   const confirmLoading = ref<boolean>(false);
   //表单验证
   const validatorRules = {
-    schedule: [{ required: true, message: '请输入重启定义!'},],
-    cmd: [{ required: true, message: '请输入重启命令!'},],
+    schedule: [{ required: true, message: '请输入重启定义!' }],
+    cmd: [{ required: true, message: '请输入重启命令!' }],
   };
   const { resetFields, validate, validateInfos } = useForm(formData, validatorRules, { immediate: false });
   const props = defineProps({
@@ -57,7 +57,7 @@
     labelCol: { xs: { span: 24 }, sm: { span: 5 } },
     wrapperCol: { xs: { span: 24 }, sm: { span: 16 } },
   };
-  
+
   /**
    * 新增
    */
@@ -73,12 +73,12 @@
       resetFields();
       const tmpData = {};
       Object.keys(formData).forEach((key) => {
-        if(record.hasOwnProperty(key)){
-          tmpData[key] = record[key]
+        if (record.hasOwnProperty(key)) {
+          tmpData[key] = record[key];
         }
-      })
+      });
       //赋值
-      Object.assign(formData,tmpData);
+      Object.assign(formData, tmpData);
     });
   }
 
@@ -106,7 +106,7 @@
     if (model.id) {
       isUpdate.value = true;
     }
-   
+
     //循环数据
     for (let data in model) {
       //如果该数据是数组并且是字符串类型
@@ -134,7 +134,6 @@
         confirmLoading.value = false;
       });
   }
-
 
   defineExpose({
     add,

@@ -33,7 +33,7 @@
         <TableAction :actions="getTableAction(record)" :dropDownActions="getDropDownAction(record)" />
       </template>
       <!--字段回显插槽-->
-      <template v-slot:bodyCell="{}"></template>
+      <template #bodyCell="{}"></template>
     </BasicTable>
     <!-- 表单区域 -->
     <CpeAlarmConfigModal @register="registerModal" @success="handleSuccess" />

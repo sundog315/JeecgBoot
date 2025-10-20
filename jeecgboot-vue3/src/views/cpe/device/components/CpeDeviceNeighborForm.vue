@@ -4,36 +4,36 @@
       <template #detail>
         <a-form class="antd-modal-form" v-bind="formItemLayout" ref="formRef" name="CpeDeviceNeighborForm">
           <a-row>
-						<a-col :span="24">
-							<a-form-item label="类型" v-bind="validateInfos.rat" id="CpeDeviceNeighbor-rat" name="rat">
-								<a-input v-model:value="formData.rat" placeholder="请输入类型"  allow-clear ></a-input>
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="ARFCN" v-bind="validateInfos.arfcn" id="CpeDeviceNeighbor-arfcn" name="arfcn">
-								<a-input v-model:value="formData.arfcn" placeholder="请输入ARFCN"  allow-clear ></a-input>
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="PCID" v-bind="validateInfos.physicalcellid" id="CpeDeviceNeighbor-physicalcellid" name="physicalcellid">
-								<a-input v-model:value="formData.physicalcellid" placeholder="请输入PCID"  allow-clear ></a-input>
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="RSRP" v-bind="validateInfos.rsrp" id="CpeDeviceNeighbor-rsrp" name="rsrp">
-								<a-input v-model:value="formData.rsrp" placeholder="请输入RSRP"  allow-clear ></a-input>
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="RSRQ" v-bind="validateInfos.rsrq" id="CpeDeviceNeighbor-rsrq" name="rsrq">
-								<a-input v-model:value="formData.rsrq" placeholder="请输入RSRQ"  allow-clear ></a-input>
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="RXLEV" v-bind="validateInfos.rxlev" id="CpeDeviceNeighbor-rxlev" name="rxlev">
-								<a-input v-model:value="formData.rxlev" placeholder="请输入RXLEV"  allow-clear ></a-input>
-							</a-form-item>
-						</a-col>
+            <a-col :span="24">
+              <a-form-item label="类型" v-bind="validateInfos.rat" id="CpeDeviceNeighbor-rat" name="rat">
+                <a-input v-model:value="formData.rat" placeholder="请输入类型" allow-clear />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="ARFCN" v-bind="validateInfos.arfcn" id="CpeDeviceNeighbor-arfcn" name="arfcn">
+                <a-input v-model:value="formData.arfcn" placeholder="请输入ARFCN" allow-clear />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="PCID" v-bind="validateInfos.physicalcellid" id="CpeDeviceNeighbor-physicalcellid" name="physicalcellid">
+                <a-input v-model:value="formData.physicalcellid" placeholder="请输入PCID" allow-clear />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="RSRP" v-bind="validateInfos.rsrp" id="CpeDeviceNeighbor-rsrp" name="rsrp">
+                <a-input v-model:value="formData.rsrp" placeholder="请输入RSRP" allow-clear />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="RSRQ" v-bind="validateInfos.rsrq" id="CpeDeviceNeighbor-rsrq" name="rsrq">
+                <a-input v-model:value="formData.rsrq" placeholder="请输入RSRQ" allow-clear />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="RXLEV" v-bind="validateInfos.rxlev" id="CpeDeviceNeighbor-rxlev" name="rxlev">
+                <a-input v-model:value="formData.rxlev" placeholder="请输入RXLEV" allow-clear />
+              </a-form-item>
+            </a-col>
           </a-row>
         </a-form>
       </template>
@@ -57,12 +57,12 @@
   const emit = defineEmits(['register', 'ok']);
   const formData = reactive<Record<string, any>>({
     id: '',
-        rat: '',   
-        arfcn: '',   
-        physicalcellid: '',   
-        rsrp: '',   
-        rsrq: '',   
-        rxlev: '',   
+    rat: '',
+    arfcn: '',
+    physicalcellid: '',
+    rsrp: '',
+    rsrq: '',
+    rxlev: '',
   });
   const { createMessage } = useMessage();
   const labelCol = ref<any>({ xs: { span: 24 }, sm: { span: 5 } });
@@ -70,9 +70,9 @@
   const confirmLoading = ref<boolean>(false);
   //表单验证
   const validatorRules = {
-    arfcn: [{ required: true, message: '请输入ARFCN!'},],
-    rsrp: [{ required: true, message: '请输入RSRP!'},],
-    rsrq: [{ required: true, message: '请输入RSRQ!'},],
+    arfcn: [{ required: true, message: '请输入ARFCN!' }],
+    rsrp: [{ required: true, message: '请输入RSRP!' }],
+    rsrq: [{ required: true, message: '请输入RSRQ!' }],
   };
   const { resetFields, validate, validateInfos } = useForm(formData, validatorRules, { immediate: false });
   const props = defineProps({
@@ -82,7 +82,7 @@
     labelCol: { xs: { span: 24 }, sm: { span: 5 } },
     wrapperCol: { xs: { span: 24 }, sm: { span: 16 } },
   };
-  
+
   /**
    * 新增
    */
@@ -98,12 +98,12 @@
       resetFields();
       const tmpData = {};
       Object.keys(formData).forEach((key) => {
-        if(record.hasOwnProperty(key)){
-          tmpData[key] = record[key]
+        if (record.hasOwnProperty(key)) {
+          tmpData[key] = record[key];
         }
-      })
+      });
       //赋值
-      Object.assign(formData,tmpData);
+      Object.assign(formData, tmpData);
     });
   }
 
@@ -131,7 +131,7 @@
     if (model.id) {
       isUpdate.value = true;
     }
-   
+
     //循环数据
     for (let data in model) {
       //如果该数据是数组并且是字符串类型
@@ -159,7 +159,6 @@
         confirmLoading.value = false;
       });
   }
-
 
   defineExpose({
     add,

@@ -1,6 +1,8 @@
 package org.jeecg.modules.cpe.contract.info.controller;
 
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.query.QueryRuleEnum;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -15,6 +17,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.cpe.contract.info.entity.ContractDevice;
 import org.jeecg.modules.cpe.contract.info.entity.ContractInfo;
@@ -73,7 +77,11 @@ public class ContractInfoController extends JeecgController<ContractInfo, IContr
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-      	QueryWrapper<ContractInfo> queryWrapper = QueryGenerator.initQueryWrapper(contractInfo, req.getParameterMap());
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        // 自定义查询规则
+        Map<String, QueryRuleEnum> customeRuleMap = new HashMap<>();
+		QueryWrapper<ContractInfo> queryWrapper = QueryGenerator.initQueryWrapper(contractInfo, req.getParameterMap(),customeRuleMap);
+		queryWrapper.likeRight("sys_org_code", sysUser.getOrgCode());
 		Page<ContractInfo> page = new Page<ContractInfo>(pageNo, pageSize);
 		IPage<ContractInfo> pageList = contractInfoService.page(page, queryWrapper);
 		return Result.OK(pageList);

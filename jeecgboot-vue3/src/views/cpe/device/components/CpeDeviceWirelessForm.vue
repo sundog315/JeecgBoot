@@ -4,96 +4,131 @@
       <template #detail>
         <a-form class="antd-modal-form" v-bind="formItemLayout" ref="formRef" name="CpeDeviceWirelessForm">
           <a-row>
-						<a-col :span="24">
-							<a-form-item label="2.4G WiFi功能" v-bind="validateInfos.radio24Disabled" id="CpeDeviceWireless-radio24Disabled" name="radio24Disabled">
-								<j-dict-select-tag v-model:value="formData.radio24Disabled" dictCode="wireless_disable" placeholder="请选择是否启用2.4G无线"  allow-clear  />
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="2.4G信道" v-bind="validateInfos.radio24Channel" id="CpeDeviceWireless-radio24Channel" name="radio24Channel">
-								<j-dict-select-tag v-model:value="formData.radio24Channel" dictCode="24g_channel" placeholder="请选择2.4G信道"  allow-clear />
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="2.4G SSID" v-bind="validateInfos.radio24Ssid" id="CpeDeviceWireless-radio24Ssid" name="radio24Ssid">
-								<a-input v-model:value="formData.radio24Ssid" placeholder="请输入2.4G SSID"  allow-clear ></a-input>
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="2.4G加密" v-bind="validateInfos.radio24Encryption" id="CpeDeviceWireless-radio24Encryption" name="radio24Encryption">
-								<j-dict-select-tag v-model:value="formData.radio24Encryption" dictCode="wireless_encryption" placeholder="请选择2.4G加密"  allow-clear />
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="2.4G密钥" v-bind="validateInfos.radio24Key" id="CpeDeviceWireless-radio24Key" name="radio24Key">
-								<a-input v-model:value="formData.radio24Key" placeholder="请输入2.4G密钥"  allow-clear ></a-input>
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="2.4G最大终端数" v-bind="validateInfos.radio24MaxSta" id="CpeDeviceWireless-radio24MaxSta" name="radio24MaxSta">
-								<a-input-number v-model:value="formData.radio24MaxSta" placeholder="请输入2.4G最大终端数" style="width: 100%" />
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="2.4G功率" v-bind="validateInfos.radio24Power" id="CpeDeviceWireless-radio24Power" name="radio24Power">
-								<a-input-number v-model:value="formData.radio24Power" placeholder="请输入2.4G功率" style="width: 100%" />
-							</a-form-item>
-						</a-col>
             <a-col :span="24">
-							<a-form-item label="2.4G MAC过滤" v-bind="validateInfos.radio24Macfilter" id="CpeDeviceWireless-radio24Macfilter" name="radio24Macfilter">
-								<a-input v-model:value="formData.radio24Macfilter" placeholder="请输入2.4G MAC过滤" style="width: 100%" />
-							</a-form-item>
-						</a-col>
+              <a-form-item label="2.4G WiFi功能" v-bind="validateInfos.radio24Disabled" id="CpeDeviceWireless-radio24Disabled" name="radio24Disabled">
+                <j-dict-select-tag
+                  v-model:value="formData.radio24Disabled"
+                  dictCode="wireless_disable"
+                  placeholder="请选择是否启用2.4G无线"
+                  allow-clear
+                />
+              </a-form-item>
+            </a-col>
             <a-col :span="24">
-							<a-form-item label="2.4G不广播" v-bind="validateInfos.radio24Hidden" id="CpeDeviceWireless-radio24Hidden" name="radio24Hidden">
-								<j-dict-select-tag v-model:value="formData.radio24Hidden" placeholder="请输入2.4G不广播" dictCode="wireless_disable" style="width: 100%" />
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="5G WiFi功能" v-bind="validateInfos.radio5Disabled" id="CpeDeviceWireless-radio5Disabled" name="radio5Disabled">
-								<j-dict-select-tag v-model:value="formData.radio5Disabled" dictCode="wireless_disable" placeholder="请选择是否启用5G无线"  allow-clear />
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="5G信道" v-bind="validateInfos.radio5Channel" id="CpeDeviceWireless-radio5Channel" name="radio5Channel">
-								<j-dict-select-tag v-model:value="formData.radio5Channel" dictCode="5g_channel" placeholder="请选择5G信道"  allow-clear />
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="5G SSID" v-bind="validateInfos.radio5Ssid" id="CpeDeviceWireless-radio5Ssid" name="radio5Ssid">
-								<a-input v-model:value="formData.radio5Ssid" placeholder="请输入5G SSID"  allow-clear ></a-input>
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="5G加密" v-bind="validateInfos.radio5Encryption" id="CpeDeviceWireless-radio5Encryption" name="radio5Encryption">
-								<j-dict-select-tag v-model:value="formData.radio5Encryption" dictCode="wireless_encryption" placeholder="请选择5G加密"  allow-clear />
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="5G密钥" v-bind="validateInfos.radio5Key" id="CpeDeviceWireless-radio5Key" name="radio5Key">
-								<a-input v-model:value="formData.radio5Key" placeholder="请输入5G密钥"  allow-clear ></a-input>
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="5G最大终端数" v-bind="validateInfos.radio5MaxSta" id="CpeDeviceWireless-radio5MaxSta" name="radio5MaxSta">
-								<a-input-number v-model:value="formData.radio5MaxSta" placeholder="请输入5G最大终端数" style="width: 100%" />
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="5G功率" v-bind="validateInfos.radio5Power" id="CpeDeviceWireless-radio5Power" name="radio5Power">
-								<a-input-number v-model:value="formData.radio5Power" placeholder="请输入5G功率" style="width: 100%" />
-							</a-form-item>
-						</a-col>
+              <a-form-item label="2.4G信道" v-bind="validateInfos.radio24Channel" id="CpeDeviceWireless-radio24Channel" name="radio24Channel">
+                <j-dict-select-tag v-model:value="formData.radio24Channel" dictCode="24g_channel" placeholder="请选择2.4G信道" allow-clear />
+              </a-form-item>
+            </a-col>
             <a-col :span="24">
-							<a-form-item label="5G MAC过滤" v-bind="validateInfos.radio5Macfilter" id="CpeDeviceWireless-radio5Macfilter" name="radio5Macfilter">
-								<a-input v-model:value="formData.radio5Macfilter" placeholder="请输入5G MAC过滤" style="width: 100%" />
-							</a-form-item>
-						</a-col>
+              <a-form-item label="2.4G SSID" v-bind="validateInfos.radio24Ssid" id="CpeDeviceWireless-radio24Ssid" name="radio24Ssid">
+                <a-input v-model:value="formData.radio24Ssid" placeholder="请输入2.4G SSID" allow-clear />
+              </a-form-item>
+            </a-col>
             <a-col :span="24">
-							<a-form-item label="5G不广播" v-bind="validateInfos.radio5Hidden" id="CpeDeviceWireless-radio5Hidden" name="radio5Hidden">
-								<j-dict-select-tag v-model:value="formData.radio5Hidden" placeholder="请输入5G不广播" dictCode="wireless_disable" style="width: 100%" />
-							</a-form-item>
-						</a-col>
+              <a-form-item
+                label="2.4G加密"
+                v-bind="validateInfos.radio24Encryption"
+                id="CpeDeviceWireless-radio24Encryption"
+                name="radio24Encryption"
+              >
+                <j-dict-select-tag
+                  v-model:value="formData.radio24Encryption"
+                  dictCode="wireless_encryption"
+                  placeholder="请选择2.4G加密"
+                  allow-clear
+                />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="2.4G密钥" v-bind="validateInfos.radio24Key" id="CpeDeviceWireless-radio24Key" name="radio24Key">
+                <a-input v-model:value="formData.radio24Key" placeholder="请输入2.4G密钥" allow-clear />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="2.4G最大终端数" v-bind="validateInfos.radio24MaxSta" id="CpeDeviceWireless-radio24MaxSta" name="radio24MaxSta">
+                <a-input-number v-model:value="formData.radio24MaxSta" placeholder="请输入2.4G最大终端数" style="width: 100%" />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="2.4G功率" v-bind="validateInfos.radio24Power" id="CpeDeviceWireless-radio24Power" name="radio24Power">
+                <a-input-number v-model:value="formData.radio24Power" placeholder="请输入2.4G功率" style="width: 100%" />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item
+                label="2.4G MAC过滤"
+                v-bind="validateInfos.radio24Macfilter"
+                id="CpeDeviceWireless-radio24Macfilter"
+                name="radio24Macfilter"
+              >
+                <a-input v-model:value="formData.radio24Macfilter" placeholder="请输入2.4G MAC过滤" style="width: 100%" />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="2.4G不广播" v-bind="validateInfos.radio24Hidden" id="CpeDeviceWireless-radio24Hidden" name="radio24Hidden">
+                <j-dict-select-tag
+                  v-model:value="formData.radio24Hidden"
+                  placeholder="请输入2.4G不广播"
+                  dictCode="wireless_disable"
+                  style="width: 100%"
+                />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="5G WiFi功能" v-bind="validateInfos.radio5Disabled" id="CpeDeviceWireless-radio5Disabled" name="radio5Disabled">
+                <j-dict-select-tag
+                  v-model:value="formData.radio5Disabled"
+                  dictCode="wireless_disable"
+                  placeholder="请选择是否启用5G无线"
+                  allow-clear
+                />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="5G信道" v-bind="validateInfos.radio5Channel" id="CpeDeviceWireless-radio5Channel" name="radio5Channel">
+                <j-dict-select-tag v-model:value="formData.radio5Channel" dictCode="5g_channel" placeholder="请选择5G信道" allow-clear />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="5G SSID" v-bind="validateInfos.radio5Ssid" id="CpeDeviceWireless-radio5Ssid" name="radio5Ssid">
+                <a-input v-model:value="formData.radio5Ssid" placeholder="请输入5G SSID" allow-clear />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="5G加密" v-bind="validateInfos.radio5Encryption" id="CpeDeviceWireless-radio5Encryption" name="radio5Encryption">
+                <j-dict-select-tag v-model:value="formData.radio5Encryption" dictCode="wireless_encryption" placeholder="请选择5G加密" allow-clear />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="5G密钥" v-bind="validateInfos.radio5Key" id="CpeDeviceWireless-radio5Key" name="radio5Key">
+                <a-input v-model:value="formData.radio5Key" placeholder="请输入5G密钥" allow-clear />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="5G最大终端数" v-bind="validateInfos.radio5MaxSta" id="CpeDeviceWireless-radio5MaxSta" name="radio5MaxSta">
+                <a-input-number v-model:value="formData.radio5MaxSta" placeholder="请输入5G最大终端数" style="width: 100%" />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="5G功率" v-bind="validateInfos.radio5Power" id="CpeDeviceWireless-radio5Power" name="radio5Power">
+                <a-input-number v-model:value="formData.radio5Power" placeholder="请输入5G功率" style="width: 100%" />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="5G MAC过滤" v-bind="validateInfos.radio5Macfilter" id="CpeDeviceWireless-radio5Macfilter" name="radio5Macfilter">
+                <a-input v-model:value="formData.radio5Macfilter" placeholder="请输入5G MAC过滤" style="width: 100%" />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="5G不广播" v-bind="validateInfos.radio5Hidden" id="CpeDeviceWireless-radio5Hidden" name="radio5Hidden">
+                <j-dict-select-tag
+                  v-model:value="formData.radio5Hidden"
+                  placeholder="请输入5G不广播"
+                  dictCode="wireless_disable"
+                  style="width: 100%"
+                />
+              </a-form-item>
+            </a-col>
           </a-row>
         </a-form>
       </template>
@@ -102,11 +137,9 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, reactive, defineExpose, nextTick, onMounted, inject, defineProps, unref } from 'vue';
-  import { defHttp } from '/@/utils/http/axios';
+  import { ref, reactive, defineExpose, nextTick, inject, defineProps, unref } from 'vue';
   import { useMessage } from '/@/hooks/web/useMessage';
   import JDictSelectTag from '/@/components/Form/src/jeecg/components/JDictSelectTag.vue';
-  import JSwitch from '/@/components/Form/src/jeecg/components/JSwitch.vue';
   import { getValueType } from '/@/utils';
   import { cpeDeviceWirelessSaveOrUpdate } from '../CpeDeviceInfo.api';
   import { Form } from 'ant-design-vue';
@@ -144,22 +177,22 @@
   const confirmLoading = ref<boolean>(false);
   //表单验证
   const validatorRules = {
-    radio24Disabled: [{ required: true, message: '请输入2.4G WiFi功能!'},],
-    radio24Channel: [{ required: true, message: '请输入2.4G信道!'},],
-    radio24Encryption: [{ required: true, message: '请输入2.4G加密!'},],
-    radio24Key: [{ required: true, message: '请输入2.4G密钥!'},],
-    radio24MaxSta: [{ required: true, message: '请输入2.4G最大终端数!'},],
-    radio24Power: [{ required: true, message: '请输入2.4G功率!'},],
-    radio24Macfilter: [{ required: true, message: '请输入2.4G MAC过滤!'},],
-    radio24Hidden: [{ required: true, message: '请输入2.4G不广播!'},],
-    radio5Disabled: [{ required: true, message: '请输入5G WiFi功能!'},],
-    radio5Channel: [{ required: true, message: '请输入5G信道!'},],
-    radio5Encryption: [{ required: true, message: '请输入5G加密!'},],
-    radio5Key: [{ required: true, message: '请输入5G密钥!'},],
-    radio5MaxSta: [{ required: true, message: '请输入5G最大终端数!'},],
-    radio5Power: [{ required: true, message: '请输入5G功率!'},],
-    radio5Macfilter: [{ required: true, message: '请输入2.4G MAC过滤!'},],
-    radio5Hidden: [{ required: true, message: '请输入2.4G不广播!'},],
+    radio24Disabled: [{ required: true, message: '请输入2.4G WiFi功能!' }],
+    radio24Channel: [{ required: true, message: '请输入2.4G信道!' }],
+    radio24Encryption: [{ required: true, message: '请输入2.4G加密!' }],
+    radio24Key: [{ required: true, message: '请输入2.4G密钥!' }],
+    radio24MaxSta: [{ required: true, message: '请输入2.4G最大终端数!' }],
+    radio24Power: [{ required: true, message: '请输入2.4G功率!' }],
+    radio24Macfilter: [{ required: true, message: '请输入2.4G MAC过滤!' }],
+    radio24Hidden: [{ required: true, message: '请输入2.4G不广播!' }],
+    radio5Disabled: [{ required: true, message: '请输入5G WiFi功能!' }],
+    radio5Channel: [{ required: true, message: '请输入5G信道!' }],
+    radio5Encryption: [{ required: true, message: '请输入5G加密!' }],
+    radio5Key: [{ required: true, message: '请输入5G密钥!' }],
+    radio5MaxSta: [{ required: true, message: '请输入5G最大终端数!' }],
+    radio5Power: [{ required: true, message: '请输入5G功率!' }],
+    radio5Macfilter: [{ required: true, message: '请输入2.4G MAC过滤!' }],
+    radio5Hidden: [{ required: true, message: '请输入2.4G不广播!' }],
   };
   const { resetFields, validate, validateInfos } = useForm(formData, validatorRules, { immediate: false });
   const props = defineProps({
@@ -169,7 +202,7 @@
     labelCol: { xs: { span: 24 }, sm: { span: 5 } },
     wrapperCol: { xs: { span: 24 }, sm: { span: 16 } },
   };
-  
+
   /**
    * 新增
    */
@@ -185,12 +218,12 @@
       resetFields();
       const tmpData = {};
       Object.keys(formData).forEach((key) => {
-        if(record.hasOwnProperty(key)){
-          tmpData[key] = record[key]
+        if (record.hasOwnProperty(key)) {
+          tmpData[key] = record[key];
         }
-      })
+      });
       //赋值
-      Object.assign(formData,tmpData);
+      Object.assign(formData, tmpData);
     });
   }
 
@@ -218,7 +251,7 @@
     if (model.id) {
       isUpdate.value = true;
     }
-   
+
     //循环数据
     for (let data in model) {
       //如果该数据是数组并且是字符串类型
@@ -246,7 +279,6 @@
         confirmLoading.value = false;
       });
   }
-
 
   defineExpose({
     add,

@@ -4,21 +4,21 @@
       <template #detail>
         <a-form ref="formRef" class="antd-modal-form" :labelCol="labelCol" :wrapperCol="wrapperCol" name="PackageInfoForm">
           <a-row>
-						<a-col :span="24">
-							<a-form-item label="套餐名" v-bind="validateInfos.name" id="PackageInfoForm-name" name="name">
-								<a-input v-model:value="formData.name" placeholder="请输入套餐名"  allow-clear ></a-input>
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="套餐类型" v-bind="validateInfos.type" id="PackageInfoForm-type" name="type">
-								<j-dict-select-tag v-model:value="formData.type" dictCode="pacakge_type" placeholder="请选择套餐类型"  allow-clear />
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="套餐量" v-bind="validateInfos.size" id="PackageInfoForm-size" name="size">
-								<a-input-number v-model:value="formData.size" placeholder="请输入套餐量" style="width: 100%" />
-							</a-form-item>
-						</a-col>
+            <a-col :span="24">
+              <a-form-item label="套餐名" v-bind="validateInfos.name" id="PackageInfoForm-name" name="name">
+                <a-input v-model:value="formData.name" placeholder="请输入套餐名" allow-clear />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="套餐类型" v-bind="validateInfos.type" id="PackageInfoForm-type" name="type">
+                <j-dict-select-tag v-model:value="formData.type" dictCode="pacakge_type" placeholder="请选择套餐类型" allow-clear />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="套餐量" v-bind="validateInfos.size" id="PackageInfoForm-size" name="size">
+                <a-input-number v-model:value="formData.size" placeholder="请输入套餐量" style="width: 100%" />
+              </a-form-item>
+            </a-col>
           </a-row>
         </a-form>
       </template>
@@ -37,15 +37,15 @@
   import JFormContainer from '/@/components/Form/src/container/JFormContainer.vue';
   const props = defineProps({
     formDisabled: { type: Boolean, default: false },
-    formData: { type: Object, default: () => ({})},
-    formBpm: { type: Boolean, default: true }
+    formData: { type: Object, default: () => ({}) },
+    formBpm: { type: Boolean, default: true },
   });
   const formRef = ref();
   const useForm = Form.useForm;
   const emit = defineEmits(['register', 'ok']);
   const formData = reactive<Record<string, any>>({
     id: '',
-    name: '',   
+    name: '',
     type: undefined,
     size: undefined,
   });
@@ -55,25 +55,24 @@
   const confirmLoading = ref<boolean>(false);
   //表单验证
   const validatorRules = reactive({
-    name: [{ required: true, message: '请输入套餐名!'},],
-    type: [{ required: true, message: '请输入套餐类型!'},],
-    size: [{ required: true, message: '请输入套餐量!'},],
+    name: [{ required: true, message: '请输入套餐名!' }],
+    type: [{ required: true, message: '请输入套餐类型!' }],
+    size: [{ required: true, message: '请输入套餐量!' }],
   });
   const { resetFields, validate, validateInfos } = useForm(formData, validatorRules, { immediate: false });
 
   // 表单禁用
-  const disabled = computed(()=>{
-    if(props.formBpm === true){
-      if(props.formData.disabled === false){
+  const disabled = computed(() => {
+    if (props.formBpm === true) {
+      if (props.formData.disabled === false) {
         return false;
-      }else{
+      } else {
         return true;
       }
     }
     return props.formDisabled;
   });
 
-  
   /**
    * 新增
    */
@@ -89,10 +88,10 @@
       resetFields();
       const tmpData = {};
       Object.keys(formData).forEach((key) => {
-        if(record.hasOwnProperty(key)){
-          tmpData[key] = record[key]
+        if (record.hasOwnProperty(key)) {
+          tmpData[key] = record[key];
         }
-      })
+      });
       //赋值
       Object.assign(formData, tmpData);
     });
@@ -145,7 +144,6 @@
         confirmLoading.value = false;
       });
   }
-
 
   defineExpose({
     add,

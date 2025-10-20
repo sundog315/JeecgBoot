@@ -1,15 +1,15 @@
 <template>
- <div class="p-2">
+  <div class="p-2">
     <!--引用表格-->
     <BasicTable @register="registerTable" :rowSelection="rowSelection">
       <!--插槽:table标题-->
       <template #tableTitle>
-        <a-button type="primary" @click="handleAdd" preIcon="ant-design:plus-outlined" v-if="mainId!=''"> 新增</a-button>
+        <a-button type="primary" @click="handleAdd" preIcon="ant-design:plus-outlined" v-if="mainId != ''"> 新增</a-button>
         <a-dropdown v-if="selectedRowKeys.length > 0">
           <template #overlay>
             <a-menu>
               <a-menu-item key="1" @click="batchHandleDelete">
-                <Icon icon="ant-design:delete-outlined"></Icon>
+                <Icon icon="ant-design:delete-outlined" />
                 删除
               </a-menu-item>
             </a-menu>
@@ -18,33 +18,37 @@
       </template>
       <!--操作栏-->
       <template #action="{ record }">
-        <TableAction :actions="getTableAction(record)" :dropDownActions="getDropDownAction(record)"/>
+        <TableAction :actions="getTableAction(record)" :dropDownActions="getDropDownAction(record)" />
       </template>
       <!--字段回显插槽-->
-      <template v-slot:bodyCell="{ column, record, index, text }">
-      </template>
+      <template #bodyCell="{ column, record, index, text }"> </template>
     </BasicTable>
 
-    <CpeDeviceAutorebootModal ref="registerModal" @success="handleSuccess"/>
-   </div>
+    <CpeDeviceAutorebootModal ref="registerModal" @success="handleSuccess" />
+  </div>
 </template>
 
 <script lang="ts" setup>
   import { ref, reactive, unref, inject, watch } from 'vue';
-  import { BasicTable, useTable, TableAction } from '/@/components/Table';
-  import { useListPage } from '/@/hooks/system/useListPage'
-  import CpeDeviceAutorebootModal from './components/CpeDeviceAutorebootModal.vue'
+  import { BasicTable, TableAction } from '/@/components/Table';
+  import { useListPage } from '/@/hooks/system/useListPage';
+  import CpeDeviceAutorebootModal from './components/CpeDeviceAutorebootModal.vue';
   import { cpeDeviceAutorebootColumns } from './CpeDeviceInfo.data';
-  import { cpeDeviceAutorebootList, cpeDeviceAutorebootDelete, cpeDeviceAutorebootDeleteBatch, cpeDeviceAutorebootExportXlsUrl, cpeDeviceAutorebootImportUrl } from './CpeDeviceInfo.api';
-  import { isEmpty } from "/@/utils/is";
+  import {
+    cpeDeviceAutorebootList,
+    cpeDeviceAutorebootDelete,
+    cpeDeviceAutorebootDeleteBatch,
+    cpeDeviceAutorebootExportXlsUrl,
+    cpeDeviceAutorebootImportUrl,
+  } from './CpeDeviceInfo.api';
+  import { isEmpty } from '/@/utils/is';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import { downloadFile } from '/@/utils/common/renderUtils';
-  
+
   const toggleSearchStatus = ref<boolean>(false);
   //接收主表id
   const mainId = inject('mainId') || '';
   //提示弹窗
-  const $message = useMessage()
+  const $message = useMessage();
   const queryParam = {};
   // 列表页面公共参数、方法
   const { prefixCls, tableContext, onImportXls, onExportXls } = useListPage({
@@ -55,7 +59,7 @@
       useSearchForm: false,
       actionColumn: {
         width: 180,
-        fixed:'right'
+        fixed: 'right',
       },
       beforeFetch: (params) => {
         return Object.assign(params, queryParam);
@@ -65,42 +69,42 @@
       name: '设备自动重启',
       url: cpeDeviceAutorebootExportXlsUrl,
       params: {
-        'cpeId': mainId
-      }
+        cpeId: mainId,
+      },
     },
     importConfig: {
-      url: ()=>{
-        return cpeDeviceAutorebootImportUrl + '/' + unref(mainId)
-      }
-    }
+      url: () => {
+        return cpeDeviceAutorebootImportUrl + '/' + unref(mainId);
+      },
+    },
   });
 
   //注册table数据
-  const [registerTable, { reload,getDataSource}, { rowSelection, selectedRowKeys }] = tableContext;
+  const [registerTable, { reload, getDataSource }, { rowSelection, selectedRowKeys }] = tableContext;
   const registerModal = ref();
   const formRef = ref();
   const labelCol = reactive({
-    xs:24,
-    sm:4,
-    xl:6,
-    xxl:4
+    xs: 24,
+    sm: 4,
+    xl: 6,
+    xxl: 4,
   });
   const wrapperCol = reactive({
     xs: 24,
     sm: 20,
   });
-  
+
   /**
    * 新增事件
    */
   function handleAdd() {
     if (isEmpty(unref(mainId))) {
-        $message.createMessage.warning('请选择一个主表信息')
-        return;
+      $message.createMessage.warning('请选择一个主表信息');
+      return;
     }
     let dataSource = getDataSource();
-    if(dataSource.length >= 1){
-      $message.createMessage.warning('一对一子表只能添加一条数据')
+    if (dataSource.length >= 1) {
+      $message.createMessage.warning('一对一子表只能添加一条数据');
       return;
     }
     registerModal.value.disableSubmit = false;
@@ -122,19 +126,19 @@
     registerModal.value.disableSubmit = true;
     registerModal.value.edit(record);
   }
-  
+
   /**
    * 删除事件
    */
   async function handleDelete(record) {
-    await cpeDeviceAutorebootDelete({id: record.id}, handleSuccess);
+    await cpeDeviceAutorebootDelete({ id: record.id }, handleSuccess);
   }
 
   /**
    * 批量删除事件
    */
   async function batchHandleDelete() {
-    await cpeDeviceAutorebootDeleteBatch({ids: selectedRowKeys.value}, handleSuccess);
+    await cpeDeviceAutorebootDeleteBatch({ ids: selectedRowKeys.value }, handleSuccess);
   }
 
   /**
@@ -153,13 +157,13 @@
         label: '编辑',
         onClick: handleEdit.bind(null, record),
       },
-    ]
+    ];
   }
-  
+
   /**
    * 下拉操作栏
    */
-  function getDropDownAction(record){
+  function getDropDownAction(record) {
     return [
       {
         label: '详情',
@@ -174,7 +178,7 @@
       },
     ];
   }
-  
+
   /**
    * 重置
    */
@@ -184,7 +188,7 @@
     //刷新数据
     reload();
   }
-  
+
   watch(mainId, () => {
     queryParam['cpeId'] = unref(mainId);
     reload();
@@ -198,13 +202,13 @@
       margin-bottom: 24px;
       white-space: nowrap;
     }
-    .query-group-cust{
+    .query-group-cust {
       min-width: 100px !important;
     }
-    .query-group-split-cust{
+    .query-group-split-cust {
       width: 30px;
       display: inline-block;
-      text-align: center
+      text-align: center;
     }
   }
 </style>

@@ -283,12 +283,18 @@ export const cpeDeviceStatusColumns: BasicColumn[] = [
     dataIndex: 'scs',
     customRender: ({ text }) => {
       switch (text) {
-        case 0: return '15KHz';
-        case 1: return '30KHz';
-        case 2: return '60KHz';
-        case 3: return '120KHz';
-        case 4: return '240KHz';
-        default: return text ?? '';
+        case 0:
+          return '15KHz';
+        case 1:
+          return '30KHz';
+        case 2:
+          return '60KHz';
+        case 3:
+          return '120KHz';
+        case 4:
+          return '240KHz';
+        default:
+          return text ?? '';
       }
     },
   },
@@ -525,7 +531,7 @@ export const cpeDeviceWirelessColumns: BasicColumn[] = [
     align: 'center',
     dataIndex: 'radio24Hidden',
     customRender: ({ text }) => {
-      return h(Tag, { color: (text === '0' || !text) ? 'success' : 'error' }, () => ((text === '0' || !text) ? '广播' : '不广播'));
+      return h(Tag, { color: text === '0' || !text ? 'success' : 'error' }, () => (text === '0' || !text ? '广播' : '不广播'));
     },
   },
   {
@@ -600,7 +606,7 @@ export const cpeDeviceWirelessColumns: BasicColumn[] = [
     align: 'center',
     dataIndex: 'radio5Hidden',
     customRender: ({ text }) => {
-      return h(Tag, { color: (text === '0' || !text) ? 'success' : 'error' }, () => ((text === '0' || !text) ? '广播' : '不广播'));
+      return h(Tag, { color: text === '0' || !text ? 'success' : 'error' }, () => (text === '0' || !text ? '广播' : '不广播'));
     },
   },
 ];
@@ -608,29 +614,29 @@ export const cpeDeviceWirelessColumns: BasicColumn[] = [
 export const cpeDeviceClientColumns: BasicColumn[] = [
   {
     title: '客户端IP',
-    align:"center",
-    dataIndex: 'clientIp'
+    align: 'center',
+    dataIndex: 'clientIp',
   },
   {
     title: '客户端MAC',
-    align:"center",
-    dataIndex: 'clientMac'
+    align: 'center',
+    dataIndex: 'clientMac',
   },
   {
     title: '上线时间',
-    align:"center",
+    align: 'center',
     width: 170,
-    dataIndex: 'attachTs'
+    dataIndex: 'attachTs',
   },
   {
     title: '刷新时间',
-    align:"center",
+    align: 'center',
     width: 170,
-    dataIndex: 'refreshTs'
+    dataIndex: 'refreshTs',
   },
   {
     title: '连接时长',
-    align:"center",
+    align: 'center',
     width: 100,
     dataIndex: 'conntedDuration',
     customRender: ({ text }) => {

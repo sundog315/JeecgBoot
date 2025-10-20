@@ -1,21 +1,29 @@
 <template>
-  <j-modal :title="title" :width="width" :visible="visible" @ok="handleOk" :okButtonProps="{ class: { 'jee-hidden': disableSubmit } }" @cancel="handleCancel" cancelText="关闭">
-      <CpeOperLogForm ref="registerForm" @ok="submitCallback" :formDisabled="disableSubmit" :formBpm="false"></CpeOperLogForm>
+  <j-modal
+    :title="title"
+    :width="width"
+    :visible="visible"
+    @ok="handleOk"
+    :okButtonProps="{ class: { 'jee-hidden': disableSubmit } }"
+    @cancel="handleCancel"
+    cancelText="关闭"
+  >
+    <CpeOperLogForm ref="registerForm" @ok="submitCallback" :formDisabled="disableSubmit" :formBpm="false" />
   </j-modal>
 </template>
 
 <script lang="ts" setup>
-  import { ref, computed, unref, inject, nextTick, defineExpose } from 'vue';
-  import CpeOperLogForm from './CpeOperLogForm.vue'
+  import { ref, nextTick, defineExpose } from 'vue';
+  import CpeOperLogForm from './CpeOperLogForm.vue';
   import JModal from '/@/components/Modal/src/JModal/JModal.vue';
-  
+
   const title = ref<string>('');
   const width = ref<number>(800);
   const visible = ref<boolean>(false);
   const disableSubmit = ref<boolean>(false);
   const registerForm = ref();
   const emit = defineEmits(['register', 'success']);
-  
+
   /**
    * 新增
    */
@@ -26,7 +34,7 @@
       registerForm.value.add();
     });
   }
-  
+
   /**
    * 编辑
    * @param record
@@ -44,7 +52,7 @@
   function handleOk() {
     registerForm.value.submitForm();
   }
-  
+
   /**
    * form保存回调事件
    */
@@ -52,14 +60,14 @@
     handleCancel();
     emit('success');
   }
-  
+
   /**
    * 取消按钮回调事件
    */
   function handleCancel() {
     visible.value = false;
   }
-  
+
   defineExpose({
     add,
     edit,

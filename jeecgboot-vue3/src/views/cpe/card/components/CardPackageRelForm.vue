@@ -4,31 +4,43 @@
       <template #detail>
         <a-form class="antd-modal-form" v-bind="formItemLayout" ref="formRef" name="CardPackageRelForm">
           <a-row>
-						<a-col :span="24">
-							<a-form-item label="卡片" v-bind="validateInfos.cardId" id="CardPackageRel-cardId" name="cardId">
-								<j-dict-select-tag v-model:value="formData.cardId" dictCode="card_info,card_no,id" placeholder="请选择卡片" :disabled="true" />
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="套餐" v-bind="validateInfos.packageId" id="CardPackageRel-packageId" name="packageId">
-								<j-dict-select-tag v-model:value="formData.packageId" dictCode="package_info,name,id" placeholder="请选择套餐" allow-clear />
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="开始时间" v-bind="validateInfos.startTime" id="CardPackageRel-startTime" name="startTime">
-								<a-date-picker placeholder="请选择开始时间"  v-model:value="formData.startTime" value-format="YYYY-MM-DD"  style="width: 100%"  allow-clear />
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="结束时间" v-bind="validateInfos.endTime" id="CardPackageRel-endTime" name="endTime">
-								<a-date-picker placeholder="请选择结束时间"  v-model:value="formData.endTime" value-format="YYYY-MM-DD"  style="width: 100%"  allow-clear />
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="状态" v-bind="validateInfos.status" id="CardPackageRel-status" name="status">
-								<j-dict-select-tag type='radio' v-model:value="formData.status" dictCode="card_rel_status" placeholder="请选择状态"  allow-clear />
-							</a-form-item>
-						</a-col>
+            <a-col :span="24">
+              <a-form-item label="卡片" v-bind="validateInfos.cardId" id="CardPackageRel-cardId" name="cardId">
+                <j-dict-select-tag v-model:value="formData.cardId" dictCode="card_info,card_no,id" placeholder="请选择卡片" :disabled="true" />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="套餐" v-bind="validateInfos.packageId" id="CardPackageRel-packageId" name="packageId">
+                <j-dict-select-tag v-model:value="formData.packageId" dictCode="package_info,name,id" placeholder="请选择套餐" allow-clear />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="开始时间" v-bind="validateInfos.startTime" id="CardPackageRel-startTime" name="startTime">
+                <a-date-picker
+                  placeholder="请选择开始时间"
+                  v-model:value="formData.startTime"
+                  value-format="YYYY-MM-DD"
+                  style="width: 100%"
+                  allow-clear
+                />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="结束时间" v-bind="validateInfos.endTime" id="CardPackageRel-endTime" name="endTime">
+                <a-date-picker
+                  placeholder="请选择结束时间"
+                  v-model:value="formData.endTime"
+                  value-format="YYYY-MM-DD"
+                  style="width: 100%"
+                  allow-clear
+                />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="状态" v-bind="validateInfos.status" id="CardPackageRel-status" name="status">
+                <j-dict-select-tag type="radio" v-model:value="formData.status" dictCode="card_rel_status" placeholder="请选择状态" allow-clear />
+              </a-form-item>
+            </a-col>
           </a-row>
         </a-form>
       </template>
@@ -53,11 +65,11 @@
   const emit = defineEmits(['register', 'ok']);
   const formData = reactive<Record<string, any>>({
     id: '',
-        cardId: '',   
-        packageId: '',   
-        startTime: '',   
-        endTime: '',   
-        status: undefined,
+    cardId: '',
+    packageId: '',
+    startTime: '',
+    endTime: '',
+    status: undefined,
   });
   const { createMessage } = useMessage();
   const labelCol = ref<any>({ xs: { span: 24 }, sm: { span: 5 } });
@@ -65,8 +77,8 @@
   const confirmLoading = ref<boolean>(false);
   //表单验证
   const validatorRules = {
-    cardId: [{ required: true, message: '请输入卡片!'},],
-    packageId: [{ required: true, message: '请输入套餐!'},],
+    cardId: [{ required: true, message: '请输入卡片!' }],
+    packageId: [{ required: true, message: '请输入套餐!' }],
   };
   const { resetFields, validate, validateInfos } = useForm(formData, validatorRules, { immediate: false });
   const props = defineProps({
@@ -76,7 +88,7 @@
     labelCol: { xs: { span: 24 }, sm: { span: 5 } },
     wrapperCol: { xs: { span: 24 }, sm: { span: 16 } },
   };
-  
+
   // 在组件挂载时设置卡片ID
   onMounted(() => {
     if (unref(mainId)) {
@@ -99,8 +111,8 @@
       resetFields();
       const tmpData = {};
       Object.keys(formData).forEach((key) => {
-        if(record.hasOwnProperty(key)){
-          tmpData[key] = record[key]
+        if (record.hasOwnProperty(key)) {
+          tmpData[key] = record[key];
         }
       });
       // 确保cardId使用主表ID
@@ -134,7 +146,7 @@
     if (model.id) {
       isUpdate.value = true;
     }
-   
+
     //循环数据
     for (let data in model) {
       //如果该数据是数组并且是字符串类型
@@ -162,7 +174,6 @@
         confirmLoading.value = false;
       });
   }
-
 
   defineExpose({
     add,

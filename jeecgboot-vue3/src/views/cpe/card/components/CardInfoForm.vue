@@ -4,51 +4,56 @@
       <template #detail>
         <a-form ref="formRef" class="antd-modal-form" :labelCol="labelCol" :wrapperCol="wrapperCol" name="CardInfoForm">
           <a-row>
-						<a-col :span="24">
-							<a-form-item label="卡号" v-bind="validateInfos.cardNo" id="CardInfoForm-cardNo" name="cardNo">
-								<a-input v-model:value="formData.cardNo" placeholder="请输入卡号"  allow-clear ></a-input>
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="短号" v-bind="validateInfos.shortNo" id="CardInfoForm-shortNo" name="shortNo">
-								<a-input v-model:value="formData.shortNo" placeholder="请输入短号"  allow-clear ></a-input>
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="接入号" v-bind="validateInfos.joinNo" id="CardInfoForm-joinNo" name="joinNo">
-								<a-input v-model:value="formData.joinNo" placeholder="请输入接入号"  allow-clear ></a-input>
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="卡片运营商" v-bind="validateInfos.netCorps" id="CardInfoForm-netCorps" name="netCorps">
-								<j-dict-select-tag v-model:value="formData.netCorps" dictCode="cpe_network" placeholder="请选择卡片运营商"  allow-clear />
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="是否实名" v-bind="validateInfos.named" id="CardInfoForm-named" name="named">
-								<j-dict-select-tag v-model:value="formData.named" dictCode="card_isnamed" placeholder="请选择是否实名"  allow-clear />
-							</a-form-item>
-						</a-col>
             <a-col :span="24">
-							<a-form-item label="实名人" v-bind="validateInfos.namedPerson" id="CardInfoForm-namedPerson" name="namedPerson">
-								<a-input v-model:value="formData.namedPerson" placeholder="请输入实名人"  allow-clear ></a-input>
-							</a-form-item>
-						</a-col>
+              <a-form-item label="卡号" v-bind="validateInfos.cardNo" id="CardInfoForm-cardNo" name="cardNo">
+                <a-input v-model:value="formData.cardNo" placeholder="请输入卡号" allow-clear />
+              </a-form-item>
+            </a-col>
             <a-col :span="24">
-							<a-form-item label="所属客户" v-bind="validateInfos.sysOrgCode" id="CpeDeviceForm-sysOrgCode" name="sysOrgCode">
-								<j-dict-select-tag v-model:value="formData.sysOrgCode" dictCode="sys_depart,depart_name,org_code" placeholder="请选择所属客户"  allow-clear />
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="本周期上传量" v-bind="validateInfos.upBytes" id="CardInfoForm-upBytes" name="upBytes">
-								<a-input-number v-model:value="formData.upBytes" placeholder="请输入本周期上传量" style="width: 100%" />
-							</a-form-item>
-						</a-col>
-						<a-col :span="24">
-							<a-form-item label="本周期下载量" v-bind="validateInfos.downBytes" id="CardInfoForm-downBytes" name="downBytes">
-								<a-input-number v-model:value="formData.downBytes" placeholder="请输入本周期下载量" style="width: 100%" />
-							</a-form-item>
-						</a-col>
+              <a-form-item label="短号" v-bind="validateInfos.shortNo" id="CardInfoForm-shortNo" name="shortNo">
+                <a-input v-model:value="formData.shortNo" placeholder="请输入短号" allow-clear />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="接入号" v-bind="validateInfos.joinNo" id="CardInfoForm-joinNo" name="joinNo">
+                <a-input v-model:value="formData.joinNo" placeholder="请输入接入号" allow-clear />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="卡片运营商" v-bind="validateInfos.netCorps" id="CardInfoForm-netCorps" name="netCorps">
+                <j-dict-select-tag v-model:value="formData.netCorps" dictCode="cpe_network" placeholder="请选择卡片运营商" allow-clear />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="是否实名" v-bind="validateInfos.named" id="CardInfoForm-named" name="named">
+                <j-dict-select-tag v-model:value="formData.named" dictCode="card_isnamed" placeholder="请选择是否实名" allow-clear />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="实名人" v-bind="validateInfos.namedPerson" id="CardInfoForm-namedPerson" name="namedPerson">
+                <a-input v-model:value="formData.namedPerson" placeholder="请输入实名人" allow-clear />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="所属客户" v-bind="validateInfos.sysOrgCode" id="CpeDeviceForm-sysOrgCode" name="sysOrgCode">
+                <j-dict-select-tag
+                  v-model:value="formData.sysOrgCode"
+                  dictCode="sys_depart,depart_name,org_code"
+                  placeholder="请选择所属客户"
+                  allow-clear
+                />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="本周期上传量" v-bind="validateInfos.upBytes" id="CardInfoForm-upBytes" name="upBytes">
+                <a-input-number v-model:value="formData.upBytes" placeholder="请输入本周期上传量" style="width: 100%" />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="本周期下载量" v-bind="validateInfos.downBytes" id="CardInfoForm-downBytes" name="downBytes">
+                <a-input-number v-model:value="formData.downBytes" placeholder="请输入本周期下载量" style="width: 100%" />
+              </a-form-item>
+            </a-col>
           </a-row>
         </a-form>
       </template>
@@ -65,16 +70,16 @@
   import { saveOrUpdate } from '../CardInfo.api';
   import { Form } from 'ant-design-vue';
   import JFormContainer from '/@/components/Form/src/container/JFormContainer.vue';
-  import { duplicateValidate } from '/@/utils/helper/validator'
-  
+  import { duplicateValidate } from '/@/utils/helper/validator';
+
   const props = defineProps({
     formDisabled: { type: Boolean, default: false },
     formData: { type: Object, default: () => ({}) },
-    formBpm: { type: Boolean, default: true }
+    formBpm: { type: Boolean, default: true },
   });
   const useForm = Form.useForm;
   const emit = defineEmits(['register', 'ok']);
-  const formData = reactive<Record<string, any>>({
+  const formData = reactive<Record<string, any>> ({
     id: '',
     cardNo: '',
     shortNo: '',
@@ -92,26 +97,25 @@
   const confirmLoading = ref<boolean>(false);
   //表单验证
   const validatorRules = reactive({
-    cardNo: [{ required: true, message: '请输入卡号!'}, { validator: cardNoDuplicatevalidate }],
-    named: [{ required: true, message: '请输入是否实名!'},],
-    upBytes: [{ required: true, message: '请输入本周期上传量!'},],
-    downBytes: [{ required: true, message: '请输入本周期下载量!'},],
+    cardNo: [{ required: true, message: '请输入卡号!' }, { validator: cardNoDuplicatevalidate }],
+    named: [{ required: true, message: '请输入是否实名!' }],
+    upBytes: [{ required: true, message: '请输入本周期上传量!' }],
+    downBytes: [{ required: true, message: '请输入本周期下载量!' }],
   });
   const { resetFields, validate, validateInfos } = useForm(formData, validatorRules, { immediate: false });
   const formRef = ref();
   // 表单禁用
-  const disabled = computed(()=>{
-    if(props.formBpm === true){
-      if(props.formData.disabled === false){
+  const disabled = computed(() => {
+    if (props.formBpm === true) {
+      if (props.formData.disabled === false) {
         return false;
-      }else{
+      } else {
         return true;
       }
     }
     return props.formDisabled;
   });
 
-  
   /**
    * 新增
    */
@@ -127,12 +131,12 @@
       resetFields();
       const tmpData = {};
       Object.keys(formData).forEach((key) => {
-        if(record.hasOwnProperty(key)){
-          tmpData[key] = record[key]
+        if (record.hasOwnProperty(key)) {
+          tmpData[key] = record[key];
         }
-      })
+      });
       //赋值
-      Object.assign(formData,tmpData);
+      Object.assign(formData, tmpData);
     });
   }
 
@@ -184,9 +188,8 @@
       });
   }
 
-
   async function cardNoDuplicatevalidate(_r, value) {
-    return duplicateValidate('card_info', 'card_no', value, formData.id || '')
+    return duplicateValidate('card_info', 'card_no', value, formData.id || '');
   }
   defineExpose({
     add,

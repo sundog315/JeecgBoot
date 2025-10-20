@@ -7,33 +7,37 @@
         <TableAction :actions="getTableAction(record)" :dropDownActions="getDropDownAction(record)"/>
       </template> -->
       <!--字段回显插槽-->
-      <template v-slot:bodyCell="{ column, record, index, text }">
-      </template>
+      <template #bodyCell="{ column, record, index, text }"> </template>
     </BasicTable>
 
-    <CpeDeviceWirelessModal ref="registerModal" @success="handleSuccess"/>
+    <CpeDeviceWirelessModal ref="registerModal" @success="handleSuccess" />
   </div>
 </template>
 
 <script lang="ts" setup>
   import { ref, reactive, unref, inject, watch } from 'vue';
-  import { BasicTable, useTable, TableAction } from '/@/components/Table';
-  import { useListPage } from '/@/hooks/system/useListPage'
-  import CpeDeviceWirelessModal from './components/CpeDeviceWirelessModal.vue'
+  import { BasicTable } from '/@/components/Table';
+  import { useListPage } from '/@/hooks/system/useListPage';
+  import CpeDeviceWirelessModal from './components/CpeDeviceWirelessModal.vue';
   import { cpeDeviceWirelessColumns } from './CpeDeviceInfo.data';
-  import { cpeDeviceWirelessList, cpeDeviceWirelessDelete, cpeDeviceWirelessDeleteBatch, cpeDeviceWirelessExportXlsUrl, cpeDeviceWirelessImportUrl } from './CpeDeviceInfo.api';
-  import { isEmpty } from "/@/utils/is";
+  import {
+    cpeDeviceWirelessList,
+    cpeDeviceWirelessDelete,
+    cpeDeviceWirelessDeleteBatch,
+    cpeDeviceWirelessExportXlsUrl,
+    cpeDeviceWirelessImportUrl,
+  } from './CpeDeviceInfo.api';
+  import { isEmpty } from '/@/utils/is';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import { downloadFile } from '/@/utils/common/renderUtils';
 
   const toggleSearchStatus = ref<boolean>(false);
   //接收主表id
   const mainId = inject('mainId') || '';
   //提示弹窗
-  const $message = useMessage()
+  const $message = useMessage();
   const queryParam = {};
   // 列表页面公共参数、方法
-  const { prefixCls, tableContext, onImportXls, onExportXls } = useListPage({
+  const { tableContext } = useListPage({
     tableProps: {
       api: cpeDeviceWirelessList,
       columns: cpeDeviceWirelessColumns,
@@ -41,7 +45,7 @@
       useSearchForm: false,
       actionColumn: {
         width: 180,
-        fixed:'right'
+        fixed: 'right',
       },
       beforeFetch: (params) => {
         return Object.assign(params, queryParam);
@@ -51,25 +55,25 @@
       name: '设备无线配置',
       url: cpeDeviceWirelessExportXlsUrl,
       params: {
-        'cpeId': mainId
-      }
+        cpeId: mainId,
+      },
     },
     importConfig: {
-      url: ()=>{
-        return cpeDeviceWirelessImportUrl + '/' + unref(mainId)
-      }
-    }
+      url: () => {
+        return cpeDeviceWirelessImportUrl + '/' + unref(mainId);
+      },
+    },
   });
 
   //注册table数据
-  const [registerTable, { reload,getDataSource}, { rowSelection, selectedRowKeys }] = tableContext;
+  const [registerTable, { reload, getDataSource }, { rowSelection, selectedRowKeys }] = tableContext;
   const registerModal = ref();
   const formRef = ref();
   const labelCol = reactive({
-    xs:24,
-    sm:4,
-    xl:6,
-    xxl:4
+    xs: 24,
+    sm: 4,
+    xl: 6,
+    xxl: 4,
   });
   const wrapperCol = reactive({
     xs: 24,
@@ -81,12 +85,12 @@
    */
   function handleAdd() {
     if (isEmpty(unref(mainId))) {
-        $message.createMessage.warning('请选择一个主表信息')
-        return;
+      $message.createMessage.warning('请选择一个主表信息');
+      return;
     }
     let dataSource = getDataSource();
-    if(dataSource.length >= 1){
-      $message.createMessage.warning('一对一子表只能添加一条数据')
+    if (dataSource.length >= 1) {
+      $message.createMessage.warning('一对一子表只能添加一条数据');
       return;
     }
     registerModal.value.disableSubmit = false;
@@ -113,14 +117,14 @@
    * 删除事件
    */
   async function handleDelete(record) {
-    await cpeDeviceWirelessDelete({id: record.id}, handleSuccess);
+    await cpeDeviceWirelessDelete({ id: record.id }, handleSuccess);
   }
 
   /**
    * 批量删除事件
    */
   async function batchHandleDelete() {
-    await cpeDeviceWirelessDeleteBatch({ids: selectedRowKeys.value}, handleSuccess);
+    await cpeDeviceWirelessDeleteBatch({ ids: selectedRowKeys.value }, handleSuccess);
   }
 
   /**
@@ -139,13 +143,13 @@
         label: '编辑',
         onClick: handleEdit.bind(null, record),
       },
-    ]
+    ];
   }
 
   /**
    * 下拉操作栏
    */
-  function getDropDownAction(record){
+  function getDropDownAction(record) {
     return [
       {
         label: '详情',
@@ -177,13 +181,13 @@
       margin-bottom: 24px;
       white-space: nowrap;
     }
-    .query-group-cust{
+    .query-group-cust {
       min-width: 100px !important;
     }
-    .query-group-split-cust{
+    .query-group-split-cust {
       width: 30px;
       display: inline-block;
-      text-align: center
+      text-align: center;
     }
   }
 </style>

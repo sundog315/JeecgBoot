@@ -1,12 +1,12 @@
-import {defHttp} from '/@/utils/http/axios';
-import { useMessage } from "/@/hooks/web/useMessage";
+import { defHttp } from '/@/utils/http/axios';
+import { useMessage } from '/@/hooks/web/useMessage';
 
 const { createConfirm } = useMessage();
 
 enum Api {
   list = '/cpe/device/cpeDeviceInfo/list',
-  save= '/cpe/device/cpeDeviceInfo/add',
-  edit= '/cpe/device/cpeDeviceInfo/edit',
+  save = '/cpe/device/cpeDeviceInfo/add',
+  edit = '/cpe/device/cpeDeviceInfo/edit',
   rebootOne = '/cpe/device/cpeDeviceInfo/reboot',
   rebootFrp = '/cpe/device/cpeDeviceInfo/rebootFrp',
   resetPwd = '/cpe/device/cpeDeviceInfo/updatePassword',
@@ -15,48 +15,48 @@ enum Api {
   importExcel = '/cpe/device/cpeDeviceInfo/importExcel',
   exportXls = '/cpe/device/cpeDeviceInfo/exportXls',
   cpeDeviceStatusList = '/cpe/device/cpeDeviceInfo/listCpeDeviceStatusByMainId',
-  cpeDeviceStatusSave= '/cpe/device/cpeDeviceInfo/addCpeDeviceStatus',
-  cpeDeviceStatusEdit= '/cpe/device/cpeDeviceInfo/editCpeDeviceStatus',
+  cpeDeviceStatusSave = '/cpe/device/cpeDeviceInfo/addCpeDeviceStatus',
+  cpeDeviceStatusEdit = '/cpe/device/cpeDeviceInfo/editCpeDeviceStatus',
   cpeDeviceStatusDelete = '/cpe/device/cpeDeviceInfo/deleteCpeDeviceStatus',
   cpeDeviceStatusDeleteBatch = '/cpe/device/cpeDeviceInfo/deleteBatchCpeDeviceStatus',
   cpeDeviceNeighborList = '/cpe/device/cpeDeviceInfo/listCpeDeviceNeighborByMainId',
-  cpeDeviceNeighborSave= '/cpe/device/cpeDeviceInfo/addCpeDeviceNeighbor',
-  cpeDeviceNeighborEdit= '/cpe/device/cpeDeviceInfo/editCpeDeviceNeighbor',
+  cpeDeviceNeighborSave = '/cpe/device/cpeDeviceInfo/addCpeDeviceNeighbor',
+  cpeDeviceNeighborEdit = '/cpe/device/cpeDeviceInfo/editCpeDeviceNeighbor',
   cpeDeviceNeighborDelete = '/cpe/device/cpeDeviceInfo/deleteCpeDeviceNeighbor',
   cpeDeviceNeighborDeleteBatch = '/cpe/device/cpeDeviceInfo/deleteBatchCpeDeviceNeighbor',
   cpeDeviceFrpList = '/cpe/device/cpeDeviceInfo/listCpeDeviceFrpByMainId',
-  cpeDeviceFrpSave= '/cpe/device/cpeDeviceInfo/addCpeDeviceFrp',
-  cpeDeviceFrpEdit= '/cpe/device/cpeDeviceInfo/editCpeDeviceFrp',
+  cpeDeviceFrpSave = '/cpe/device/cpeDeviceInfo/addCpeDeviceFrp',
+  cpeDeviceFrpEdit = '/cpe/device/cpeDeviceInfo/editCpeDeviceFrp',
   cpeDeviceFrpDelete = '/cpe/device/cpeDeviceInfo/deleteCpeDeviceFrp',
   cpeDeviceFrpDeleteBatch = '/cpe/device/cpeDeviceInfo/deleteBatchCpeDeviceFrp',
   cpeDeviceAutorebootList = '/cpe/device/cpeDeviceInfo/listCpeDeviceAutorebootByMainId',
-  cpeDeviceAutorebootSave= '/cpe/device/cpeDeviceInfo/addCpeDeviceAutoreboot',
-  cpeDeviceAutorebootEdit= '/cpe/device/cpeDeviceInfo/editCpeDeviceAutoreboot',
+  cpeDeviceAutorebootSave = '/cpe/device/cpeDeviceInfo/addCpeDeviceAutoreboot',
+  cpeDeviceAutorebootEdit = '/cpe/device/cpeDeviceInfo/editCpeDeviceAutoreboot',
   cpeDeviceAutorebootDelete = '/cpe/device/cpeDeviceInfo/deleteCpeDeviceAutoreboot',
   cpeDeviceAutorebootDeleteBatch = '/cpe/device/cpeDeviceInfo/deleteBatchCpeDeviceAutoreboot',
   cpeDeviceNetworkList = '/cpe/device/cpeDeviceInfo/listCpeDeviceNetworkByMainId',
-  cpeDeviceNetworkSave= '/cpe/device/cpeDeviceInfo/addCpeDeviceNetwork',
-  cpeDeviceNetworkEdit= '/cpe/device/cpeDeviceInfo/editCpeDeviceNetwork',
+  cpeDeviceNetworkSave = '/cpe/device/cpeDeviceInfo/addCpeDeviceNetwork',
+  cpeDeviceNetworkEdit = '/cpe/device/cpeDeviceInfo/editCpeDeviceNetwork',
   cpeDeviceNetworkDelete = '/cpe/device/cpeDeviceInfo/deleteCpeDeviceNetwork',
   cpeDeviceNetworkDeleteBatch = '/cpe/device/cpeDeviceInfo/deleteBatchCpeDeviceNetwork',
   cpeSpeedLimitList = '/cpe/device/cpeDeviceInfo/listCpeSpeedLimitByMainId',
-  cpeSpeedLimitSave= '/cpe/device/cpeDeviceInfo/addCpeSpeedLimit',
-  cpeSpeedLimitEdit= '/cpe/device/cpeDeviceInfo/editCpeSpeedLimit',
+  cpeSpeedLimitSave = '/cpe/device/cpeDeviceInfo/addCpeSpeedLimit',
+  cpeSpeedLimitEdit = '/cpe/device/cpeDeviceInfo/editCpeSpeedLimit',
   cpeSpeedLimitDelete = '/cpe/device/cpeDeviceInfo/deleteCpeSpeedLimit',
   cpeSpeedLimitDeleteBatch = '/cpe/device/cpeDeviceInfo/deleteBatchCpeSpeedLimit',
   cpeDeviceWirelessList = '/cpe/device/cpeDeviceInfo/listCpeDeviceWirelessByMainId',
-  cpeDeviceWirelessSave= '/cpe/device/cpeDeviceInfo/addCpeDeviceWireless',
-  cpeDeviceWirelessEdit= '/cpe/device/cpeDeviceInfo/editCpeDeviceWireless',
+  cpeDeviceWirelessSave = '/cpe/device/cpeDeviceInfo/addCpeDeviceWireless',
+  cpeDeviceWirelessEdit = '/cpe/device/cpeDeviceInfo/editCpeDeviceWireless',
   cpeDeviceWirelessDelete = '/cpe/device/cpeDeviceInfo/deleteCpeDeviceWireless',
   cpeDeviceWirelessDeleteBatch = '/cpe/device/cpeDeviceInfo/deleteBatchCpeDeviceWireless',
   cpeDeviceClientList = '/cpe/device/cpeDeviceInfo/listCpeDeviceClientByMainId',
-  cpeDeviceClientSave= '/cpe/device/cpeDeviceInfo/addCpeDeviceClient',
-  cpeDeviceClientEdit= '/cpe/device/cpeDeviceInfo/editCpeDeviceClient',
+  cpeDeviceClientSave = '/cpe/device/cpeDeviceInfo/addCpeDeviceClient',
+  cpeDeviceClientEdit = '/cpe/device/cpeDeviceInfo/editCpeDeviceClient',
   cpeDeviceClientDelete = '/cpe/device/cpeDeviceInfo/deleteCpeDeviceClient',
   cpeDeviceClientDeleteBatch = '/cpe/device/cpeDeviceInfo/deleteBatchCpeDeviceClient',
   cpeOperLogList = '/cpe/device/cpeDeviceInfo/listCpeOperLogByMainId',
-  cpeOperLogSave= '/cpe/device/cpeDeviceInfo/addCpeOperLog',
-  cpeOperLogEdit= '/cpe/device/cpeDeviceInfo/editCpeOperLog',
+  cpeOperLogSave = '/cpe/device/cpeDeviceInfo/addCpeOperLog',
+  cpeOperLogEdit = '/cpe/device/cpeDeviceInfo/editCpeOperLog',
   cpeOperLogDelete = '/cpe/device/cpeDeviceInfo/deleteCpeOperLog',
   cpeOperLogDeleteBatch = '/cpe/device/cpeDeviceInfo/deleteBatchCpeOperLog',
 }
@@ -75,44 +75,43 @@ export const getImportUrl = Api.importExcel;
  * 列表接口
  * @param params
  */
-export const list = (params) =>
-  defHttp.get({ url: Api.list, params });
+export const list = (params) => defHttp.get({ url: Api.list, params });
 
 /**
  * 重启单个
  */
-export const rebootOne = (params,handleSuccess) => {
-  return defHttp.post({url: Api.rebootOne, params}, { joinParamsToUrl: true }).then(() => {
+export const rebootOne = (params, handleSuccess) => {
+  return defHttp.post({ url: Api.rebootOne, params }, { joinParamsToUrl: true }).then(() => {
     handleSuccess();
   });
-}
+};
 
 /**
  * 重启Frp
  */
-export const rebootFrp = (params,handleSuccess) => {
-  return defHttp.post({url: Api.rebootFrp, params}, { joinParamsToUrl: true }).then(() => {
+export const rebootFrp = (params, handleSuccess) => {
+  return defHttp.post({ url: Api.rebootFrp, params }, { joinParamsToUrl: true }).then(() => {
     handleSuccess();
   });
-}
+};
 
 /**
  * 重置Root密码
  */
-export const resetPwd = (params,handleSuccess) => {
-  return defHttp.post({url: Api.resetPwd, params}, { joinParamsToUrl: true }).then(() => {
+export const resetPwd = (params, handleSuccess) => {
+  return defHttp.post({ url: Api.resetPwd, params }, { joinParamsToUrl: true }).then(() => {
     handleSuccess();
   });
-}
+};
 
 /**
  * 删除单个
  */
-export const deleteOne = (params,handleSuccess) => {
+export const deleteOne = (params, handleSuccess) => {
   return defHttp.delete({ url: Api.deleteOne, params }, { joinParamsToUrl: true }).then(() => {
     handleSuccess();
   });
-}
+};
 
 /**
  * 批量删除
@@ -129,38 +128,38 @@ export const batchDelete = (params, handleSuccess) => {
       return defHttp.delete({ url: Api.deleteBatch, data: params }, { joinParamsToUrl: true }).then(() => {
         handleSuccess();
       });
-    }
+    },
   });
-}
+};
 
 /**
  * 保存或者更新
  * @param params
  */
 export const saveOrUpdate = (params, isUpdate) => {
-  let url = isUpdate ? Api.edit : Api.save;
-  return defHttp.post({ url: url, params },{ isTransformResponse: false });
-}
-  
+  const url = isUpdate ? Api.edit : Api.save;
+  return defHttp.post({ url: url, params }, { isTransformResponse: false });
+};
+
 /**
  * 列表接口
  * @param params
  */
 export const cpeDeviceStatusList = (params) => {
-  if(params['cpeId']){
+  if (params['cpeId']) {
     return defHttp.get({ url: Api.cpeDeviceStatusList, params });
   }
   return Promise.resolve({});
-}
+};
 
 /**
  * 删除单个
  */
-export const cpeDeviceStatusDelete = (params,handleSuccess) => {
+export const cpeDeviceStatusDelete = (params, handleSuccess) => {
   return defHttp.delete({ url: Api.cpeDeviceStatusDelete, params }, { joinParamsToUrl: true }).then(() => {
     handleSuccess();
   });
-}
+};
 
 /**
  * 批量删除
@@ -177,48 +176,48 @@ export const cpeDeviceStatusDeleteBatch = (params, handleSuccess) => {
       return defHttp.delete({ url: Api.cpeDeviceStatusDeleteBatch, data: params }, { joinParamsToUrl: true }).then(() => {
         handleSuccess();
       });
-    }
+    },
   });
-}
+};
 
 /**
  * 保存或者更新
  * @param params
  */
-export const  cpeDeviceStatusSaveOrUpdate = (params, isUpdate) => {
-  let url = isUpdate ? Api.cpeDeviceStatusEdit : Api.cpeDeviceStatusSave;
-  return defHttp.post({ url: url, params },{ isTransformResponse: false });
-}
+export const cpeDeviceStatusSaveOrUpdate = (params, isUpdate) => {
+  const url = isUpdate ? Api.cpeDeviceStatusEdit : Api.cpeDeviceStatusSave;
+  return defHttp.post({ url: url, params }, { isTransformResponse: false });
+};
 
 /**
  * 导入
  */
-export const cpeDeviceStatusImportUrl = '/cpe/device/cpeDeviceInfo/importCpeDeviceStatus'
+export const cpeDeviceStatusImportUrl = '/cpe/device/cpeDeviceInfo/importCpeDeviceStatus';
 
 /**
  * 导出
  */
-export const cpeDeviceStatusExportXlsUrl = '/cpe/device/cpeDeviceInfo/exportCpeDeviceStatus'
-  
+export const cpeDeviceStatusExportXlsUrl = '/cpe/device/cpeDeviceInfo/exportCpeDeviceStatus';
+
 /**
  * 列表接口
  * @param params
  */
 export const cpeDeviceNeighborList = (params) => {
-  if(params['cpeId']){
+  if (params['cpeId']) {
     return defHttp.get({ url: Api.cpeDeviceNeighborList, params });
   }
   return Promise.resolve({});
-}
+};
 
 /**
  * 删除单个
  */
-export const cpeDeviceNeighborDelete = (params,handleSuccess) => {
+export const cpeDeviceNeighborDelete = (params, handleSuccess) => {
   return defHttp.delete({ url: Api.cpeDeviceNeighborDelete, params }, { joinParamsToUrl: true }).then(() => {
     handleSuccess();
   });
-}
+};
 
 /**
  * 批量删除
@@ -235,49 +234,48 @@ export const cpeDeviceNeighborDeleteBatch = (params, handleSuccess) => {
       return defHttp.delete({ url: Api.cpeDeviceNeighborDeleteBatch, data: params }, { joinParamsToUrl: true }).then(() => {
         handleSuccess();
       });
-    }
+    },
   });
-}
+};
 
 /**
  * 保存或者更新
  * @param params
  */
-export const  cpeDeviceNeighborSaveOrUpdate = (params, isUpdate) => {
-  let url = isUpdate ? Api.cpeDeviceNeighborEdit : Api.cpeDeviceNeighborSave;
-  return defHttp.post({ url: url, params },{ isTransformResponse: false });
-}
+export const cpeDeviceNeighborSaveOrUpdate = (params, isUpdate) => {
+  const url = isUpdate ? Api.cpeDeviceNeighborEdit : Api.cpeDeviceNeighborSave;
+  return defHttp.post({ url: url, params }, { isTransformResponse: false });
+};
 
 /**
  * 导入
  */
-export const cpeDeviceNeighborImportUrl = '/cpe/device/cpeDeviceInfo/importCpeDeviceNeighbor'
+export const cpeDeviceNeighborImportUrl = '/cpe/device/cpeDeviceInfo/importCpeDeviceNeighbor';
 
 /**
  * 导出
  */
-export const cpeDeviceNeighborExportXlsUrl = '/cpe/device/cpeDeviceInfo/exportCpeDeviceNeighbor'
-
+export const cpeDeviceNeighborExportXlsUrl = '/cpe/device/cpeDeviceInfo/exportCpeDeviceNeighbor';
 
 /**
  * 列表接口
  * @param params
  */
 export const cpeDeviceFrpList = (params) => {
-  if(params['cpeId']){
+  if (params['cpeId']) {
     return defHttp.get({ url: Api.cpeDeviceFrpList, params });
   }
   return Promise.resolve({});
-}
+};
 
 /**
  * 删除单个
  */
-export const cpeDeviceFrpDelete = (params,handleSuccess) => {
+export const cpeDeviceFrpDelete = (params, handleSuccess) => {
   return defHttp.delete({ url: Api.cpeDeviceFrpDelete, params }, { joinParamsToUrl: true }).then(() => {
     handleSuccess();
   });
-}
+};
 
 /**
  * 批量删除
@@ -294,48 +292,48 @@ export const cpeDeviceFrpDeleteBatch = (params, handleSuccess) => {
       return defHttp.delete({ url: Api.cpeDeviceFrpDeleteBatch, data: params }, { joinParamsToUrl: true }).then(() => {
         handleSuccess();
       });
-    }
+    },
   });
-}
+};
 
 /**
  * 保存或者更新
  * @param params
  */
-export const  cpeDeviceFrpSaveOrUpdate = (params, isUpdate) => {
-  let url = isUpdate ? Api.cpeDeviceFrpEdit : Api.cpeDeviceFrpSave;
-  return defHttp.post({ url: url, params },{ isTransformResponse: false });
-}
+export const cpeDeviceFrpSaveOrUpdate = (params, isUpdate) => {
+  const url = isUpdate ? Api.cpeDeviceFrpEdit : Api.cpeDeviceFrpSave;
+  return defHttp.post({ url: url, params }, { isTransformResponse: false });
+};
 
 /**
  * 导入
  */
-export const cpeDeviceFrpImportUrl = '/cpe/device/cpeDeviceInfo/importCpeDeviceFrp'
+export const cpeDeviceFrpImportUrl = '/cpe/device/cpeDeviceInfo/importCpeDeviceFrp';
 
 /**
  * 导出
  */
-export const cpeDeviceFrpExportXlsUrl = '/cpe/device/cpeDeviceInfo/exportCpeDeviceFrp'
+export const cpeDeviceFrpExportXlsUrl = '/cpe/device/cpeDeviceInfo/exportCpeDeviceFrp';
 
 /**
  * 列表接口
  * @param params
  */
 export const cpeDeviceAutorebootList = (params) => {
-  if(params['cpeId']){
+  if (params['cpeId']) {
     return defHttp.get({ url: Api.cpeDeviceAutorebootList, params });
   }
   return Promise.resolve({});
-}
+};
 
 /**
  * 删除单个
  */
-export const cpeDeviceAutorebootDelete = (params,handleSuccess) => {
+export const cpeDeviceAutorebootDelete = (params, handleSuccess) => {
   return defHttp.delete({ url: Api.cpeDeviceAutorebootDelete, params }, { joinParamsToUrl: true }).then(() => {
     handleSuccess();
   });
-}
+};
 
 /**
  * 批量删除
@@ -352,48 +350,48 @@ export const cpeDeviceAutorebootDeleteBatch = (params, handleSuccess) => {
       return defHttp.delete({ url: Api.cpeDeviceAutorebootDeleteBatch, data: params }, { joinParamsToUrl: true }).then(() => {
         handleSuccess();
       });
-    }
+    },
   });
-}
+};
 
 /**
  * 保存或者更新
  * @param params
  */
-export const  cpeDeviceAutorebootSaveOrUpdate = (params, isUpdate) => {
-  let url = isUpdate ? Api.cpeDeviceAutorebootEdit : Api.cpeDeviceAutorebootSave;
-  return defHttp.post({ url: url, params },{ isTransformResponse: false });
-}
+export const cpeDeviceAutorebootSaveOrUpdate = (params, isUpdate) => {
+  const url = isUpdate ? Api.cpeDeviceAutorebootEdit : Api.cpeDeviceAutorebootSave;
+  return defHttp.post({ url: url, params }, { isTransformResponse: false });
+};
 
 /**
  * 导入
  */
-export const cpeDeviceAutorebootImportUrl = '/cpe/device/cpeDeviceInfo/importCpeDeviceAutoreboot'
+export const cpeDeviceAutorebootImportUrl = '/cpe/device/cpeDeviceInfo/importCpeDeviceAutoreboot';
 
 /**
  * 导出
  */
-export const cpeDeviceAutorebootExportXlsUrl = '/cpe/device/cpeDeviceInfo/exportCpeDeviceAutoreboot'
+export const cpeDeviceAutorebootExportXlsUrl = '/cpe/device/cpeDeviceInfo/exportCpeDeviceAutoreboot';
 
 /**
  * 列表接口
  * @param params
  */
 export const cpeDeviceNetworkList = (params) => {
-  if(params['cpeId']){
+  if (params['cpeId']) {
     return defHttp.get({ url: Api.cpeDeviceNetworkList, params });
   }
   return Promise.resolve({});
-}
+};
 
 /**
  * 删除单个
  */
-export const cpeDeviceNetworkDelete = (params,handleSuccess) => {
+export const cpeDeviceNetworkDelete = (params, handleSuccess) => {
   return defHttp.delete({ url: Api.cpeDeviceNetworkDelete, params }, { joinParamsToUrl: true }).then(() => {
     handleSuccess();
   });
-}
+};
 
 /**
  * 批量删除
@@ -410,48 +408,48 @@ export const cpeDeviceNetworkDeleteBatch = (params, handleSuccess) => {
       return defHttp.delete({ url: Api.cpeDeviceNetworkDeleteBatch, data: params }, { joinParamsToUrl: true }).then(() => {
         handleSuccess();
       });
-    }
+    },
   });
-}
+};
 
 /**
  * 保存或者更新
  * @param params
  */
-export const  cpeDeviceNetworkSaveOrUpdate = (params, isUpdate) => {
-  let url = isUpdate ? Api.cpeDeviceNetworkEdit : Api.cpeDeviceNetworkSave;
-  return defHttp.post({ url: url, params },{ isTransformResponse: false });
-}
+export const cpeDeviceNetworkSaveOrUpdate = (params, isUpdate) => {
+  const url = isUpdate ? Api.cpeDeviceNetworkEdit : Api.cpeDeviceNetworkSave;
+  return defHttp.post({ url: url, params }, { isTransformResponse: false });
+};
 
 /**
  * 导入
  */
-export const cpeDeviceNetworkImportUrl = '/cpe/device/cpeDeviceInfo/importCpeDeviceNetwork'
+export const cpeDeviceNetworkImportUrl = '/cpe/device/cpeDeviceInfo/importCpeDeviceNetwork';
 
 /**
  * 导出
  */
-export const cpeDeviceNetworkExportXlsUrl = '/cpe/device/cpeDeviceInfo/exportCpeDeviceNetwork'
+export const cpeDeviceNetworkExportXlsUrl = '/cpe/device/cpeDeviceInfo/exportCpeDeviceNetwork';
 
 /**
  * 列表接口
  * @param params
  */
 export const cpeSpeedLimitList = (params) => {
-  if(params['cpeId']){
+  if (params['cpeId']) {
     return defHttp.get({ url: Api.cpeSpeedLimitList, params });
   }
   return Promise.resolve({});
-}
+};
 
 /**
  * 删除单个
  */
-export const cpeSpeedLimitDelete = (params,handleSuccess) => {
+export const cpeSpeedLimitDelete = (params, handleSuccess) => {
   return defHttp.delete({ url: Api.cpeSpeedLimitDelete, params }, { joinParamsToUrl: true }).then(() => {
     handleSuccess();
   });
-}
+};
 
 /**
  * 批量删除
@@ -468,48 +466,48 @@ export const cpeSpeedLimitDeleteBatch = (params, handleSuccess) => {
       return defHttp.delete({ url: Api.cpeSpeedLimitDeleteBatch, data: params }, { joinParamsToUrl: true }).then(() => {
         handleSuccess();
       });
-    }
+    },
   });
-}
+};
 
 /**
  * 保存或者更新
  * @param params
  */
-export const  cpeSpeedLimitSaveOrUpdate = (params, isUpdate) => {
-  let url = isUpdate ? Api.cpeSpeedLimitEdit : Api.cpeSpeedLimitSave;
-  return defHttp.post({ url: url, params },{ isTransformResponse: false });
-}
+export const cpeSpeedLimitSaveOrUpdate = (params, isUpdate) => {
+  const url = isUpdate ? Api.cpeSpeedLimitEdit : Api.cpeSpeedLimitSave;
+  return defHttp.post({ url: url, params }, { isTransformResponse: false });
+};
 
 /**
  * 导入
  */
-export const cpeSpeedLimitImportUrl = '/cpe/device/cpeDeviceInfo/importCpeSpeedLimit'
+export const cpeSpeedLimitImportUrl = '/cpe/device/cpeDeviceInfo/importCpeSpeedLimit';
 
 /**
  * 导出
  */
-export const cpeSpeedLimitExportXlsUrl = '/cpe/device/cpeDeviceInfo/exportCpeSpeedLimit'
+export const cpeSpeedLimitExportXlsUrl = '/cpe/device/cpeDeviceInfo/exportCpeSpeedLimit';
 
 /**
  * 列表接口
  * @param params
  */
 export const cpeDeviceWirelessList = (params) => {
-  if(params['cpeId']){
+  if (params['cpeId']) {
     return defHttp.get({ url: Api.cpeDeviceWirelessList, params });
   }
   return Promise.resolve({});
-}
+};
 
 /**
  * 删除单个
  */
-export const cpeDeviceWirelessDelete = (params,handleSuccess) => {
+export const cpeDeviceWirelessDelete = (params, handleSuccess) => {
   return defHttp.delete({ url: Api.cpeDeviceWirelessDelete, params }, { joinParamsToUrl: true }).then(() => {
     handleSuccess();
   });
-}
+};
 
 /**
  * 批量删除
@@ -526,48 +524,48 @@ export const cpeDeviceWirelessDeleteBatch = (params, handleSuccess) => {
       return defHttp.delete({ url: Api.cpeDeviceWirelessDeleteBatch, data: params }, { joinParamsToUrl: true }).then(() => {
         handleSuccess();
       });
-    }
+    },
   });
-}
+};
 
 /**
  * 保存或者更新
  * @param params
  */
-export const  cpeDeviceWirelessSaveOrUpdate = (params, isUpdate) => {
-  let url = isUpdate ? Api.cpeDeviceWirelessEdit : Api.cpeDeviceWirelessSave;
-  return defHttp.post({ url: url, params },{ isTransformResponse: false });
-}
+export const cpeDeviceWirelessSaveOrUpdate = (params, isUpdate) => {
+  const url = isUpdate ? Api.cpeDeviceWirelessEdit : Api.cpeDeviceWirelessSave;
+  return defHttp.post({ url: url, params }, { isTransformResponse: false });
+};
 
 /**
  * 导入
  */
-export const cpeDeviceWirelessImportUrl = '/cpe/device/cpeDeviceInfo/importCpeDeviceWireless'
+export const cpeDeviceWirelessImportUrl = '/cpe/device/cpeDeviceInfo/importCpeDeviceWireless';
 
 /**
  * 导出
  */
-export const cpeDeviceWirelessExportXlsUrl = '/cpe/device/cpeDeviceInfo/exportCpeDeviceWireless'
+export const cpeDeviceWirelessExportXlsUrl = '/cpe/device/cpeDeviceInfo/exportCpeDeviceWireless';
 
 /**
  * 列表接口
  * @param params
  */
 export const cpeDeviceClientList = (params) => {
-  if(params['cpeId']){
+  if (params['cpeId']) {
     return defHttp.get({ url: Api.cpeDeviceClientList, params });
   }
   return Promise.resolve({});
-}
+};
 
 /**
  * 删除单个
  */
-export const cpeDeviceClientDelete = (params,handleSuccess) => {
+export const cpeDeviceClientDelete = (params, handleSuccess) => {
   return defHttp.delete({ url: Api.cpeDeviceClientDelete, params }, { joinParamsToUrl: true }).then(() => {
     handleSuccess();
   });
-}
+};
 
 /**
  * 批量删除
@@ -584,48 +582,48 @@ export const cpeDeviceClientDeleteBatch = (params, handleSuccess) => {
       return defHttp.delete({ url: Api.cpeDeviceClientDeleteBatch, data: params }, { joinParamsToUrl: true }).then(() => {
         handleSuccess();
       });
-    }
+    },
   });
-}
+};
 
 /**
  * 保存或者更新
  * @param params
  */
-export const  cpeDeviceClientSaveOrUpdate = (params, isUpdate) => {
-  let url = isUpdate ? Api.cpeDeviceClientEdit : Api.cpeDeviceClientSave;
-  return defHttp.post({ url: url, params },{ isTransformResponse: false });
-}
+export const cpeDeviceClientSaveOrUpdate = (params, isUpdate) => {
+  const url = isUpdate ? Api.cpeDeviceClientEdit : Api.cpeDeviceClientSave;
+  return defHttp.post({ url: url, params }, { isTransformResponse: false });
+};
 
 /**
  * 导入
  */
-export const cpeDeviceClientImportUrl = '/cpe/device/cpeDeviceInfo/importCpeDeviceClient'
+export const cpeDeviceClientImportUrl = '/cpe/device/cpeDeviceInfo/importCpeDeviceClient';
 
 /**
  * 导出
  */
-export const cpeDeviceClientExportXlsUrl = '/cpe/device/cpeDeviceInfo/exportCpeDeviceClient'
+export const cpeDeviceClientExportXlsUrl = '/cpe/device/cpeDeviceInfo/exportCpeDeviceClient';
 
 /**
  * 列表接口
  * @param params
  */
 export const cpeOperLogList = (params) => {
-  if(params['cpeId']){
+  if (params['cpeId']) {
     return defHttp.get({ url: Api.cpeOperLogList, params });
   }
   return Promise.resolve({});
-}
+};
 
 /**
  * 删除单个
  */
-export const cpeOperLogDelete = (params,handleSuccess) => {
+export const cpeOperLogDelete = (params, handleSuccess) => {
   return defHttp.delete({ url: Api.cpeOperLogDelete, params }, { joinParamsToUrl: true }).then(() => {
     handleSuccess();
   });
-}
+};
 
 /**
  * 批量删除
@@ -642,25 +640,25 @@ export const cpeOperLogDeleteBatch = (params, handleSuccess) => {
       return defHttp.delete({ url: Api.cpeOperLogDeleteBatch, data: params }, { joinParamsToUrl: true }).then(() => {
         handleSuccess();
       });
-    }
+    },
   });
-}
+};
 
 /**
  * 保存或者更新
  * @param params
  */
-export const  cpeOperLogSaveOrUpdate = (params, isUpdate) => {
-  let url = isUpdate ? Api.cpeOperLogEdit : Api.cpeOperLogSave;
-  return defHttp.post({ url: url, params },{ isTransformResponse: false });
-}
+export const cpeOperLogSaveOrUpdate = (params, isUpdate) => {
+  const url = isUpdate ? Api.cpeOperLogEdit : Api.cpeOperLogSave;
+  return defHttp.post({ url: url, params }, { isTransformResponse: false });
+};
 
 /**
  * 导入
  */
-export const cpeOperLogImportUrl = '/cpe/device/cpeDeviceInfo/importCpeOperLog'
+export const cpeOperLogImportUrl = '/cpe/device/cpeDeviceInfo/importCpeOperLog';
 
 /**
  * 导出
  */
-export const cpeOperLogExportXlsUrl = '/cpe/device/cpeDeviceInfo/exportCpeOperLog'
+export const cpeOperLogExportXlsUrl = '/cpe/device/cpeDeviceInfo/exportCpeOperLog';
