@@ -260,6 +260,13 @@ update_frp_config() {
 
 # 重启FRP服务
 restart_frp_service() {
+    # 检查并修正配置文件中的option type为tcp
+    if [ -f "/etc/config/frpc" ]; then
+        if grep "option type" /etc/config/frpc | grep -v "'tcp'" > /dev/null; then
+            sed -i "s/option type '[^']*'/option type 'tcp'/g" /etc/config/frpc
+        fi
+    fi
+
     /etc/init.d/frpc stop
     sleep 1
     /etc/init.d/frpc start
