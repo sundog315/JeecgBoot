@@ -5,7 +5,7 @@ VERSION="1.0.0"
 SERVER_URL='xuanshu.wutengtech.com:9527'
 API_BASE_URL="http://${SERVER_URL}/jeecg-boot/cpe/device/cpeOperLog"
 API_SCRIPT_URL="http://${SERVER_URL}/jeecg-boot/cpe/scripts/cpeScripts" 
-DEVICE_TYPE=$(uci get lede.system.name)
+DEVICE_TYPE=$(cat /tmp/sysinfo/board_name)
 MAX_RETRIES=3
 RETRY_DELAY=5
 
@@ -97,10 +97,10 @@ handle_script_update() {
 # 获取MAC地址
 get_mac_address() {
     local mac
-    mac=$(wtinfo -g mac)
+    mac=$(ifconfig br-lan | grep HWaddr | awk '{print $5}' | tr -d ':' | tr 'a-z' 'A-Z')
     if [ $? -ne 0 ] || [ -z "$mac" ]; then
-        log_error "获取mac地址失败"
-        exit 1
+        log_error "获取MAC地址失败"
+        return 1
     fi
     echo "$mac"
 }
@@ -155,7 +155,6 @@ make_http_push() {
 
     while [ $retry -lt $MAX_RETRIES ]; do
         response=$(curl -s -X POST \
-            --compressed \
             -H "Content-Type: application/x-www-form-urlencoded" \
             --data-urlencode "type=${DEVICE_TYPE}" \
             --data-urlencode "operid=${operid}" \
@@ -725,7 +724,7 @@ main() {
     operList=$(parse_operation "$response")
 
     # 处理操作
-    if [[ "$operList" =~ "OK" ]]; then
+    if echo "$operList" | grep -q "OK"; then
         log_info "No job to be run"
         exit 0
     fi
@@ -735,19 +734,13 @@ main() {
     local oper=$(echo "$operList" | awk -F '|' '{print $2}')
     local param=$(echo "$operList" | awk -F '|' '{print $3}')
     # 参数中的特殊字符进行转义
-    param=${param//%2C/,}
-    param=${param//%7C/\|}
+    param=$(echo "$param" | sed 's/%2C/,/g')
+    param=$(echo "$param" | sed 's/%7C/|/g')
 
     # 执行操作
     case "$oper" in
         "reboot")
             handle_reboot "$id"
-            ;;
-        "frp")
-            handle_frp "$id" "$param"
-            ;;
-        "restartFrp")
-            handle_restarFrp "$id" "$param"
             ;;
         "autoreboot")
             handle_autoreboot "$id" "$param"
@@ -755,12 +748,6 @@ main() {
         "network")
             handle_network "$id" "$param"
             ;;
-        "speed_limit")
-            handle_speed_limit "$id" "$param"
-            ;;
-        # "wireless")
-        #     handle_wireless "$id" "$param"
-        #     ;;
         "update_password")
             handle_update_password "$id" "$param"
             ;;

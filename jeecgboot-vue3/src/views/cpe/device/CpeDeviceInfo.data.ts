@@ -2,7 +2,7 @@ import { BasicColumn } from '/@/components/Table';
 import { formatTraffic } from '/@/utils/formatter';
 import { h } from 'vue';
 import { useGo } from '/@/hooks/web/usePage';
-import { Tag } from 'ant-design-vue';
+import { Tag, Tooltip } from 'ant-design-vue';
 
 //列表数据
 export const columns: BasicColumn[] = [
@@ -401,6 +401,32 @@ export const cpeDeviceFrpColumns: BasicColumn[] = [
       };
       return h('a', props, text);
     },
+  },
+  {
+    title: '类型',
+    align: 'center',
+    dataIndex: 'frpType',
+  },
+  {
+    title: '子域名',
+    align: 'center',
+    dataIndex: 'customDomains',
+    customRender: ({ text }) => {
+      const props = {
+        style: { color: '#1890ff', cursor: 'pointer' },
+        onClick: () => {
+          const url = `http://${text}:10000`;
+          window.open(url, '_blank');
+        },
+      };
+      const title = `ssh -o 'proxycommand socat - PROXY:frp.wutengtech.com:%h:%p,proxyport=2222' root@${text}`;
+      return h(Tooltip, { title }, { default: () => h('a', props, text) });
+    },
+  },
+  {
+    title: '多路复用',
+    align: 'center',
+    dataIndex: 'multiplexer',
   },
 ];
 //子表列表数据

@@ -27,13 +27,13 @@ import io.swagger.annotations.ApiOperation;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 
- /**
+/**
  * @Description: 设备脚本管理
  * @Author: jeecg-boot
- * @Date:   2025-01-14
+ * @Date: 2025-01-14
  * @Version: V1.0
  */
-@Api(tags="设备脚本管理")
+@Api(tags = "设备脚本管理")
 @RestController
 @RequestMapping("/cpe/scripts/cpeScripts")
 @Slf4j
@@ -50,33 +50,34 @@ public class CpeScriptsController extends JeecgController<CpeScripts, ICpeScript
 	 * @param req
 	 * @return
 	 */
-	//@AutoLog(value = "设备脚本管理-分页列表查询")
-	@ApiOperation(value="设备脚本管理-分页列表查询", notes="设备脚本管理-分页列表查询")
+	// @AutoLog(value = "设备脚本管理-分页列表查询")
+	@ApiOperation(value = "设备脚本管理-分页列表查询", notes = "设备脚本管理-分页列表查询")
 	@GetMapping(value = "/list")
 	public Result<IPage<CpeScripts>> queryPageList(CpeScripts cpeScripts,
-									@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-									@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-									HttpServletRequest req) {
-        // 自定义查询规则
-        Map<String, QueryRuleEnum> customeRuleMap = new HashMap<>();
-        // 自定义多选的查询规则为：LIKE_WITH_OR
-        customeRuleMap.put("enableFlag", QueryRuleEnum.LIKE_WITH_OR);
-        customeRuleMap.put("deviceModuleNo", QueryRuleEnum.LIKE_WITH_OR);
-        QueryWrapper<CpeScripts> queryWrapper = QueryGenerator.initQueryWrapper(cpeScripts, req.getParameterMap(),customeRuleMap);
+			@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+			HttpServletRequest req) {
+		// 自定义查询规则
+		Map<String, QueryRuleEnum> customeRuleMap = new HashMap<>();
+		// 自定义多选的查询规则为：LIKE_WITH_OR
+		customeRuleMap.put("enableFlag", QueryRuleEnum.LIKE_WITH_OR);
+		customeRuleMap.put("deviceModuleNo", QueryRuleEnum.LIKE_WITH_OR);
+		QueryWrapper<CpeScripts> queryWrapper = QueryGenerator.initQueryWrapper(cpeScripts, req.getParameterMap(),
+				customeRuleMap);
 		Page<CpeScripts> page = new Page<CpeScripts>(pageNo, pageSize);
 		IPage<CpeScripts> pageList = cpeScriptsService.page(page, queryWrapper);
 		return Result.OK(pageList);
 	}
 
 	/**
-	 *   添加
+	 * 添加
 	 *
 	 * @param cpeScripts
 	 * @return
 	 */
 	@AutoLog(value = "设备脚本管理-添加")
-	@ApiOperation(value="设备脚本管理-添加", notes="设备脚本管理-添加")
-	//@RequiresPermissions("cpe.scripts:cpe_scripts:add")
+	@ApiOperation(value = "设备脚本管理-添加", notes = "设备脚本管理-添加")
+	// @RequiresPermissions("cpe.scripts:cpe_scripts:add")
 	@PostMapping(value = "/add")
 	public Result<String> add(@RequestBody CpeScripts cpeScripts) {
 		cpeScriptsService.save(cpeScripts);
@@ -84,46 +85,46 @@ public class CpeScriptsController extends JeecgController<CpeScripts, ICpeScript
 	}
 
 	/**
-	 *  编辑
+	 * 编辑
 	 *
 	 * @param cpeScripts
 	 * @return
 	 */
 	@AutoLog(value = "设备脚本管理-编辑")
-	@ApiOperation(value="设备脚本管理-编辑", notes="设备脚本管理-编辑")
-	//@RequiresPermissions("cpe.scripts:cpe_scripts:edit")
-	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
+	@ApiOperation(value = "设备脚本管理-编辑", notes = "设备脚本管理-编辑")
+	// @RequiresPermissions("cpe.scripts:cpe_scripts:edit")
+	@RequestMapping(value = "/edit", method = { RequestMethod.PUT, RequestMethod.POST })
 	public Result<String> edit(@RequestBody CpeScripts cpeScripts) {
 		cpeScriptsService.updateById(cpeScripts);
 		return Result.OK("编辑成功!");
 	}
 
 	/**
-	 *   通过id删除
+	 * 通过id删除
 	 *
 	 * @param id
 	 * @return
 	 */
 	@AutoLog(value = "设备脚本管理-通过id删除")
-	@ApiOperation(value="设备脚本管理-通过id删除", notes="设备脚本管理-通过id删除")
-	//@RequiresPermissions("cpe.scripts:cpe_scripts:delete")
+	@ApiOperation(value = "设备脚本管理-通过id删除", notes = "设备脚本管理-通过id删除")
+	// @RequiresPermissions("cpe.scripts:cpe_scripts:delete")
 	@DeleteMapping(value = "/delete")
-	public Result<String> delete(@RequestParam(name="id",required=true) String id) {
+	public Result<String> delete(@RequestParam(name = "id", required = true) String id) {
 		cpeScriptsService.removeById(id);
 		return Result.OK("删除成功!");
 	}
 
 	/**
-	 *  批量删除
+	 * 批量删除
 	 *
 	 * @param ids
 	 * @return
 	 */
 	@AutoLog(value = "设备脚本管理-批量删除")
-	@ApiOperation(value="设备脚本管理-批量删除", notes="设备脚本管理-批量删除")
-	//@RequiresPermissions("cpe.scripts:cpe_scripts:deleteBatch")
+	@ApiOperation(value = "设备脚本管理-批量删除", notes = "设备脚本管理-批量删除")
+	// @RequiresPermissions("cpe.scripts:cpe_scripts:deleteBatch")
 	@DeleteMapping(value = "/deleteBatch")
-	public Result<String> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
+	public Result<String> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
 		this.cpeScriptsService.removeByIds(Arrays.asList(ids.split(",")));
 		return Result.OK("批量删除成功!");
 	}
@@ -134,49 +135,49 @@ public class CpeScriptsController extends JeecgController<CpeScripts, ICpeScript
 	 * @param id
 	 * @return
 	 */
-	//@AutoLog(value = "设备脚本管理-通过id查询")
-	@ApiOperation(value="设备脚本管理-通过id查询", notes="设备脚本管理-通过id查询")
+	// @AutoLog(value = "设备脚本管理-通过id查询")
+	@ApiOperation(value = "设备脚本管理-通过id查询", notes = "设备脚本管理-通过id查询")
 	@GetMapping(value = "/queryById")
-	public Result<CpeScripts> queryById(@RequestParam(name="id",required=true) String id) {
+	public Result<CpeScripts> queryById(@RequestParam(name = "id", required = true) String id) {
 		CpeScripts cpeScripts = cpeScriptsService.getById(id);
-		if(cpeScripts==null) {
+		if (cpeScripts == null) {
 			return Result.error("未找到对应数据");
 		}
 		return Result.OK(cpeScripts);
 	}
 
-    /**
-    * 导出excel
-    *
-    * @param request
-    * @param cpeScripts
-    */
-    @RequiresPermissions("cpe.scripts:cpe_scripts:exportXls")
-    @RequestMapping(value = "/exportXls")
-    public ModelAndView exportXls(HttpServletRequest request, CpeScripts cpeScripts) {
-        return super.exportXls(request, cpeScripts, CpeScripts.class, "设备脚本管理");
-    }
+	/**
+	 * 导出excel
+	 *
+	 * @param request
+	 * @param cpeScripts
+	 */
+	@RequiresPermissions("cpe.scripts:cpe_scripts:exportXls")
+	@RequestMapping(value = "/exportXls")
+	public ModelAndView exportXls(HttpServletRequest request, CpeScripts cpeScripts) {
+		return super.exportXls(request, cpeScripts, CpeScripts.class, "设备脚本管理");
+	}
 
-    /**
-      * 通过excel导入数据
-    *
-    * @param request
-    * @param response
-    * @return
-    */
-    @RequiresPermissions("cpe.scripts:cpe_scripts:importExcel")
-    @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
-    public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
-        return super.importExcel(request, response, CpeScripts.class);
-    }
+	/**
+	 * 通过excel导入数据
+	 *
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequiresPermissions("cpe.scripts:cpe_scripts:importExcel")
+	@RequestMapping(value = "/importExcel", method = RequestMethod.POST)
+	public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
+		return super.importExcel(request, response, CpeScripts.class);
+	}
 
 	@GetMapping("/listEnabledScripts")
 	public Result<List<Map<String, Object>>> listEnabledScripts(@RequestParam String deviceModule) {
 		// 1. 构建查询条件
 		QueryWrapper<CpeScripts> queryWrapper = new QueryWrapper<>();
 		queryWrapper.eq("enable_flag", "1")
-					.like("device_module_no", deviceModule)
-					.select("script_name", "script_path", "version");
+				.like("device_module_no", deviceModule)
+				.select("script_name", "script_path", "version");
 
 		// 2. 获取所有生效的脚本记录
 		List<CpeScripts> scripts = cpeScriptsService.list(queryWrapper);
@@ -196,7 +197,7 @@ public class CpeScriptsController extends JeecgController<CpeScripts, ICpeScript
 	}
 
 	@GetMapping("/getScriptContent")
-	public Result<String> getScriptContent(@RequestParam String scriptPath) {
+	public Result<String> getScriptContent(@RequestParam String scriptPath, @RequestParam String deviceModule) {
 		// 拆分完整路径为目录路径和文件名
 		String scriptName = scriptPath.substring(scriptPath.lastIndexOf('/') + 1);
 		String path = scriptPath.substring(0, scriptPath.lastIndexOf('/'));
@@ -204,6 +205,7 @@ public class CpeScriptsController extends JeecgController<CpeScripts, ICpeScript
 		// 构建查询条件
 		QueryWrapper<CpeScripts> queryWrapper = new QueryWrapper<>();
 		queryWrapper.eq("script_path", path)
+				.like("device_module_no", deviceModule)
 				.eq("script_name", scriptName)
 				.eq("enable_flag", "1")
 				.select("content");

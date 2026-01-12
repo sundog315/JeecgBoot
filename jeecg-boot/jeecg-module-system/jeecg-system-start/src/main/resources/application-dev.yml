@@ -162,6 +162,11 @@ spring:
           merge-sql: true
           slow-sql-millis: 5000
       datasource:
+        # master:
+        #   url: jdbc:mysql://192.168.88.10:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+        #   username: jeecg
+        #   password: p0o9i8u7
+        #   driver-class-name: com.mysql.cj.jdbc.Driver
         master:
           url: jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
           username: jeecg
@@ -177,6 +182,7 @@ spring:
   redis:
     database: 1
     host: 127.0.0.1
+    # host: 192.168.88.10
     port: 6379
     password: ''
 #mybatis plus 设置

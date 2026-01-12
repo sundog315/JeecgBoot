@@ -39,6 +39,21 @@
                 <a-input-number v-model:value="formData.proxyHttpRemotePort" placeholder="请输入HTTP映射端口" style="width: 100%" />
               </a-form-item>
             </a-col>
+            <a-col :span="24">
+              <a-form-item label="类型" v-bind="validateInfos.frpType" id="CpeDeviceFrp-frpType" name="frpType">
+                <a-input v-model:value="formData.frpType" placeholder="请输入类型" allow-clear />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="子域名" v-bind="validateInfos.customDomains" id="CpeDeviceFrp-customDomains" name="customDomains">
+                <a-input v-model:value="formData.customDomains" placeholder="请输入子域名" allow-clear />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item label="多路复用" v-bind="validateInfos.multiplexer" id="CpeDeviceFrp-multiplexer" name="multiplexer">
+                <a-input v-model:value="formData.multiplexer" placeholder="请输入多路复用" allow-clear />
+              </a-form-item>
+            </a-col>
           </a-row>
         </a-form>
       </template>
@@ -66,6 +81,9 @@
     token: '',
     proxySshRemotePort: undefined,
     proxyHttpRemotePort: undefined,
+    frpType: '',
+    customDomains: '',
+    multiplexer: '',
   });
   const { createMessage } = useMessage();
   const labelCol = ref<any>({ xs: { span: 24 }, sm: { span: 5 } });
@@ -76,8 +94,6 @@
     serverAddr: [{ required: true, message: '请输入服务器地址!' }],
     serverPort: [{ required: true, message: '请输入服务器端口!' }],
     token: [{ required: true, message: '请输入令牌!' }],
-    proxySshRemotePort: [{ required: true, message: '请输入SSH映射端口!' }],
-    proxyHttpRemotePort: [{ required: true, message: '请输入HTTP映射端口!' }],
   };
   const { resetFields, validate, validateInfos } = useForm(formData, validatorRules, { immediate: false });
   const props = defineProps({

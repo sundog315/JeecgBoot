@@ -69,4 +69,16 @@ public class CpeDeviceFrp implements Serializable {
 	@Excel(name = "HTTP映射端口", width = 15)
     @ApiModelProperty(value = "HTTP映射端口")
     private java.lang.Integer proxyHttpRemotePort;
+	/**类型*/
+	@Excel(name = "类型", width = 10)
+    @ApiModelProperty(value = "类型")
+    private java.lang.String frpType;
+	/**子域名*/
+	@Excel(name = "子域名", width = 20)
+    @ApiModelProperty(value = "子域名")
+    private java.lang.String customDomains;
+    /**多路复用*/
+	@Excel(name = "多路复用", width = 10)
+    @ApiModelProperty(value = "多路复用")
+    private java.lang.String multiplexer;
 }

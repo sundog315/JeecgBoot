@@ -186,11 +186,11 @@ public class CpeDeviceFrpServiceImpl extends ServiceImpl<CpeDeviceFrpMapper, Cpe
         // 克隆配置用于比较
         FrpConfig newFrpConfig = (FrpConfig) frpConfig.clone();
 
-        // 获取端口信息
-        PortInfo portInfo = extractPortInfo(frpConfig.getServices());
+        // 获取服务信息
+        ServiceInfo serviceInfo = extractServiceInfo(frpConfig.getServices());
 
         // 获取或创建FRP记录
-        CpeDeviceFrp frpRecord = getOrCreateFrpRecord(device, frpConfig, portInfo);
+        CpeDeviceFrp frpRecord = getOrCreateFrpRecord(device, frpConfig, serviceInfo);
 
 		if (!newFrpConfig.getServerAddr().equals(frpRecord.getServerAddr()))
 			newFrpConfig.setServerAddr(frpRecord.getServerAddr());
@@ -201,21 +201,34 @@ public class CpeDeviceFrpServiceImpl extends ServiceImpl<CpeDeviceFrpMapper, Cpe
 		if (!newFrpConfig.getToken().equals(frpRecord.getToken()))
 			newFrpConfig.setToken(frpRecord.getToken());
 
-		if (frpRecord.getProxyHttpRemotePort() != portInfo.getHttpPort())
-			for (ServiceConfig sc : newFrpConfig.getServices()) {
-				if (sc.getName().contains(HTTP_SERVICE_TYPE)) {
-					sc.setRemotePort(frpRecord.getProxyHttpRemotePort());
-				}
-			}
+        // 更新服务配置
+        for (ServiceConfig sc : newFrpConfig.getServices()) {
+            if (sc.getName().contains(HTTP_SERVICE_TYPE)) {
+                if (frpRecord.getProxyHttpRemotePort() != null) {
+                    sc.setRemotePort(frpRecord.getProxyHttpRemotePort());
+                }
+                if (StringUtils.isNotBlank(frpRecord.getCustomDomains())) {
+                    sc.setCustomDomains(frpRecord.getCustomDomains());
+                }
+            }
+            
+            if (sc.getName().contains(SSH_SERVICE_TYPE)) {
+                if (frpRecord.getProxySshRemotePort() != null) {
+                    sc.setRemotePort(frpRecord.getProxySshRemotePort());
+                }
+                if (StringUtils.isNotBlank(frpRecord.getCustomDomains())) {
+                    sc.setCustomDomains(frpRecord.getCustomDomains());
+                }
+                if (StringUtils.isNotBlank(frpRecord.getMultiplexer())) {
+                    sc.setMultiplexer(frpRecord.getMultiplexer());
+                }
+                if (StringUtils.isNotBlank(frpRecord.getFrpType())) {
+                    sc.setFrpType(frpRecord.getFrpType());
+                }
+            }
+        }
 
-		if (frpRecord.getProxySshRemotePort() != portInfo.getSshPort())
-		for (ServiceConfig sc : newFrpConfig.getServices()) {
-			if (sc.getName().contains(SSH_SERVICE_TYPE)) {
-				sc.setRemotePort(frpRecord.getProxySshRemotePort());
-			}
-		}
-
-		PortInfo pInfo = extractPortInfo(newFrpConfig.getServices());
+		ServiceInfo pInfo = extractServiceInfo(newFrpConfig.getServices());
 
         // 检查并更新配置
         if (isConfigChanged(frpConfig, newFrpConfig)) {
@@ -225,35 +238,48 @@ public class CpeDeviceFrpServiceImpl extends ServiceImpl<CpeDeviceFrpMapper, Cpe
     }
 
     /**
-     * 提取端口信息
+     * 提取服务信息
      */
     @Data
-    private static class PortInfo {
-        private int sshPort;
-        private int httpPort;
+    private static class ServiceInfo {
+        private Integer sshPort;
+        private Integer httpPort;
+        private String customDomains;
+        private String multiplexer;
+        private String frpType;
     }
 
-    private PortInfo extractPortInfo(List<ServiceConfig> services) {
-        PortInfo portInfo = new PortInfo();
+    private ServiceInfo extractServiceInfo(List<ServiceConfig> services) {
+        ServiceInfo info = new ServiceInfo();
         for (ServiceConfig sc : services) {
             if (sc.getName().contains(SSH_SERVICE_TYPE)) {
-                portInfo.setSshPort(sc.getRemotePort());
+                info.setSshPort(sc.getRemotePort());
+                info.setMultiplexer(sc.getMultiplexer());
+                info.setFrpType(sc.getFrpType());
+                // 优先使用SSH的customDomains
+                if (StringUtils.isNotBlank(sc.getCustomDomains())) {
+                    info.setCustomDomains(sc.getCustomDomains());
+                }
             } else if (sc.getName().contains(HTTP_SERVICE_TYPE)) {
-                portInfo.setHttpPort(sc.getRemotePort());
+                info.setHttpPort(sc.getRemotePort());
+                // 如果SSH没有customDomains，尝试使用HTTP的
+                if (StringUtils.isBlank(info.getCustomDomains()) && StringUtils.isNotBlank(sc.getCustomDomains())) {
+                    info.setCustomDomains(sc.getCustomDomains());
+                }
             }
         }
-        return portInfo;
+        return info;
     }
 
     /**
      * 获取或创建FRP记录
      */
-    private CpeDeviceFrp getOrCreateFrpRecord(CpeDevice device, FrpConfig frpConfig, PortInfo portInfo) {
+    private CpeDeviceFrp getOrCreateFrpRecord(CpeDevice device, FrpConfig frpConfig, ServiceInfo serviceInfo) {
         List<CpeDeviceFrp> frpRecordsList = cpeDeviceFrpMapper.selectByMainId(device.getId());
         CpeDeviceFrp frpRecord = frpRecordsList.size() > 0 ? frpRecordsList.get(0) : null;
 
         if (frpRecord == null) {
-            frpRecord = createNewFrpRecord(device, frpConfig, portInfo);
+            frpRecord = createNewFrpRecord(device, frpConfig, serviceInfo);
         }
         return frpRecord;
     }
@@ -261,7 +287,7 @@ public class CpeDeviceFrpServiceImpl extends ServiceImpl<CpeDeviceFrpMapper, Cpe
     /**
      * 创建新的FRP记录
      */
-    private CpeDeviceFrp createNewFrpRecord(CpeDevice device, FrpConfig frpConfig, PortInfo portInfo) {
+    private CpeDeviceFrp createNewFrpRecord(CpeDevice device, FrpConfig frpConfig, ServiceInfo serviceInfo) {
         CpeDeviceFrp frpRecord = new CpeDeviceFrp();
         frpRecord.setCpeId(device.getId());
         frpRecord.setCreateBy(ADMIN_USER);
@@ -272,8 +298,11 @@ public class CpeDeviceFrpServiceImpl extends ServiceImpl<CpeDeviceFrpMapper, Cpe
         frpRecord.setToken(frpConfig.getToken());
         frpRecord.setUpdateBy(ADMIN_USER);
         frpRecord.setUpdateTime(new Date());
-        frpRecord.setProxyHttpRemotePort(portInfo.getHttpPort());
-        frpRecord.setProxySshRemotePort(portInfo.getSshPort());
+        frpRecord.setProxyHttpRemotePort(serviceInfo.getHttpPort());
+        frpRecord.setProxySshRemotePort(serviceInfo.getSshPort());
+        frpRecord.setCustomDomains(serviceInfo.getCustomDomains());
+        frpRecord.setMultiplexer(serviceInfo.getMultiplexer());
+        frpRecord.setFrpType(serviceInfo.getFrpType());
         
         save(frpRecord);
         return frpRecord;
@@ -289,7 +318,7 @@ public class CpeDeviceFrpServiceImpl extends ServiceImpl<CpeDeviceFrpMapper, Cpe
     /**
      * 创建操作日志
      */
-    private void createOperationLog(String deviceId, FrpConfig frpConfig, PortInfo portInfo) {
+    private void createOperationLog(String deviceId, FrpConfig frpConfig, ServiceInfo serviceInfo) {
         CpeOperLog operLog = new CpeOperLog();
         operLog.setCpeId(deviceId);
         operLog.setCreateBy(ADMIN_USER);
@@ -301,13 +330,17 @@ public class CpeDeviceFrpServiceImpl extends ServiceImpl<CpeDeviceFrpMapper, Cpe
         operLog.setOperType("frp");
         
         // 构建操作参数
-        String operParam = frpConfig.getServerAddr() + "," +
-                          frpConfig.getServerPort() + "," +
-                          frpConfig.getToken() + "," +
-                          portInfo.getSshPort() + "," +
-                          portInfo.getHttpPort();
+        StringBuilder operParam = new StringBuilder();
+        operParam.append(frpConfig.getServerAddr()).append(",")
+                 .append(frpConfig.getServerPort()).append(",")
+                 .append(frpConfig.getToken()).append(",")
+                 .append(serviceInfo.getSshPort() != null ? serviceInfo.getSshPort() : "").append(",")
+                 .append(serviceInfo.getHttpPort() != null ? serviceInfo.getHttpPort() : "").append(",")
+                 .append(StringUtils.isNotBlank(serviceInfo.getCustomDomains()) ? serviceInfo.getCustomDomains() : "").append(",")
+                 .append(StringUtils.isNotBlank(serviceInfo.getMultiplexer()) ? serviceInfo.getMultiplexer() : "").append(",")
+                 .append(StringUtils.isNotBlank(serviceInfo.getFrpType()) ? serviceInfo.getFrpType() : "");
         
-        operLog.setOperParam(operParam);
+        operLog.setOperParam(operParam.toString());
         
         cpeOperLogService.save(operLog);
     }

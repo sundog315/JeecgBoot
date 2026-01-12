@@ -28,7 +28,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jeecg.common.aspect.annotation.AutoLog;
 
-@Api(tags="设备上下行API")
+@Api(tags = "设备上下行API")
 @RestController
 @RequestMapping("/cpe/device/api")
 @Slf4j
@@ -46,31 +46,30 @@ public class CpeDeviceApi extends JeecgController<CpeDevice, ICpeDeviceService> 
 	@Autowired
 	private ICpeDeviceWirelessService cpeDeviceWirelessService;
 
-
 	/**
-	 *   信息上报
+	 * 信息上报
 	 *
 	 * @param request
 	 * @return
 	 */
 	@IgnoreAuth
 	@AutoLog(value = "设备状态表-上报")
-	@ApiOperation(value="设备状态表-上报", notes="设备状态表-上报")
-	@RequestMapping(value = "/push", method = {RequestMethod.GET,RequestMethod.POST})
-	public Result<String> push(@RequestParam(name="type",required=true) String deviceType,
-								@RequestParam(name="mac",required=true) String deviceSnParam,
-								@RequestParam(name="ubus_call",required=true) String ubusOutputParam,
-								@RequestParam(name="ip_addr",required=true) String ipAddrParam,
-								@RequestParam(name="lte_status",required=false) String lteStatus,
-								@RequestParam(name="frp",required=false) String frp,
-								@RequestParam(name="auto_reboot",required=false) String autoReboot,
-								@RequestParam(name="network",required=false) String network,
-								@RequestParam(name="speed_limit",required=false) String speedLimitParam,
-								@RequestParam(name="wireless",required=false) String wireless,
-								@RequestParam(name="version",required=false) String version,
-								@RequestParam(name="uptime",required=false) String uptime,
-								@RequestParam(name="clients",required=false) String clients,
-								@RequestParam(name="cpu_temp",required=false) String cpuTemp) {
+	@ApiOperation(value = "设备状态表-上报", notes = "设备状态表-上报")
+	@RequestMapping(value = "/push", method = { RequestMethod.GET, RequestMethod.POST })
+	public Result<String> push(@RequestParam(name = "type", required = true) String deviceType,
+			@RequestParam(name = "mac", required = true) String deviceSnParam,
+			@RequestParam(name = "ubus_call", required = false) String ubusOutputParam,
+			@RequestParam(name = "ip_addr", required = true) String ipAddrParam,
+			@RequestParam(name = "lte_status", required = false) String lteStatus,
+			@RequestParam(name = "frp", required = false) String frp,
+			@RequestParam(name = "auto_reboot", required = false) String autoReboot,
+			@RequestParam(name = "network", required = false) String network,
+			@RequestParam(name = "speed_limit", required = false) String speedLimitParam,
+			@RequestParam(name = "wireless", required = false) String wireless,
+			@RequestParam(name = "version", required = false) String version,
+			@RequestParam(name = "uptime", required = false) String uptime,
+			@RequestParam(name = "clients", required = false) String clients,
+			@RequestParam(name = "cpu_temp", required = false) String cpuTemp) {
 
 		switch (deviceType) {
 			case "X25":
@@ -82,8 +81,9 @@ public class CpeDeviceApi extends JeecgController<CpeDevice, ICpeDeviceService> 
 				break;
 
 			default:
-				try{
-					cpeDeviceStatusService.push(deviceSnParam, ubusOutputParam, ipAddrParam, lteStatus, version, uptime, clients, cpuTemp);
+				try {
+					cpeDeviceStatusService.push(deviceSnParam, ubusOutputParam, ipAddrParam, lteStatus, version, uptime,
+							clients, cpuTemp);
 					if ((frp != null) && (!frp.isEmpty()))
 						cpeDeviceFrpService.report(deviceSnParam, frp);
 					if ((autoReboot != null) && (!autoReboot.isEmpty()))
@@ -95,10 +95,9 @@ public class CpeDeviceApi extends JeecgController<CpeDevice, ICpeDeviceService> 
 					if ((wireless != null) && (!wireless.isEmpty()))
 						cpeDeviceWirelessService.report(deviceSnParam, wireless);
 
-					log.info("{}设备状态上报成功",deviceSnParam);
-				}
-				catch (Exception e) {
-					log.info("{}设备状态上报失败",deviceSnParam);
+					log.info("{}设备状态上报成功", deviceSnParam);
+				} catch (Exception e) {
+					log.info("{}设备状态上报失败", deviceSnParam);
 					return Result.error(e.getMessage());
 				}
 

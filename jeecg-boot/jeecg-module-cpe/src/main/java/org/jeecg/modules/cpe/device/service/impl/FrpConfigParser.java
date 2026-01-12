@@ -77,12 +77,14 @@ public class FrpConfigParser implements Cloneable {
     @Builder
     public static class ServiceConfig implements Cloneable {
         private String name;         // 服务名称
-        private String type;         // 服务类型
         private String localIp;      // 本地IP
         private Integer localPort;   // 本地端口
         private Integer remotePort;  // 远程端口
         private Boolean useEncryption;  // 是否加密
         private Boolean useCompression; // 是否压缩
+        private String customDomains;  // 自定义域名
+        private String multiplexer;    // 多路复用器
+        private String frpType;       // 类型
 
         /**
          * 克隆ServiceConfig对象
@@ -104,12 +106,14 @@ public class FrpConfigParser implements Cloneable {
 
             ServiceConfig that = (ServiceConfig) o;
             return Objects.equals(name, that.name) &&
-                Objects.equals(type, that.type) &&
                 Objects.equals(localIp, that.localIp) &&
                 Objects.equals(localPort, that.localPort) &&
                 Objects.equals(remotePort, that.remotePort) &&
                 Objects.equals(useEncryption, that.useEncryption) &&
-                Objects.equals(useCompression, that.useCompression);
+                Objects.equals(useCompression, that.useCompression) &&
+                Objects.equals(customDomains, that.customDomains) &&
+                Objects.equals(multiplexer, that.multiplexer) &&
+                Objects.equals(frpType, that.frpType);
         }
 
         /**
@@ -117,8 +121,8 @@ public class FrpConfigParser implements Cloneable {
          */
         @Override
         public int hashCode() {
-            return Objects.hash(name, type, localIp, localPort, remotePort, 
-                            useEncryption, useCompression);
+            return Objects.hash(name, localIp, localPort, remotePort, 
+                            useEncryption, useCompression, customDomains, multiplexer, frpType);
         }
     }
 
@@ -189,9 +193,6 @@ public class FrpConfigParser implements Cloneable {
                     }
                 } else if (serviceBuilder != null) {
                     switch (key) {
-                        case "type":
-                            serviceBuilder.type(value);
-                            break;
                         case "local_ip":
                             serviceBuilder.localIp(value);
                             break;
@@ -206,6 +207,14 @@ public class FrpConfigParser implements Cloneable {
                             break;
                         case "use_compression":
                             serviceBuilder.useCompression(Boolean.parseBoolean(value));
+                        case "custom_domains":
+                            serviceBuilder.customDomains(value);
+                            break;
+                        case "multiplexer":
+                            serviceBuilder.multiplexer(value);
+                            break;
+                        case "type":
+                            serviceBuilder.frpType(value);      
                             break;
                     }
                 }
