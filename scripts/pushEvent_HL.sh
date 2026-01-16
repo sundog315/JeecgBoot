@@ -24,6 +24,17 @@ get_version() {
     awk -F"'" '/DISTRIB_CODENAME/{print $2}' /etc/openwrt_release
 }
 
+# 获取设备信息
+get_ubus_call() {
+    local result
+    result=$(curl -s "http://127.0.0.1/cgi-bin/npapply.cgi?action=Obtain&csq&version&wificlients&iccid&imei")
+    if [ $? -ne 0 ]; then
+        log_error "获取设备信息失败"
+        return 1
+    fi
+    echo "$result"
+}
+
 # 获取MAC地址
 get_mac_address() {
     local mac
@@ -211,7 +222,7 @@ make_http_request() {
     while [ $retry -lt $MAX_RETRIES ] && [ "$success" = "false" ]; do
         # 准备所有数据
         local mac=$(get_mac_address)
-        #local ubus_call=$(get_ubus_call)
+        local ubus_call=$(get_ubus_call)
         
         # 检查ubus_call中是否包含MT5700M，如果包含则使用eth1接口而不是usb0
         local network_interface="usb0"
@@ -238,6 +249,7 @@ make_http_request() {
             -H "Content-Type: application/x-www-form-urlencoded" \
             --data-urlencode "type=${DEVICE_TYPE}" \
             --data-urlencode "mac=${mac}" \
+            --data-urlencode "ubus_call=${ubus_call}" \
             --data-urlencode "ip_addr=${network_info}" \
             --data-urlencode "lte_status=${lte_status}" \
             --data-urlencode "auto_reboot=${auto_reboot_config}" \

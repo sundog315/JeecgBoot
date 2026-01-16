@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Vendor Specific TR-069 Extension Template -->
+<dm:document xmlns:dm="urn:broadband-forum-org:cwmp:datamodel-1-0">
+
+    <object name="Device.DeviceInfo.X_VENDOR_CONF." access="readWrite">
+        <description>Vendor specific configurations and sensors.</description>
+        
+        <parameter name="ModemVersion" access="readOnly">
+            <syntax><string/></syntax>
+            <description>Internal 5G/4G Modem Software Version</description>
+        </parameter>
+
+        <parameter name="CPUTemperature" access="readOnly">
+            <syntax><int/></syntax>
+            <description>CPU core temperature in Celsius</description>
+        </parameter>
+
+        <parameter name="ReportingInterval" access="readWrite">
+            <syntax>
+                <unsignedInt>
+                    <range minInclusive="30" maxInclusive="86400"/>
+                </unsignedInt>
+            </syntax>
+            <description>Frequency of Periodic Informs in seconds</description>
+        </parameter>
+    </object>
+
+</dm:document>

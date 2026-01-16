@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- TR-181 Device:2 Cellular Data Model Template -->
+<dm:document xmlns:dm="urn:broadband-forum-org:cwmp:datamodel-1-0"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="urn:broadband-forum-org:cwmp:datamodel-1-0 http://www.broadband-forum.org/cwmp/cwmp-datamodel-1-0.xsd">
+
+    <object name="Device.Cellular.Interface.{i}." access="readOnly" minEntries="0" maxEntries="unbounded">
+        <description>Cellular interface settings and status.</description>
+        
+        <parameter name="Status" access="readOnly">
+            <syntax><string/></syntax>
+        </parameter>
+
+        <object name="Signal.">
+            <parameter name="RSSI" access="readOnly">
+                <syntax><int/></syntax>
+                <description>Received Signal Strength Indicator (dBm)</description>
+            </parameter>
+            <parameter name="RSRP" access="readOnly">
+                <syntax><int/></syntax>
+                <description>Reference Signal Received Power (dBm)</description>
+            </parameter>
+            <parameter name="SINR" access="readOnly">
+                <syntax><int/></syntax>
+                <description>Signal to Interference plus Noise Ratio (dB)</description>
+            </parameter>
+        </object>
+
+        <object name="SIM.">
+            <parameter name="ICCID" access="readOnly">
+                <syntax><string/></syntax>
+            </parameter>
+            <parameter name="IMSI" access="readOnly">
+                <syntax><string/></syntax>
+            </parameter>
+        </object>
+
+        <object name="Stats.">
+            <parameter name="BytesSent" access="readOnly">
+                <syntax><unsignedLong/></syntax>
+            </parameter>
+            <parameter name="BytesReceived" access="readOnly">
+                <syntax><unsignedLong/></syntax>
+            </parameter>
+        </object>
+    </object>
+
+</dm:document>

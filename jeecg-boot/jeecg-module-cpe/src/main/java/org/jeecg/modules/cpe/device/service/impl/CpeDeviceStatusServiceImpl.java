@@ -94,6 +94,7 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 		public String sysUptime = "";
 		public Integer clientCount = 0;
 		public Integer cpuTemp = 0;
+		public String sinr = "";
 	}
 
 	/**
@@ -1013,6 +1014,7 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 			// cpeDeviceNeighborService.saveBatch(cpeDeviceNeighborList);
 			// }
 		} else {
+
 			// 处理IP地址和流量信息
 			if (ipAddrParam != null && ipAddrParam.length() > 0) {
 				String[] ipaddr = ipAddrParam.split(",");
@@ -1078,6 +1080,9 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 			cpeDeviceStatus.setSysUptime(data.sysUptime);
 			cpeDeviceStatus.setClientCount(data.clientCount);
 			cpeDeviceStatus.setCpuTemp(data.cpuTemp);
+			if (data.sinr != null && !data.sinr.isEmpty()) {
+				cpeDeviceStatus.setSinr(data.sinr);
+			}
 
 			// 保存设备状态记录
 			save(cpeDeviceStatus);
@@ -1178,44 +1183,83 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 
 					if (ubusOutputParam != null) {
 						String ubusOutput = ubusOutputParam;
-						// 解析设备上报的JSON数据
-						ObjectMapper objectMapper = new ObjectMapper();
-						@SuppressWarnings("unchecked")
-						Map<String, Object> ubusOutputMap = objectMapper.readValue(ubusOutput, Map.class);
+						try {
+							// 解析设备上报的JSON数据
+							ObjectMapper objectMapper = new ObjectMapper();
+							@SuppressWarnings("unchecked")
+							Map<String, Object> ubusOutputMap = objectMapper.readValue(ubusOutput, Map.class);
 
-						// 提取SIM卡槽位信息
-						data.sim_slot = Integer.parseInt(ubusOutputMap.get("LTE_SIMSLOT").toString());
-						data.lte_4g = ubusOutputMap.containsKey("LTE_4G") ? ubusOutputMap.get("LTE_4G").toString() : "";
-						data.lte_5g = ubusOutputMap.containsKey("LTE_5G") ? ubusOutputMap.get("LTE_5G").toString() : "";
+							// 提取SIM卡槽位信息
+							data.sim_slot = Integer.parseInt(ubusOutputMap.get("LTE_SIMSLOT").toString());
+							data.lte_4g = ubusOutputMap.containsKey("LTE_4G") ? ubusOutputMap.get("LTE_4G").toString()
+									: "";
+							data.lte_5g = ubusOutputMap.containsKey("LTE_5G") ? ubusOutputMap.get("LTE_5G").toString()
+									: "";
 
-						// 提取设备基本信息
-						data.imei = ubusOutputMap.containsKey("LTE_IMEI") ? ubusOutputMap.get("LTE_IMEI").toString()
-								: "";
-						data.version = ubusOutputMap.containsKey("LTE_VER") ? ubusOutputMap.get("LTE_VER").toString()
-								: "";
-						data.iccid = ubusOutputMap.containsKey("LTE_ICCID") ? ubusOutputMap.get("LTE_ICCID").toString()
-								: "";
-						// 关联SIM卡信息
-						if (cardInfoService.selectByCardNo(data.iccid).size() > 0) {
-							cpeDevice.setCardNo(cardInfoService.selectByCardNo(data.iccid).get(0).getId());
-							cpeDevice.setOnlineCardNo(cardInfoService.selectByCardNo(data.iccid).get(0).getId());
+							// 提取设备基本信息
+							data.imei = ubusOutputMap.containsKey("LTE_IMEI") ? ubusOutputMap.get("LTE_IMEI").toString()
+									: "";
+							data.version = ubusOutputMap.containsKey("LTE_VER")
+									? ubusOutputMap.get("LTE_VER").toString()
+									: "";
+							data.iccid = ubusOutputMap.containsKey("LTE_ICCID")
+									? ubusOutputMap.get("LTE_ICCID").toString()
+									: "";
+							// 关联SIM卡信息
+							if (cardInfoService.selectByCardNo(data.iccid).size() > 0) {
+								cpeDevice.setCardNo(cardInfoService.selectByCardNo(data.iccid).get(0).getId());
+								cpeDevice.setOnlineCardNo(cardInfoService.selectByCardNo(data.iccid).get(0).getId());
+							}
+
+							// 提取网络相关信息
+							data.module = ubusOutputMap.containsKey("LTE_MODULE")
+									? ubusOutputMap.get("LTE_MODULE").toString()
+									: "";
+							cpeDevice.setFiveGModule(data.module);
+
+							data.lte_cell = ubusOutputMap.containsKey("LTE_CELL")
+									? ubusOutputMap.get("LTE_CELL").toString()
+									: "";
+							data.lte_freq = ubusOutputMap.containsKey("LTE_FREQ")
+									? ubusOutputMap.get("LTE_FREQ").toString()
+									: "";
+							data.lte_cainfo = ubusOutputMap.containsKey("LTE_CAINFO")
+									? ubusOutputMap.get("LTE_CAINFO").toString()
+									: "";
+							data.lte_cops = ubusOutputMap.containsKey("LTE_COPS")
+									? ubusOutputMap.get("LTE_COPS").toString()
+									: "";
+						} catch (Exception e) {
+							try {
+								// 处理非JSON格式的数据，例如：csq=26;version=15.05.1;wificlients=-1;iccid=89860624750036570650;imei=866791079623804;
+								String[] pairs = ubusOutput.split(";");
+								for (String pair : pairs) {
+									String[] kv = pair.split("=");
+									if (kv.length == 2) {
+										String key = kv[0].trim();
+										String value = kv[1].trim();
+										if ("csq".equals(key)) {
+											data.sinr = value;
+										} else if ("iccid".equals(key)) {
+											data.iccid = value;
+											// 关联SIM卡信息
+											if (cardInfoService.selectByCardNo(data.iccid).size() > 0) {
+												cpeDevice.setCardNo(
+														cardInfoService.selectByCardNo(data.iccid).get(0).getId());
+												cpeDevice.setOnlineCardNo(
+														cardInfoService.selectByCardNo(data.iccid).get(0).getId());
+											}
+										} else if ("imei".equals(key)) {
+											data.imei = value;
+										} else if ("wificlients".equals(key)) {
+											data.clientCount = Integer.parseInt(value);
+										}
+									}
+								}
+							} catch (Exception e2) {
+								log.error("解析设备上报的非JSON数据失败", e2);
+							}
 						}
-
-						// 提取网络相关信息
-						data.module = ubusOutputMap.containsKey("LTE_MODULE")
-								? ubusOutputMap.get("LTE_MODULE").toString()
-								: "";
-						cpeDevice.setFiveGModule(data.module);
-
-						data.lte_cell = ubusOutputMap.containsKey("LTE_CELL") ? ubusOutputMap.get("LTE_CELL").toString()
-								: "";
-						data.lte_freq = ubusOutputMap.containsKey("LTE_FREQ") ? ubusOutputMap.get("LTE_FREQ").toString()
-								: "";
-						data.lte_cainfo = ubusOutputMap.containsKey("LTE_CAINFO")
-								? ubusOutputMap.get("LTE_CAINFO").toString()
-								: "";
-						data.lte_cops = ubusOutputMap.containsKey("LTE_COPS") ? ubusOutputMap.get("LTE_COPS").toString()
-								: "";
 					}
 
 					service_nr(cpeDevice, cpeDevice, ipAddrParam, lteStatus, data);
