@@ -1,0 +1,134 @@
+#!/bin/sh
+#/usr/share/easycwmp/fnctions/cellular
+
+# 1. 底层数据获取函数
+get_ubus_lte() {
+    local val=$(ubus call lteat get 2>/dev/null | tr -d '\n\r')
+    echo "${val:-{}}"
+}
+get_ip_addr_param() {
+    local interface="usb0"
+    if ubus call lteat get 2>/dev/null | grep -q "MT5700M"; then
+        interface="eth1"
+    fi
+    local ipv4=$(ifconfig $interface 2>/dev/null | grep 'inet addr' | awk '{print $2}' | cut -d: -f2)
+    local ipv6=$(ifconfig $interface 2>/dev/null | grep 'inet6 addr' | awk '{print $3}' | cut -d/ -f1 | head -n1)
+    local stats=$(ifconfig $interface 2>/dev/null | grep 'RX bytes' | head -n1)
+    local rx=$(echo "$stats" | awk '{print $2}' | cut -d: -f2)
+    local tx=$(echo "$stats" | awk '{print $6}' | cut -d: -f2)
+    echo "${ipv4:-},${ipv6:-},${tx:-0},${rx:-0}"
+}
+get_lte_status() {
+    local val=$(ubus call network.interface.lte0 status 2>/dev/null | tr -d '\n\r')
+    echo "${val:-{}}"
+}
+get_cpu_temp() {
+    [ -f /sys/class/thermal/thermal_zone0/temp ] && echo $(($(cat /sys/class/thermal/thermal_zone0/temp)/1000)) || echo "0"
+}
+get_openwrt_ver() {
+    [ -f /etc/openwrt_release ] && grep "DISTRIB_RELEASE" /etc/openwrt_release | cut -d"'" -f2 || echo "Unknown"
+}
+# 获取系统运行时长
+get_sys_uptime() {
+    local uptime_output
+    uptime_output=$(uptime)
+    if [ $? -ne 0 ]; then
+        log_error "获取系统运行时长失败"
+        return 1
+    fi
+
+    # 从uptime输出提取运行时长，兼容BusyBox/ash
+    # 1) 截取" up "之后的部分
+    local uptime_info
+    uptime_info=${uptime_output#* up }
+
+    # 2) 去掉" load average"及其后内容（如果存在）
+    uptime_info=${uptime_info%% load average*}
+
+    # 3) 去掉" user"/" users"及其后内容（如果存在）
+    uptime_info=${uptime_info%% user*}
+
+    # 4) 规范化空格与逗号，去除首尾逗号与空白
+    uptime_info=$(echo "$uptime_info" | sed 's/^[[:space:],]*//;s/[[:space:],]*$//' | sed 's/, \{1,\}/, /g')
+
+    if [ -z "$uptime_info" ]; then
+        log_error "解析uptime信息失败"
+        return 1
+    fi
+
+    echo "$uptime_info"
+}
+# 获取客户端连接信息
+get_client_connections() {
+    local stat_file="/proc/net/wtnet/stat"
+    if [ -f "$stat_file" ]; then
+        cat "$stat_file"
+        return 0
+    fi
+
+    local tmpfile="/tmp/wifi_clients.txt"
+    > $tmpfile
+    for iface in $(iwinfo 2>/dev/null | grep -oE '^[^ ]+' | grep -E 'ap0$|wlan[0-9]$'); do
+        iwinfo $iface assoclist 2>/dev/null | \
+        awk '
+            /^[0-9A-Fa-f:]{17}/ {
+                mac=tolower($1);
+                rx=0; tx=0;
+                while(getline>0 && $0!~/^[0-9A-Fa-f:]{17}/){
+                    if($1=="RX:") rx=$2;
+                    if($1=="TX:") tx=$2;
+                }
+                print mac "|" rx "|" tx
+            }
+        ' >> $tmpfile
+    done
+
+    local arp_cmd=""
+    if command -v arp >/dev/null 2>&1; then
+        arp_cmd="arp -a"
+    elif command -v ip >/dev/null 2>&1; then
+        arp_cmd="ip neigh"
+    else
+        echo "No arp or ip command found" >&2
+        rm -f $tmpfile
+        return 1
+    fi
+
+    $arp_cmd | {
+        if [ "$arp_cmd" = "arp -a" ]; then
+            awk '/br-lan/ && $1 ~ /^[0-9]+(\.[0-9]+){3}$/ {print $1, tolower($4)}'
+        else
+            awk '/br-lan/ && $1 ~ /^[0-9]+(\.[0-9]+){3}$/ {print $1, tolower($5)}'
+        fi
+    } | while read ip mac; do
+        line=$(grep "^$mac|" $tmpfile)
+        if [ -n "$line" ]; then
+            rx=$(echo $line | awk -F'|' '{print $2}')
+            tx=$(echo $line | awk -F'|' '{print $3}')
+            echo "$ip $mac 0 0 0 0 0 0 0"
+        fi
+    done
+    rm -f $tmpfile
+}
+
+# 2. 定义符合该版本规范的钩子入口
+entry_execute_method_root_DeviceInfo_X_JEECG() {
+    case "$1" in ""|"$DMROOT."|"$DMROOT.DeviceInfo."*)
+        common_execute_method_param "$DMROOT.DeviceInfo.X_JEECG_UbusOutput" "0" "get_ubus_lte" "" "xsd:string" "1"
+        common_execute_method_param "$DMROOT.DeviceInfo.X_JEECG_IpAddrParam" "0" "get_ip_addr_param" "" "xsd:string" "1"
+        common_execute_method_param "$DMROOT.DeviceInfo.X_JEECG_LteStatus" "0" "get_lte_status" "" "xsd:string" "1"
+        common_execute_method_param "$DMROOT.DeviceInfo.X_JEECG_CpuTemp" "0" "get_cpu_temp" "" "xsd:string" "1"
+        common_execute_method_param "$DMROOT.DeviceInfo.X_JEECG_OpenwrtVer" "0" "get_openwrt_ver" "" "xsd:string" "1"
+        common_execute_method_param "$DMROOT.DeviceInfo.X_JEECG_SysUptime" "0" "get_sys_uptime" "" "xsd:string" "1"
+        common_execute_method_param "$DMROOT.DeviceInfo.X_JEECG_Clients" "0" "get_client_connections" "" "xsd:string" "1"
+        return 0
+        ;;
+    esac
+    return $E_INVALID_PARAMETER_NAME
+}
+
+# 3. 注册到执行列表 (必须要这一步设备才会真正上报)
+entry_execute_method_list="$entry_execute_method_list entry_execute_method_root_DeviceInfo_X_JEECG"
+entry_execute_method_list_forcedinform="$entry_execute_method_list_forcedinform entry_execute_method_root_DeviceInfo_X_JEECG"
+
+logger -t easycwmp "Cellular extension (X_JEECG) hooked successfully"

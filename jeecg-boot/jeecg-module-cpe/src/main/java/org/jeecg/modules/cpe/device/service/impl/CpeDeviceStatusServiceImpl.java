@@ -12,8 +12,11 @@ import org.jeecg.modules.cpe.device.mapper.CpeDeviceStatusMapper;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceNeighborService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceStatusService;
+import org.jeecg.modules.cpe.device.util.CwmpParameterMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.HtmlUtils;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -46,6 +49,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @version V1.0
  * @date 2024-12-25
  */
+@Slf4j
 @Service
 public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMapper, CpeDeviceStatus>
 		implements ICpeDeviceStatusService {
@@ -1136,151 +1140,273 @@ public class CpeDeviceStatusServiceImpl extends ServiceImpl<CpeDeviceStatusMappe
 	 * @param clientCount     客户端连接信息
 	 * @throws Exception 处理异常时抛出
 	 */
+	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public void push(String deviceSnParam, String ubusOutputParam, String ipAddrParam, String lteStatus,
 			String openwrtVer, String sysUptime, String clients, String cpuTemp) throws Exception {
-		CpeBaseData data = new CpeBaseData();
-		// 标准化设备序列号格式（移除冒号并转换为大写）
-		data.deviceSn = deviceSnParam.replace(":", "").toUpperCase();
+		// 标准化设备序列号格式
+		String deviceSn = deviceSnParam.replace(":", "").toUpperCase();
 
 		// 根据设备序列号查询设备信息
-		List<CpeDevice> cpeDeviceList = cpeDeviceService.selectByDeviceSn(data.deviceSn);
+		List<CpeDevice> cpeDeviceList = cpeDeviceService.selectByDeviceSn(deviceSn);
 		CpeDevice cpeDevice = cpeDeviceList.isEmpty() ? null : cpeDeviceList.get(0);
 		if (cpeDevice == null) {
 			throw new Exception("设备未找到！");
 		}
 
 		// 获取设备对应的锁
-		Lock deviceLock = getDeviceLock(data.deviceSn);
+		Lock deviceLock = getDeviceLock(deviceSn);
 
 		try {
-			// 尝试获取设备锁，防止并发操作
 			if (deviceLock.tryLock(LOCK_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
 				try {
-					// 设置设备在线状态
-					cpeDevice.setDeviceStatusNo("1");
-
-					data.openwrtVersion = openwrtVer;
-					if (sysUptime != null && sysUptime.length() > 0) {
-						data.sysUptime = parseSysUptime(sysUptime);
-					} else
-						data.sysUptime = "0";
-					if (clients != null && clients.length() > 0) {
-						List<CpeDeviceClient> clientList = parseClientsDetail(clients, cpeDevice.getId());
-						data.clientCount = clientList.size();
-					} else
-						data.clientCount = 0;
-					if (cpuTemp != null && cpuTemp.length() > 0) {
-						try {
-							data.cpuTemp = Integer.parseInt(cpuTemp);
-						} catch (NumberFormatException e) {
-							data.cpuTemp = 0;
-						}
-					} else
-						data.cpuTemp = 0;
-
-					log.warn("CPU温度: " + data.cpuTemp.toString());
-
-					if (ubusOutputParam != null) {
-						String ubusOutput = ubusOutputParam;
-						try {
-							// 解析设备上报的JSON数据
-							ObjectMapper objectMapper = new ObjectMapper();
-							@SuppressWarnings("unchecked")
-							Map<String, Object> ubusOutputMap = objectMapper.readValue(ubusOutput, Map.class);
-
-							// 提取SIM卡槽位信息
-							data.sim_slot = Integer.parseInt(ubusOutputMap.get("LTE_SIMSLOT").toString());
-							data.lte_4g = ubusOutputMap.containsKey("LTE_4G") ? ubusOutputMap.get("LTE_4G").toString()
-									: "";
-							data.lte_5g = ubusOutputMap.containsKey("LTE_5G") ? ubusOutputMap.get("LTE_5G").toString()
-									: "";
-
-							// 提取设备基本信息
-							data.imei = ubusOutputMap.containsKey("LTE_IMEI") ? ubusOutputMap.get("LTE_IMEI").toString()
-									: "";
-							data.version = ubusOutputMap.containsKey("LTE_VER")
-									? ubusOutputMap.get("LTE_VER").toString()
-									: "";
-							data.iccid = ubusOutputMap.containsKey("LTE_ICCID")
-									? ubusOutputMap.get("LTE_ICCID").toString()
-									: "";
-							// 关联SIM卡信息
-							if (cardInfoService.selectByCardNo(data.iccid).size() > 0) {
-								cpeDevice.setCardNo(cardInfoService.selectByCardNo(data.iccid).get(0).getId());
-								cpeDevice.setOnlineCardNo(cardInfoService.selectByCardNo(data.iccid).get(0).getId());
-							}
-
-							// 提取网络相关信息
-							data.module = ubusOutputMap.containsKey("LTE_MODULE")
-									? ubusOutputMap.get("LTE_MODULE").toString()
-									: "";
-							cpeDevice.setFiveGModule(data.module);
-
-							data.lte_cell = ubusOutputMap.containsKey("LTE_CELL")
-									? ubusOutputMap.get("LTE_CELL").toString()
-									: "";
-							data.lte_freq = ubusOutputMap.containsKey("LTE_FREQ")
-									? ubusOutputMap.get("LTE_FREQ").toString()
-									: "";
-							data.lte_cainfo = ubusOutputMap.containsKey("LTE_CAINFO")
-									? ubusOutputMap.get("LTE_CAINFO").toString()
-									: "";
-							data.lte_cops = ubusOutputMap.containsKey("LTE_COPS")
-									? ubusOutputMap.get("LTE_COPS").toString()
-									: "";
-						} catch (Exception e) {
-							try {
-								// 处理非JSON格式的数据，例如：csq=26;version=15.05.1;wificlients=-1;iccid=89860624750036570650;imei=866791079623804;
-								String[] pairs = ubusOutput.split(";");
-								for (String pair : pairs) {
-									String[] kv = pair.split("=");
-									if (kv.length == 2) {
-										String key = kv[0].trim();
-										String value = kv[1].trim();
-										if ("csq".equals(key)) {
-											data.sinr = value;
-										} else if ("iccid".equals(key)) {
-											data.iccid = value;
-											// 关联SIM卡信息
-											if (cardInfoService.selectByCardNo(data.iccid).size() > 0) {
-												cpeDevice.setCardNo(
-														cardInfoService.selectByCardNo(data.iccid).get(0).getId());
-												cpeDevice.setOnlineCardNo(
-														cardInfoService.selectByCardNo(data.iccid).get(0).getId());
-											}
-										} else if ("imei".equals(key)) {
-											data.imei = value;
-										} else if ("wificlients".equals(key)) {
-											data.clientCount = Integer.parseInt(value);
-										}
-									}
-								}
-							} catch (Exception e2) {
-								log.error("解析设备上报的非JSON数据失败", e2);
-							}
-						}
-					}
-
-					service_nr(cpeDevice, cpeDevice, ipAddrParam, lteStatus, data);
-
-					// 更新设备信息
-					cpeDeviceService.updateById(cpeDevice);
+					internalPush(cpeDevice, ubusOutputParam, ipAddrParam, lteStatus, openwrtVer, sysUptime, clients,
+							cpuTemp);
 				} finally {
-					// 释放设备锁
 					deviceLock.unlock();
 				}
 			} else {
-				// 获取锁超时
-				log.warn("Failed to acquire lock for device: {}");
+				log.warn("Failed to acquire lock for device: {}", deviceSn);
 				throw new Exception("设备正忙，请稍后重试");
 			}
 		} catch (InterruptedException e) {
-			// 处理线程中断异常
 			Thread.currentThread().interrupt();
-			log.error("Interrupted while processing device: {}", e);
+			log.error("Interrupted while processing device: {}", deviceSn, e);
 			throw new Exception("处理设备数据被中断");
 		}
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public void pushCwmp(String deviceSnParam, Map<String, String> params) throws Exception {
+		// 1. Normalize SN
+		String deviceSn = deviceSnParam.replace(":", "").toUpperCase();
+
+		// 2. Get device lock for thread safety
+		Lock deviceLock = getDeviceLock(deviceSn);
+
+		try {
+			if (deviceLock.tryLock(LOCK_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+				try {
+					// 3. Get or Create Device (Auto-registration)
+					List<CpeDevice> cpeDeviceList = cpeDeviceService.selectByDeviceSn(deviceSn);
+					CpeDevice cpeDevice;
+					if (cpeDeviceList.isEmpty()) {
+						log.info("TR-069 Auto-registration for device: {}", deviceSn);
+						cpeDevice = new CpeDevice();
+						cpeDevice.setDeviceSn(deviceSn);
+						cpeDevice.setDeviceStatusNo("1");
+						cpeDevice.setDeviceTypeNo("1"); // TR069 Type
+
+						String modelName = params.get("Device.DeviceInfo.ModelName");
+						if (modelName == null)
+							modelName = params.get("Device.DeviceInfo.ModelNumber");
+						if (modelName == null)
+							modelName = params.get("InternetGatewayDevice.DeviceInfo.ModelName");
+						cpeDevice.setDeviceModuleNo(modelName != null ? modelName : "TR069_Model");
+
+						cpeDevice.setCreateTime(new Date());
+						cpeDevice.setCreateBy(ADMIN_USER);
+						cpeDevice.setSysOrgCode(SYS_ORG_CODE);
+						cpeDeviceService.save(cpeDevice);
+					} else {
+						cpeDevice = cpeDeviceList.get(0);
+					}
+
+					// 4. CHECK FOR RAW DATA REPORTING (Unified Logic)
+					String ubusRaw = params.get("Device.DeviceInfo.X_JEECG_UbusOutput");
+					String ipAddrRaw = params.get("Device.DeviceInfo.X_JEECG_IpAddrParam");
+					String lteStatusRaw = params.get("Device.DeviceInfo.X_JEECG_LteStatus");
+					String openwrtVer = params.get("Device.DeviceInfo.X_JEECG_OpenwrtVer");
+					if (openwrtVer == null)
+						openwrtVer = params.get("Device.DeviceInfo.SoftwareVersion");
+					String sysUptime = params.get("Device.DeviceInfo.X_JEECG_SysUptime");
+					if (sysUptime == null)
+						sysUptime = params.get("Device.DeviceInfo.UpTime");
+					String clientsRaw = params.get("Device.DeviceInfo.X_JEECG_Clients");
+					String cpuTempRaw = params.get("Device.DeviceInfo.X_JEECG_CpuTemp");
+
+					if (ubusRaw != null || ipAddrRaw != null) {
+						// Use unified internal push logic if raw data is provided
+						log.info("Processing TR-069 device using unified raw data logic: {}", deviceSn);
+						internalPush(cpeDevice, ubusRaw, ipAddrRaw, lteStatusRaw, openwrtVer, sysUptime, clientsRaw,
+								cpuTempRaw);
+					} else {
+						// Fallback to standard CWMP mapping
+						log.info("Processing TR-069 device using standard mapping: {}", deviceSn);
+						processStandardCwmp(cpeDevice, params);
+					}
+
+					log.info("TR-069 Inform matched and processed for device: {}", deviceSn);
+
+				} finally {
+					deviceLock.unlock();
+				}
+			} else {
+				log.warn("Failed to acquire lock for TR-069 device: {}", deviceSn);
+				throw new Exception("设备正忙，请稍后重试");
+			}
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			log.error("Interrupted while processing TR-069 device: {}", deviceSn, e);
+			throw new Exception("处理设备数据被中断");
+		}
+	}
+
+	/**
+	 * 标准 CWMP 参数映射逻辑 (原 pushCwmp 的核心)
+	 */
+	private void processStandardCwmp(CpeDevice cpeDevice, Map<String, String> params) throws Exception {
+		CpeBaseData data = new CpeBaseData();
+		data.deviceSn = cpeDevice.getDeviceSn();
+
+		CpeDeviceStatus status = new CpeDeviceStatus();
+		status.setDeviceSn(data.deviceSn);
+		status.setCpeId(cpeDevice.getId());
+		status.setTs(new Date());
+		status.setCreateTime(new Date());
+		status.setCreateBy(ADMIN_USER);
+		status.setUpdateBy(ADMIN_USER);
+		status.setUpdateTime(new Date());
+		status.setSysOrgCode(cpeDevice.getSysOrgCode() != null ? cpeDevice.getSysOrgCode() : SYS_ORG_CODE);
+
+		CwmpParameterMapper.mapParameters(params, cpeDevice, status);
+
+		if (status.getSysUptime() != null && !status.getSysUptime().isEmpty()) {
+			data.sysUptime = parseSysUptime(status.getSysUptime());
+			status.setSysUptime(data.sysUptime);
+		}
+
+		if (status.getIccid() != null && !status.getIccid().isEmpty()) {
+			data.iccid = status.getIccid();
+			data.imei = status.getImei();
+
+			List<CardInfo> cards = cardInfoService.selectByCardNo(data.iccid);
+			if (!cards.isEmpty()) {
+				cpeDevice.setCardNo(cards.get(0).getId());
+				cpeDevice.setOnlineCardNo(cards.get(0).getId());
+			}
+
+			String[] ipaddrForTraffic = new String[] {
+					status.getIpv4() != null ? status.getIpv4() : "",
+					status.getIpv6() != null ? status.getIpv6() : "",
+					String.valueOf(status.getUpBytes() != null ? status.getUpBytes().longValue() : 0L),
+					String.valueOf(status.getDownBytes() != null ? status.getDownBytes().longValue() : 0L)
+			};
+			processTrafficData(ipaddrForTraffic, data.iccid, cpeDevice, data);
+			status.setUpBytes(data.upBytes);
+			status.setDownBytes(data.downBytes);
+		}
+
+		cpeDeviceService.updateById(cpeDevice);
+		save(status);
+	}
+
+	/**
+	 * 内部统一推送逻辑
+	 */
+	private void internalPush(CpeDevice cpeDevice, String ubusOutputParam, String ipAddrParam, String lteStatus,
+			String openwrtVer, String sysUptime, String clients, String cpuTemp) throws Exception {
+
+		// Decode HTML entities (e.g., &quot; -> ") which might occur during TR-069 XML
+		// transport
+		String decodedUbus = HtmlUtils.htmlUnescape(ubusOutputParam).trim();
+		// Handle occasional stray trailing braces from some device reports
+		if (decodedUbus.endsWith("}}") && !decodedUbus.startsWith("{{")) {
+			decodedUbus = decodedUbus.substring(0, decodedUbus.length() - 1);
+		}
+
+		String decodedLteStatus = HtmlUtils.htmlUnescape(lteStatus).trim();
+		// Handle occasional stray trailing braces from some device reports
+		if (decodedLteStatus.endsWith("}}") && !decodedLteStatus.startsWith("{{")) {
+			decodedLteStatus = decodedLteStatus.substring(0, decodedLteStatus.length() - 1);
+		}
+
+		CpeBaseData data = new CpeBaseData();
+		data.deviceSn = cpeDevice.getDeviceSn();
+
+		// 设置设备在线状态
+		cpeDevice.setDeviceStatusNo("1");
+
+		data.openwrtVersion = openwrtVer;
+		if (sysUptime != null && sysUptime.length() > 0) {
+			data.sysUptime = parseSysUptime(sysUptime);
+		} else {
+			data.sysUptime = "0";
+		}
+
+		if (clients != null && clients.length() > 0) {
+			List<CpeDeviceClient> clientList = parseClientsDetail(clients, cpeDevice.getId());
+			data.clientCount = clientList.size();
+		} else {
+			data.clientCount = 0;
+		}
+
+		if (cpuTemp != null && cpuTemp.length() > 0) {
+			try {
+				data.cpuTemp = Integer.parseInt(cpuTemp);
+			} catch (Exception e) {
+				data.cpuTemp = 0;
+			}
+		} else {
+			data.cpuTemp = 0;
+		}
+
+		if (ubusOutputParam != null) {
+			try {
+				ObjectMapper objectMapper = new ObjectMapper();
+				@SuppressWarnings("unchecked")
+				Map<String, Object> ubusOutputMap = objectMapper.readValue(decodedUbus, Map.class);
+
+				data.sim_slot = Integer.parseInt(ubusOutputMap.getOrDefault("LTE_SIMSLOT", "0").toString());
+				data.lte_4g = ubusOutputMap.getOrDefault("LTE_4G", "").toString();
+				data.lte_5g = ubusOutputMap.getOrDefault("LTE_5G", "").toString();
+				data.imei = ubusOutputMap.getOrDefault("LTE_IMEI", "").toString();
+				data.version = ubusOutputMap.getOrDefault("LTE_VER", "").toString();
+				data.iccid = ubusOutputMap.getOrDefault("LTE_ICCID", "").toString();
+
+				if (!data.iccid.isEmpty()) {
+					List<CardInfo> cards = cardInfoService.selectByCardNo(data.iccid);
+					if (!cards.isEmpty()) {
+						cpeDevice.setCardNo(cards.get(0).getId());
+						cpeDevice.setOnlineCardNo(cards.get(0).getId());
+					}
+				}
+
+				data.module = ubusOutputMap.getOrDefault("LTE_MODULE", "").toString();
+				cpeDevice.setFiveGModule(data.module);
+				data.lte_cell = ubusOutputMap.getOrDefault("LTE_CELL", "").toString();
+				data.lte_freq = ubusOutputMap.getOrDefault("LTE_FREQ", "").toString();
+				data.lte_cainfo = ubusOutputMap.getOrDefault("LTE_CAINFO", "").toString();
+				data.lte_cops = ubusOutputMap.getOrDefault("LTE_COPS", "").toString();
+			} catch (Exception e) {
+				// Fallback for non-JSON format
+				String[] pairs = ubusOutputParam.split(";");
+				for (String pair : pairs) {
+					String[] kv = pair.split("=");
+					if (kv.length == 2) {
+						String key = kv[0].trim();
+						String value = kv[1].trim();
+						if ("csq".equals(key))
+							data.sinr = value;
+						else if ("iccid".equals(key)) {
+							data.iccid = value;
+							List<CardInfo> cards = cardInfoService.selectByCardNo(data.iccid);
+							if (!cards.isEmpty()) {
+								cpeDevice.setCardNo(cards.get(0).getId());
+								cpeDevice.setOnlineCardNo(cards.get(0).getId());
+							}
+						} else if ("imei".equals(key))
+							data.imei = value;
+						else if ("wificlients".equals(key))
+							data.clientCount = Integer.parseInt(value);
+					}
+				}
+			}
+		}
+
+		service_nr(cpeDevice, cpeDevice, ipAddrParam, decodedLteStatus, data);
+		cpeDeviceService.updateById(cpeDevice);
 	}
 
 	/**

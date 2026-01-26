@@ -1,7 +1,11 @@
 {
     "java.compile.nullAnalysis.mode": "automatic",
-    "java.configuration.updateBuildConfiguration": "interactive",
-    "cursor.projectProfile": "fullstack-jeecg",
-    "cursor.crossStackLinking": true,
-    "cursor.autoLearnPatterns": true
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-1.8",
+      "path": "C:\\Program Files\\Java\\jdk1.8.0_301",
+      "default": true
+    }
+  ]
 }

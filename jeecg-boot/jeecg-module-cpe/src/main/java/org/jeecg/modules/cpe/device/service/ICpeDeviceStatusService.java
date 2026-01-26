@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * @Description: CPE设备状态表
  * @Author: jeecg-boot
- * @Date:   2024-12-25
+ * @Date: 2024-12-25
  * @Version: V1.0
  */
 public interface ICpeDeviceStatusService extends IService<CpeDeviceStatus> {
@@ -37,8 +37,17 @@ public interface ICpeDeviceStatusService extends IService<CpeDeviceStatus> {
 	 * @return void
 	 */
 	public void deleteByMainId(String mainId);
-	
-	public void push(String deviceSnParam, String ubusOutputParam, String ipAddrParam, String lteStatus, String openwrtVer, String sysUptime, String clients, String cpuTemp) throws Exception;
+
+	public void push(String deviceSnParam, String ubusOutputParam, String ipAddrParam, String lteStatus,
+			String openwrtVer, String sysUptime, String clients, String cpuTemp) throws Exception;
+
+	/**
+	 * TR-069 数据推送接口
+	 * 
+	 * @param deviceSnParam 设备序列号
+	 * @param params        TR-181 参数 Map
+	 */
+	public void pushCwmp(String deviceSnParam, java.util.Map<String, String> params) throws Exception;
 
 	/**
 	 * 通过时间戳删除子表数据

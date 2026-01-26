@@ -9,7 +9,6 @@ import org.jeecg.modules.cpe.device.entity.CpeOperLog;
 import org.jeecg.modules.cpe.device.mapper.CpeDeviceWirelessMapper;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceService;
 import org.jeecg.modules.cpe.device.service.ICpeDeviceWirelessService;
-import org.jeecg.modules.cpe.device.service.ICpeOperLogService;
 import org.jeecg.modules.cpe.device.service.impl.WirelessConfigParser.WirelessConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,12 +26,13 @@ import java.text.SimpleDateFormat;
 /**
  * @Description: 设备无线网络配置
  * @Author: jeecg-boot
- * @Date:   2025-01-20
+ * @Date: 2025-01-20
  * @Version: V1.0
  */
 @Slf4j
 @Service
-public class CpeDeviceWirelessServiceImpl extends ServiceImpl<CpeDeviceWirelessMapper, CpeDeviceWireless> implements ICpeDeviceWirelessService {
+public class CpeDeviceWirelessServiceImpl extends ServiceImpl<CpeDeviceWirelessMapper, CpeDeviceWireless>
+		implements ICpeDeviceWirelessService {
 
 	// 常量定义
 	private static final String ADMIN_USER = "admin";
@@ -47,14 +47,12 @@ public class CpeDeviceWirelessServiceImpl extends ServiceImpl<CpeDeviceWirelessM
 	@Autowired
 	private ICpeDeviceService cpeDeviceService;
 
-	@Autowired
-	private ICpeOperLogService cpeOperLogService;
-
 	/** 并发控制锁 */
 	private final ConcurrentHashMap<String, Lock> deviceLocks = new ConcurrentHashMap<>();
 
 	/**
 	 * 获取设备锁
+	 * 
 	 * @param deviceSn 设备序列号
 	 * @return 设备对应的锁对象
 	 */
@@ -77,7 +75,7 @@ public class CpeDeviceWirelessServiceImpl extends ServiceImpl<CpeDeviceWirelessM
 	 * 处理设备无线配置报告
 	 *
 	 * @param deviceSnParam 设备序列号
-	 * @param wireless 无线配置内容
+	 * @param wireless      无线配置内容
 	 * @return 处理结果状态码
 	 */
 	@Override
@@ -230,6 +228,7 @@ public class CpeDeviceWirelessServiceImpl extends ServiceImpl<CpeDeviceWirelessM
 
 	/**
 	 * 检查无线配置记录
+	 * 
 	 * @return 配置是否发生变化
 	 */
 	private boolean checkWirelessRecord(CpeDeviceWireless record, WirelessConfig config) {
@@ -249,77 +248,95 @@ public class CpeDeviceWirelessServiceImpl extends ServiceImpl<CpeDeviceWirelessM
 
 		// 检查并更新2.4G配置
 		if (!StringUtils.equals(record.getRadio24Channel(), config.getRadio0().getChannel())) {
-			if (newfile) record.setRadio24Channel(config.getRadio0().getChannel());
+			if (newfile)
+				record.setRadio24Channel(config.getRadio0().getChannel());
 			changed = true;
 		}
 		if (!Objects.equals(record.getRadio24Power(), config.getRadio0().getPower())) {
-			if (newfile) record.setRadio24Power(config.getRadio0().getPower());
+			if (newfile)
+				record.setRadio24Power(config.getRadio0().getPower());
 			changed = true;
 		}
 		if (!Objects.equals(record.getRadio24Disabled(), config.getWlan0().getDisabled())) {
-			if (newfile) record.setRadio24Disabled(config.getWlan0().getDisabled());
+			if (newfile)
+				record.setRadio24Disabled(config.getWlan0().getDisabled());
 			changed = true;
 		}
 		if (!StringUtils.equals(record.getRadio24Ssid(), config.getWlan0().getSsid())) {
-			if (newfile) record.setRadio24Ssid(config.getWlan0().getSsid());
+			if (newfile)
+				record.setRadio24Ssid(config.getWlan0().getSsid());
 			changed = true;
 		}
 		if (!StringUtils.equals(record.getRadio24Encryption(), config.getWlan0().getEncryption())) {
-			if (newfile) record.setRadio24Encryption(config.getWlan0().getEncryption());
+			if (newfile)
+				record.setRadio24Encryption(config.getWlan0().getEncryption());
 			changed = true;
 		}
 		if (!StringUtils.equals(record.getRadio24Key(), config.getWlan0().getKey())) {
-			if (newfile) record.setRadio24Key(config.getWlan0().getKey());
+			if (newfile)
+				record.setRadio24Key(config.getWlan0().getKey());
 			changed = true;
 		}
 		if (!Objects.equals(record.getRadio24MaxSta(), config.getWlan0().getMaxsta())) {
-			if (newfile) record.setRadio24MaxSta(config.getWlan0().getMaxsta());
+			if (newfile)
+				record.setRadio24MaxSta(config.getWlan0().getMaxsta());
 			changed = true;
 		}
 		if (!Objects.equals(record.getRadio24Macfilter(), config.getWlan0().getMacfilter())) {
-			if (newfile) record.setRadio24Macfilter(config.getWlan0().getMacfilter());
+			if (newfile)
+				record.setRadio24Macfilter(config.getWlan0().getMacfilter());
 			changed = true;
 		}
 		if (!Objects.equals(record.getRadio24Hidden(), config.getWlan0().getHidden())) {
-			if (newfile) record.setRadio24Hidden(config.getWlan0().getHidden());
+			if (newfile)
+				record.setRadio24Hidden(config.getWlan0().getHidden());
 			changed = true;
 		}
 
 		// 检查并更新5G配置
 		if (!StringUtils.equals(record.getRadio5Channel(), config.getRadio1().getChannel())) {
-			if (newfile) record.setRadio5Channel(config.getRadio1().getChannel());
+			if (newfile)
+				record.setRadio5Channel(config.getRadio1().getChannel());
 			changed = true;
 		}
 		if (!Objects.equals(record.getRadio5Power(), config.getRadio1().getPower())) {
-			if (newfile) record.setRadio5Power(config.getRadio1().getPower());
+			if (newfile)
+				record.setRadio5Power(config.getRadio1().getPower());
 			changed = true;
 		}
 		if (!Objects.equals(record.getRadio5Disabled(), config.getWlan1().getDisabled())) {
-			if (newfile) record.setRadio5Disabled(config.getWlan1().getDisabled());
+			if (newfile)
+				record.setRadio5Disabled(config.getWlan1().getDisabled());
 			changed = true;
 		}
 		if (!StringUtils.equals(record.getRadio5Ssid(), config.getWlan1().getSsid())) {
-			if (newfile) record.setRadio5Ssid(config.getWlan1().getSsid());
+			if (newfile)
+				record.setRadio5Ssid(config.getWlan1().getSsid());
 			changed = true;
 		}
 		if (!StringUtils.equals(record.getRadio5Encryption(), config.getWlan1().getEncryption())) {
-			if (newfile) record.setRadio5Encryption(config.getWlan1().getEncryption());
+			if (newfile)
+				record.setRadio5Encryption(config.getWlan1().getEncryption());
 			changed = true;
 		}
 		if (!StringUtils.equals(record.getRadio5Key(), config.getWlan1().getKey())) {
-			if (newfile) record.setRadio5Key(config.getWlan1().getKey());
+			if (newfile)
+				record.setRadio5Key(config.getWlan1().getKey());
 			changed = true;
 		}
 		if (!Objects.equals(record.getRadio5MaxSta(), config.getWlan1().getMaxsta())) {
-			if (newfile) record.setRadio5MaxSta(config.getWlan1().getMaxsta());
+			if (newfile)
+				record.setRadio5MaxSta(config.getWlan1().getMaxsta());
 			changed = true;
 		}
 		if (!Objects.equals(record.getRadio5Macfilter(), config.getWlan1().getMacfilter())) {
-			if (newfile) record.setRadio5Macfilter(config.getWlan1().getMacfilter());
+			if (newfile)
+				record.setRadio5Macfilter(config.getWlan1().getMacfilter());
 			changed = true;
 		}
 		if (!Objects.equals(record.getRadio5Hidden(), config.getWlan1().getHidden())) {
-			if (newfile) record.setRadio5Hidden(config.getWlan1().getHidden());
+			if (newfile)
+				record.setRadio5Hidden(config.getWlan1().getHidden());
 			changed = true;
 		}
 
@@ -355,45 +372,44 @@ public class CpeDeviceWirelessServiceImpl extends ServiceImpl<CpeDeviceWirelessM
 
 		// 使用数据库记录构建操作参数
 		String operParam = String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
-			// wirelessConfig.getWlan0().getDisabled(),
-			// wirelessConfig.getRadio0().getChannel(),
-			// wirelessConfig.getWlan0().getSsid(),
-			// wirelessConfig.getWlan0().getEncryption(),
-			// wirelessConfig.getWlan0().getKey(),
-			// wirelessConfig.getWlan0().getMaxsta(),
-			// wirelessConfig.getRadio0().getPower(),
-			// wirelessConfig.getWlan0().getMacfilter(),
-			// wirelessConfig.getWlan0().getHidden(),
-			// wirelessConfig.getWlan1().getDisabled(),
-			// wirelessConfig.getRadio1().getChannel(),
-			// wirelessConfig.getWlan1().getSsid(),
-			// wirelessConfig.getWlan1().getEncryption(),
-			// wirelessConfig.getWlan1().getKey(),
-			// wirelessConfig.getWlan1().getMaxsta(),
-			// wirelessConfig.getRadio0().getPower(),
-			// wirelessConfig.getWlan1().getMacfilter(),
-			// wirelessConfig.getWlan1().getHidden()
-			record.getRadio24Disabled(),
-			record.getRadio24Channel(),
-			record.getRadio24Ssid(),
-			record.getRadio24Encryption(),
-			record.getRadio24Key(),
-			record.getRadio24MaxSta(),
-			record.getRadio24Power(),
-			record.getRadio24Macfilter(),
-			record.getRadio24Hidden(),
-			record.getRadio5Disabled(),
-			record.getRadio5Channel(),
-			record.getRadio5Ssid(),
-			record.getRadio5Encryption(),
-			record.getRadio5Key(),
-			record.getRadio5MaxSta(),
-			record.getRadio5Power(),
-			record.getRadio5Macfilter(),
-			record.getRadio5Hidden()
-		);
+				// wirelessConfig.getWlan0().getDisabled(),
+				// wirelessConfig.getRadio0().getChannel(),
+				// wirelessConfig.getWlan0().getSsid(),
+				// wirelessConfig.getWlan0().getEncryption(),
+				// wirelessConfig.getWlan0().getKey(),
+				// wirelessConfig.getWlan0().getMaxsta(),
+				// wirelessConfig.getRadio0().getPower(),
+				// wirelessConfig.getWlan0().getMacfilter(),
+				// wirelessConfig.getWlan0().getHidden(),
+				// wirelessConfig.getWlan1().getDisabled(),
+				// wirelessConfig.getRadio1().getChannel(),
+				// wirelessConfig.getWlan1().getSsid(),
+				// wirelessConfig.getWlan1().getEncryption(),
+				// wirelessConfig.getWlan1().getKey(),
+				// wirelessConfig.getWlan1().getMaxsta(),
+				// wirelessConfig.getRadio0().getPower(),
+				// wirelessConfig.getWlan1().getMacfilter(),
+				// wirelessConfig.getWlan1().getHidden()
+				record.getRadio24Disabled(),
+				record.getRadio24Channel(),
+				record.getRadio24Ssid(),
+				record.getRadio24Encryption(),
+				record.getRadio24Key(),
+				record.getRadio24MaxSta(),
+				record.getRadio24Power(),
+				record.getRadio24Macfilter(),
+				record.getRadio24Hidden(),
+				record.getRadio5Disabled(),
+				record.getRadio5Channel(),
+				record.getRadio5Ssid(),
+				record.getRadio5Encryption(),
+				record.getRadio5Key(),
+				record.getRadio5MaxSta(),
+				record.getRadio5Power(),
+				record.getRadio5Macfilter(),
+				record.getRadio5Hidden());
 
 		operLog.setOperParam(operParam);
-		//cpeOperLogService.save(operLog);
+		// cpeOperLogService.save(operLog);
 	}
 }

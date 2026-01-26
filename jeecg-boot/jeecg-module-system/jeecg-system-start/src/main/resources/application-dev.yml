@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 9527
   tomcat:
     max-swallow-size: -1
   error:
@@ -162,16 +162,16 @@ spring:
           merge-sql: true
           slow-sql-millis: 5000
       datasource:
-        # master:
-        #   url: jdbc:mysql://192.168.88.10:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
-        #   username: jeecg
-        #   password: p0o9i8u7
-        #   driver-class-name: com.mysql.cj.jdbc.Driver
         master:
-          url: jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+          url: jdbc:mysql://192.168.88.10:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
           username: jeecg
           password: p0o9i8u7
           driver-class-name: com.mysql.cj.jdbc.Driver
+        # master:
+        #   url: jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+        #   username: jeecg
+        #   password: p0o9i8u7
+        #   driver-class-name: com.mysql.cj.jdbc.Driver
           # 多数据源配置
           #multi-datasource1:
           #url: jdbc:mysql://localhost:3306/jeecg-boot2?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
@@ -181,8 +181,8 @@ spring:
   #redis 配置
   redis:
     database: 1
-    host: 127.0.0.1
-    # host: 192.168.88.10
+    # host: 127.0.0.1
+    host: 192.168.88.10
     port: 6379
     password: ''
 #mybatis plus 设置

